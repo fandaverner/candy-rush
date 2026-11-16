@@ -10,7 +10,7 @@ function playBonus(spins) {
   while (left > 0) {
     left--;
     const g = H.spinGrid(rnd), f = H.rollFeature(true, rnd), e = H.evaluate(g, f, true);
-    tot += Math.floor(e.total * 10) / 10 + jackpot(e.jp);
+    tot += (e.total > 0 ? Math.max(1, Math.floor(e.total * 10)) / 10 : 0) + jackpot(e.jp);
     if (e.sc >= 3) left += H.RETRIGGER;
   }
   return tot;
@@ -19,7 +19,7 @@ for (let i = 0; i < N; i++) {
   H.JP.forEach((j, k) => jp[k] += j.grow);
   const g = H.spinGrid(rnd), f = H.rollFeature(false, rnd), e = H.evaluate(g, f, false);
   if (f.length) featN++;
-  let w = Math.floor(e.total * 10) / 10; if (w > 0) hits++;
+  let w = e.total > 0 ? Math.max(1, Math.floor(e.total * 10)) / 10 : 0; if (w > 0) hits++;
   const jw = jackpot(e.jp); jpWin += jw;
   base += w;
   let bw = 0;

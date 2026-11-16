@@ -28,9 +28,9 @@ const HH = (() => {
   ];
   const CFG = {
     scatterP: 0.0118, jackpotP: 0.0078,
-    featureP: 0.09,          // šance na rozšířený válec v základní hře
+    featureP: 0.1,          // šance na rozšířený válec v základní hře
     bonusReels: [0.972, 0.026, 0.002], // 1 / 2 / 3 válce ve free spinech
-    payScale: 0.075, bonusPayScale: 0.046,
+    payScale: 0.235, bonusPayScale: 0.46,
   };
   const TOTW = SYMS.reduce((a, s) => a + s.w, 0);
 
@@ -56,7 +56,14 @@ const HH = (() => {
     else if (rnd() < CFG.featureP) n = 1;
     const reels = [0, 1, 2, 3, 4];
     for (let i = reels.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [reels[i], reels[j]] = [reels[j], reels[i]]; }
-    return reels.slice(0, n).sort((a, b) => a - b).map(reel => ({ reel, mult: pickW(MULTS, bonus ? MULT_W_BONUS : MULT_W, rnd) }));
+    // nahoře a dole dva RŮZNÉ násobky, náhodně se vybere jeden z nich
+    const W = bonus ? MULT_W_BONUS : MULT_W;
+    return reels.slice(0, n).sort((a, b) => a - b).map(reel => {
+      const top = pickW(MULTS, W, rnd);
+      let bot; do { bot = pickW(MULTS, W, rnd); } while (bot === top);
+      const side = rnd() < 0.5 ? 'top' : 'bot';
+      return { reel, top, bot, side, mult: side === 'top' ? top : bot };
+    });
   }
   // výpočet výher „ways“ (zleva doprava, sousední válce, všech 6^5 = 7776 cest)
   function evaluate(g, feat, bonus) {
@@ -66,7 +73,8 @@ const HH = (() => {
     for (const s of SYMS) {
       let ways = 1, len = 0, real = false; const cells = [];
       for (let r = 0; r < REELS; r++) {
-        if (wild.has(r)) { ways *= ROWS; len++; cells.push(...Array.from({ length: ROWS }, (_, y) => [r, y])); continue; }
+        if (wild.has(r)) { len++; // rozšířený válec = WILD, spojí cestu (počítá se jako jedna pozice)
+ cells.push(...Array.from({ length: ROWS }, (_, y) => [r, y])); continue; }
         let c = 0; for (let y = 0; y < ROWS; y++) if (g[r][y] === s.id) { c++; cells.push([r, y]); }
         if (!c) break;
         ways *= c; len++; real = true;

@@ -99,6 +99,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .badge.top{top:4px;color:#4a2c00;background:radial-gradient(circle at 35% 30%,#fff 0 12%,#ffe28a 40%,#c4831c);box-shadow:0 0 0 3px #fff6,0 0 16px #ffe28a}
 .badge.bot{bottom:4px;color:#fff;background:radial-gradient(circle at 35% 30%,#ffb3a0 0 10%,#e0313b 45%,#5a0508);box-shadow:0 0 0 3px #ff8a6a88,0 0 16px #ff3a2a;text-shadow:0 1px 2px #000}
 .badge.roll span{animation:roll .09s linear infinite}
+.badge{transition:filter .15s,opacity .3s,box-shadow .15s}
+.badge.pick{filter:brightness(1.35);box-shadow:0 0 0 4px #fff,0 0 26px 8px #fff8!important}
+.badge.out{opacity:.35;filter:grayscale(1)}
+.wildreel .w span{font-family:'Cinzel',serif;font-size:calc(var(--cw)*.3);color:#ffe9a0}
 @keyframes roll{50%{opacity:.5;transform:translateY(-3px)}}
 .badge.land{animation:land .45s}
 @keyframes land{40%{transform:translateX(-50%) scale(1.45)}}
@@ -384,22 +388,27 @@ async function spinReels(newGrid, anticipate) {
 async function expandReel(f) {
   sfx.whoosh(); $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
   const w = document.createElement('div'); w.className = 'wildreel';
-  w.innerHTML = `<div class="badge top roll"><span>×2</span></div>
+  w.innerHTML = `<div class="badge top roll"><span>?</span></div>
     <div class="art a1"><svg viewBox="0 0 100 100"><use href="#s-10"/></svg></div>
     <div class="w">WILD</div>
     <div class="art a2"><svg viewBox="0 0 100 100"><use href="#s-8"/></svg></div>
-    <div class="badge bot roll"><span>×2</span></div>`;
+    <div class="badge bot roll"><span>?</span></div>`;
   reels[f.reel].appendChild(w);
   await sleep(T(450));
-  const spans = w.querySelectorAll('.badge span');
-  const steps = turbo ? 10 : 20;
+  const top = w.querySelector('.badge.top'), bot = w.querySelector('.badge.bot');
+  top.querySelector('span').textContent = '×' + f.top; bot.querySelector('span').textContent = '×' + f.bot;
+  top.classList.remove('roll'); bot.classList.remove('roll');
+  await sleep(T(350));
+  // výběr: světlo přeskakuje mezi horním a spodním násobkem a zastaví se na jednom
+  const steps = (turbo ? 7 : 11) + (f.side === 'top' ? 0 : 1);
   for (let i = 0; i < steps; i++) {
-    const v = MULTS[(i * 3 + Math.floor(Math.random() * 3)) % MULTS.length];
-    spans.forEach(s => s.textContent = '×' + v); sfx.tick();
-    await sleep(40 + i * (turbo ? 4 : 7));
+    const onTop = i % 2 === 0;
+    top.classList.toggle('pick', onTop); bot.classList.toggle('pick', !onTop); sfx.tick();
+    await sleep(70 + i * (turbo ? 10 : 22));
   }
-  spans.forEach(s => s.textContent = '×' + f.mult);
-  w.querySelectorAll('.badge').forEach(b => { b.classList.remove('roll'); b.classList.add('land'); });
+  const win = f.side === 'top' ? top : bot, lose = f.side === 'top' ? bot : top;
+  win.classList.add('pick', 'land'); lose.classList.remove('pick'); lose.classList.add('out');
+  w.querySelector('.w').innerHTML = 'WILD<br><span>×' + f.mult + '</span>';
   f.mult >= 25 ? sfx.big() : sfx.choir();
   await sleep(T(500));
 }
@@ -448,7 +457,7 @@ async function spinRound() {
   for (const f of feat) await expandReel(f);
 
   const ev = HH.evaluate(g, feat, bonus);
-  let total = Math.floor(ev.total * b);
+  let total = ev.total > 0 ? Math.max(1, Math.floor(ev.total * b)) : 0;
   if (ev.wins.length) {
     highlight(ev.wins, feat);
     const best = ev.wins.slice().sort((a, c) => c.win - a.win).slice(0, 3);
