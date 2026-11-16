@@ -62,6 +62,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 .s8.big .tile{box-shadow:0 0 14px 4px #fff,0 0 24px 6px #ffd54a}
 @keyframes wobble{50%{transform:scale(1.07) rotate(4deg)}}
 .cell.win .tile{animation:winPulse .55s ease-in-out;filter:brightness(1.2) drop-shadow(0 0 6px #fff) drop-shadow(0 0 10px #ffd54a)!important}
+@keyframes drop{0%{transform:translateY(var(--from));animation-timing-function:cubic-bezier(.5,0,.85,.4)}80%{transform:translateY(0);animation-timing-function:ease-out}90%{transform:translateY(-7%)}100%{transform:translateY(0)}}
 @keyframes winPulse{0%{transform:scale(1)}40%{transform:scale(1.22) rotate(-6deg)}70%{transform:scale(1.12) rotate(5deg)}100%{transform:scale(1.15)}}
 .cell.pop .tile{animation:pop .3s forwards}
 @keyframes pop{to{transform:scale(0) rotate(90deg);opacity:0}}
@@ -170,6 +171,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 // ---------- UI ----------
 const $ = id => document.getElementById(id);
 const board = $('board');
+const BUY_X = 80;
 const BETS = [10, 20, 30, 50, 100, 200, 500, 1000];
 let st = { bal: 10000, betI: 0 };
 try { const s = JSON.parse(localStorage.getItem('cukrova8b') || 'null'); if (s && typeof s.bal === 'number') { st = s; st.bal = Math.round(st.bal); st.betI = Math.min(Math.max(0, st.betI|0), BETS.length - 1); } } catch (e) {}
@@ -186,7 +188,7 @@ function sizeVars() { document.documentElement.style.setProperty('--cell', (boar
 addEventListener('resize', sizeVars);
 
 // ---------- Zvuk ----------
-let actx = null;
+let actx = null, lastLand = 0;
 function tone(f, d = 0.12, type = 'sine', v = 0.12, delay = 0) {
   if (!sound) return;
   try {
@@ -198,7 +200,7 @@ function tone(f, d = 0.12, type = 'sine', v = 0.12, delay = 0) {
   } catch (e) {}
 }
 const sfx = {
-  land: () => tone(220, .06, 'triangle', .05),
+  land: () => { const n = performance.now(); if (n - lastLand < 45) return; lastLand = n; tone(260 + Math.random() * 120, .05, 'triangle', .035); },
   win: n => { for (let i = 0; i < 3; i++) tone(520 + n * 40 + i * 140, .14, 'sine', .1, i * .07); },
   pop: () => tone(900, .08, 'square', .03),
   multi: () => { [660, 880, 1320].forEach((f, i) => tone(f, .18, 'triangle', .1, i * .08)); },
@@ -206,7 +208,7 @@ const sfx = {
 };
 
 // ---------- Vykreslení ----------
-function render(g) {
+function render(g, spinMode = false) {
   board.querySelectorAll('.cell').forEach(e => e.remove());
   const els = [];
   for (let c = 0; c < COLS; c++) for (let r = 0; r < ROWS; r++) {
@@ -221,20 +223,28 @@ function render(g) {
     el.appendChild(t);
     const from = x.from === undefined ? r : x.from;
     if (from !== r) {
-      el.style.transform = `translateY(${(from - r) * 100}%)`;
-      els.push([el, r - from, c]);
+      // každý symbol padá samostatně: spodní řady dřív, sloupce s malým posunem
+      const k = turbo ? 0.45 : 1, dist = r - from;
+      const delay = spinMode ? ((ROWS - 1 - r) * 55 + c * 18) * k : ((ROWS - 1 - r) * 30 + c * 22) * k;
+      const dur = (170 + Math.sqrt(dist) * 95) * k;
+      el.style.setProperty('--from', `${(from - r) * 100}%`);
+      el.style.animation = `drop ${dur}ms ${delay}ms both`;
+      el.addEventListener('animationend', () => { sfx.land(); el.style.animation = ''; }, { once: true });
     }
     board.appendChild(el);
   }
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    for (const [el, dist, c] of els) {
-      const d = (turbo ? 160 : 260) + dist * (turbo ? 18 : 35);
-      el.style.transition = `transform ${d}ms cubic-bezier(.45,.05,.55,1.25) ${c * (turbo ? 12 : 28)}ms`;
-      el.style.transform = 'translateY(0)';
-    }
-  }));
   // vymazat 'from', aby se příště nepřehrávalo
   for (const col of g) for (const x of col) delete x.from;
+}
+// staré symboly postupně vypadnou dolů
+async function dropOut() {
+  const k = turbo ? 0.45 : 1;
+  board.querySelectorAll('.cell').forEach(el => {
+    const c = +el.dataset.c, r = +el.dataset.r;
+    el.style.transition = `transform ${260 * k}ms cubic-bezier(.55,0,1,.45) ${((ROWS - 1 - r) * 40 + c * 14) * k}ms`;
+    el.style.transform = `translateY(${(ROWS - r + 1) * 100}%)`;
+  });
+  await new Promise(r => setTimeout(r, (ROWS * 40 + COLS * 14 + 260) * k));
 }
 const cellEl = (c, r) => board.querySelector(`.cell[data-c="${c}"][data-r="${r}"]`);
 
@@ -251,13 +261,13 @@ function banner(text) {
 function updateUI() {
   $('bal').textContent = fmt(st.bal);
   $('bet').textContent = fmt(bet());
-  $('buyCost').textContent = '(' + fmt(BETS[st.betI] * 100) + ')';
+  $('buyCost').textContent = '(' + fmt(BETS[st.betI] * BUY_X) + ')';
   $('bonusBar').classList.toggle('on', bonus);
   $('fsLeft').textContent = fsLeft;
   $('meterVal').textContent = '×' + meter;
   $('fsWin').textContent = fmt(fsTotal);
   $('spinBtn').disabled = busy && !auto;
-  $('buyBtn').disabled = busy || bonus || st.bal < BETS[st.betI] * 100;
+  $('buyBtn').disabled = busy || bonus || st.bal < BETS[st.betI] * BUY_X;
   $('betMinus').disabled = $('betPlus').disabled = busy || bonus;
 }
 function setWin(x) { $('win').textContent = fmt(x); }
@@ -266,14 +276,15 @@ function setWin(x) { $('win').textContent = fmt(x); }
 async function spinRound() {
   const b = bet();
   let total = 0;
+  await dropOut();
   grid = fillGrid(bonus, Math.random);
-  for (const col of grid) col.forEach((x, r) => x.from = r - ROWS - 1);
-  render(grid); sfx.land();
-  await wait(620);
+  for (const col of grid) col.forEach((x, r) => x.from = -1.5);
+  render(grid, true);
+  await wait(1020);
   setWin(0);
   let step = 0;
   for (;;) {
-    const cl = findClusters(grid);
+    const cl = findClusters(grid, bonus);
     if (!cl.length) break;
     step++;
     let sw = 0;
@@ -292,7 +303,7 @@ async function spinRound() {
     await wait(260);
     grid = tumble(grid, cl.flatMap(k => k.cells), bonus, Math.random);
     render(grid);
-    await wait(520);
+    await wait(820);
   }
 
   // Násobky
@@ -318,7 +329,7 @@ async function spinRound() {
 
   // Scattery
   const sc = countSym(grid, SCATTER);
-  let trig = 0;
+  let trig = 0, start = 0;
   if (sc >= 3) {
     board.querySelectorAll('.cell.s7').forEach(e => e.classList.add('glow'));
     sfx.scatter();
@@ -327,8 +338,9 @@ async function spinRound() {
     banner(sc + '× 🍭  +' + fmt(sp));
     await wait(1500);
     trig = bonus ? RETRIGGER : FREE_SPINS[Math.min(sc, 5)];
+    if (!bonus) start = START_MULTI[Math.min(sc, 5)];
   }
-  return { total, trig };
+  return { total, trig, start };
 }
 
 // ---------- Hlavní tlačítko ----------
@@ -342,17 +354,17 @@ async function spin() {
   st.bal += r.total; save();
   if (r.total >= b * 20) await bigWin(r.total, b);
   updateUI();
-  if (r.trig) await runBonus(r.trig, b);
+  if (r.trig) await runBonus(r.trig, b, r.start);
   busy = false; updateUI();
   if (auto) { await wait(350); if (auto) spin(); }
 }
 
-async function runBonus(spins, b) {
+async function runBonus(spins, b, start = 0) {
   bonusBet = b;
-  await modal(`<h2>🍭 BONUS! 🍭</h2><div class="big">${spins} FREE SPINŮ</div>
+  await modal(`<h2>🍭 BONUS! 🍭</h2><div class="big">${spins} FREE SPINŮ</div>${start ? `<p style="font-size:20px">Startovní násobek <b style="color:#e8197a">×${start}</b>!</p>` : ''}
     <p>Násobky ve free spinech <b>zůstávají a sčítají se</b>.<br>Celkový násobek se uplatní na každou výhru!</p>
     <p style="font-size:13px;opacity:.8">Další 3+ scattery = +${RETRIGGER} spinů</p>`, 'START', auto ? 2200 : 0);
-  bonus = true; fsLeft = spins; meter = 0; fsTotal = 0; updateUI();
+  bonus = true; fsLeft = spins; meter = start; fsTotal = 0; updateUI();
   while (fsLeft > 0) {
     fsLeft--; updateUI();
     const r = await spinRound();
@@ -425,9 +437,9 @@ function showInfo() {
    <li>Hrací plocha <b>8×8</b>. Výhra padá za <b>shluk 5 a více stejných symbolů</b>, které se dotýkají stranou – kdekoli na ploše, i uprostřed.</li>
    <li>Výherní symboly zmizí, ostatní <b>propadnou dolů</b> a shora spadnou nové – výhry se můžou řetězit.</li>
    <li>🌈 <b>Násobky</b> (×2 až ×100): v základní hře se na konci spinu sečtou a vynásobí celou výhru spinu.</li>
-   <li>🍭 <b>Scatter</b>: 3 = 10 free spinů, 4 = 12, 5+ = 15 (+ výplata 3×/5×/10× sázka).</li>
+   <li>🍭 <b>Scatter</b>: 3 = 10 free spinů, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
    <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. 3+ scattery v bonusu = +${RETRIGGER} spinů.</li>
-   <li>Bonus lze koupit za 100× sázka. Teoretická návratnost (RTP) ≈ 96 %.</li>
+   <li>Bonus (10 spinů) lze koupit za ${BUY_X}× sázka. Teoretická návratnost (RTP) ≈ 96 %.</li>
   </ul>
   <table class="pt"><tr><th></th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${rows}</table>
   <p style="font-size:12px;opacity:.75">Výplaty pro aktuální sázku ${fmt(b)} • Fiktivní kredity, jen pro zábavu.</p>
@@ -448,7 +460,7 @@ $('infoBtn').onclick = showInfo;
 $('betMinus').onclick = () => { if (st.betI > 0) st.betI--; save(); updateUI(); };
 $('betPlus').onclick = () => { if (st.betI < BETS.length - 1) st.betI++; save(); updateUI(); };
 $('buyBtn').onclick = async () => {
-  const b = BETS[st.betI], cost = b * 100;
+  const b = BETS[st.betI], cost = b * BUY_X;
   if (busy || bonus || st.bal < cost) return;
   let ok = false;
   await new Promise(res => {
@@ -470,8 +482,8 @@ sizeVars();
 grid = fillGrid(false, Math.random);
 // úvodní plocha bez okamžitých výher
 for (let i = 0; i < 50 && findClusters(grid).length; i++) grid = fillGrid(false, Math.random);
-for (const col of grid) col.forEach((x, r) => x.from = r - ROWS - 1);
-render(grid); updateUI();
+for (const col of grid) col.forEach((x, r) => x.from = -1.5);
+render(grid, true); updateUI();
 </script>
 </body>
 </html>

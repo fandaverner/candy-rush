@@ -12,14 +12,16 @@ const SYMS = [
 ];
 const SCATTER = 7, MULTI = 8;
 const MULTI_VALUES = [2,2,2,3,3,3,4,5,5,6,8,10,10,12,15,20,25,50,100];
-const MULTI_VALUES_BONUS = [2,2,3,3,4,5,5,6,8,10,12,15,20,25,50,100];
+const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,10,15,20,25,50];
 const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
+// startovní celkový násobek bonusu podle počtu scatterů
+const START_MULTI = { 3: 0, 4: 10, 5: 100 };
 const RETRIGGER = 5;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
-  scatterP: 0.0046, scatterPBonus: 0.0042,
-  multiP: 0.0032, multiPBonus: 0.0085,
-  payScale: 0.5,
+  scatterP: 0.0055, scatterPBonus: 0.0042,
+  multiP: 0.0032, multiPBonus: 0.013,
+  payScale: 0.33, bonusPayScale: 0.55,
 };
 const TOTAL_W = SYMS.reduce((a, s) => a + s.w, 0);
 
@@ -47,7 +49,8 @@ function fillGrid(bonus, rnd) {
   return g;
 }
 
-function findClusters(g) {
+function findClusters(g, bonus) {
+  const sc = bonus ? CFG.bonusPayScale : CFG.payScale;
   const seen = Array.from({ length: COLS }, () => Array(ROWS).fill(false));
   const out = [];
   for (let c = 0; c < COLS; c++) for (let r = 0; r < ROWS; r++) {
@@ -63,7 +66,7 @@ function findClusters(g) {
         if (g[nx][ny].s === s) { seen[nx][ny] = true; stack.push([nx, ny]); }
       }
     }
-    if (cells.length >= 5) out.push({ s, cells, win: SYMS[s].pay[sizeIdx(cells.length)] * CFG.payScale });
+    if (cells.length >= 5) out.push({ s, cells, win: SYMS[s].pay[sizeIdx(cells.length)] * sc });
   }
   return out;
 }
@@ -90,7 +93,7 @@ function multis(g) { const a = []; g.forEach((col, c) => col.forEach((x, r) => {
 function playSpin(bonus, rnd, state) {
   let g = fillGrid(bonus, rnd), win = 0;
   for (;;) {
-    const cl = findClusters(g);
+    const cl = findClusters(g, bonus);
     if (!cl.length) break;
     win += cl.reduce((a, x) => a + x.win, 0);
     g = tumble(g, cl.flatMap(x => x.cells), bonus, rnd);
@@ -105,8 +108,8 @@ function playSpin(bonus, rnd, state) {
   return { win, sc };
 }
 
-function playBonus(spins, rnd) {
-  const st = { meter: 0 }; let total = 0, left = spins;
+function playBonus(spins, rnd, start = 0) {
+  const st = { meter: start }; let total = 0, left = spins;
   while (left > 0) {
     left--;
     const r = playSpin(true, rnd, st);
@@ -116,4 +119,4 @@ function playBonus(spins, rnd) {
   return total;
 }
 
-if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, RETRIGGER, SCATTER_PAY, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
+if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, SCATTER_PAY, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };

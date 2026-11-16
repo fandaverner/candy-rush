@@ -7,7 +7,8 @@ Cukrovinkový výherní automat v prohlížeči (jen pro zábavu, fiktivní kred
 - 🌈 Násobky ×2–×100
 - 🍭 Scatter: 3 = 10, 4 = 12, 5+ = 15 free spinů
 - Ve free spinech se násobky sčítají a zůstávají do konce bonusu
-- Koupě bonusu za 100× sázka, RTP ≈ 96 % (ověřeno simulací)
+- 4 scattery = startovní násobek ×10, 5 scatterů = startovní násobek ×100
+- Bonus padá cca 1× za 155 spinů, koupě bonusu za 80× sázka, RTP ≈ 96 % (ověřeno simulací)
 
 ## Soubory
 - `index.html` – hotová hra (jeden soubor, stačí otevřít)
