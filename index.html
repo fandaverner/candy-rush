@@ -189,7 +189,9 @@ const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,10,15,20,25,50];
 const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
 // startovní celkový násobek bonusu podle počtu scatterů
 const START_MULTI = { 3: 0, 4: 10, 5: 100 };
-const RETRIGGER = 5;
+// lízátka ve free spinech: 2 = +2, 3 = +5, 4 = +8, 5+ = +10 spinů
+const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 };
+const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
@@ -299,12 +301,12 @@ function playBonus(spins, rnd, start = 0) {
     left--;
     const r = playSpin(true, rnd, st);
     total += r.win;
-    if (r.sc >= 3) left += RETRIGGER;
+    left += retrigger(r.sc);
   }
   return total;
 }
 
-if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
+if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, retrigger, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
 
 
 // ---------- UI ----------
@@ -485,8 +487,13 @@ async function spinRound() {
     total += sp; setWin(total);
     banner(sc + '× 🍭  +' + fmt(sp));
     await wait(1500);
-    trig = bonus ? RETRIGGER : FREE_SPINS[Math.min(sc, 5)];
+    trig = bonus ? retrigger(sc) : FREE_SPINS[Math.min(sc, 5)];
     if (!bonus) start = START_MULTI[Math.min(sc, 5)];
+  } else if (bonus && sc === 2) {
+    board.querySelectorAll('.cell.s7').forEach(e => e.classList.add('glow'));
+    sfx.scatter();
+    await wait(900);
+    trig = retrigger(sc);
   }
   return { total, trig, start };
 }
@@ -511,7 +518,7 @@ async function runBonus(spins, b, start = 0) {
   bonusBet = b;
   await modal(`<h2>🍭 BONUS! 🍭</h2><div class="big">${spins} FREE SPINŮ</div>${start ? `<p style="font-size:20px">Startovní násobek <b style="color:#e8197a">×${start}</b>!</p>` : ''}
     <p>Násobky ve free spinech <b>zůstávají a sčítají se</b>.<br>Celkový násobek se uplatní na každou výhru!</p>
-    <p style="font-size:13px;opacity:.8">Další 3+ scattery = +${RETRIGGER} spinů</p>`, 'START', auto ? 2200 : 0);
+    <p style="font-size:13px;opacity:.8">Lízátka v bonusu: 2 = +2, 3 = +5, 4 = +8, 5 = +10 spinů</p>`, 'START', auto ? 2200 : 0);
   bonus = true; fsLeft = spins; meter = start; fsTotal = 0; updateUI();
   while (fsLeft > 0) {
     fsLeft--; updateUI();
@@ -587,7 +594,7 @@ function showInfo() {
    <li>🔗 <b>Propojení v základní hře</b>: každý výherní shluk (i dva různé symboly naráz) je samostatné propojení. Výhry se během kola sčítají a <b>po konci kola</b> se celá výhra vynásobí podle počtu propojení: 2 = ×2, 3 = ×4, 4 = ×6, 5 = ×8, 6 = ×10 …</li>
    <li>🌈 <b>Násobky</b> (×2 až ×50) padají <b>jen ve free spinech</b>.</li>
    <li>🍭 <b>Scatter</b>: 3 = 10 free spinů, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
-   <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. 3+ scattery v bonusu = +${RETRIGGER} spinů.</li>
+   <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. Lízátka v bonusu přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5+ = +10.</li>
    <li>Bonus (10 spinů) lze koupit za ${BUY_X}× sázka. Teoretická návratnost (RTP) ≈ 96 %.</li>
   </ul>
   <table class="pt"><tr><th></th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${rows}</table>

@@ -16,7 +16,9 @@ const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,10,15,20,25,50];
 const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
 // startovní celkový násobek bonusu podle počtu scatterů
 const START_MULTI = { 3: 0, 4: 10, 5: 100 };
-const RETRIGGER = 5;
+// lízátka ve free spinech: 2 = +2, 3 = +5, 4 = +8, 5+ = +10 spinů
+const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 };
+const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
@@ -126,9 +128,9 @@ function playBonus(spins, rnd, start = 0) {
     left--;
     const r = playSpin(true, rnd, st);
     total += r.win;
-    if (r.sc >= 3) left += RETRIGGER;
+    left += retrigger(r.sc);
   }
   return total;
 }
 
-if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
+if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, retrigger, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
