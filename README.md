@@ -1,4 +1,4 @@
-# 🍭 Cukrová horečka 8×8
+# 🍭 Candy Cascade 8×8
 
 Cukrovinkový výherní automat v prohlížeči (jen pro zábavu, fiktivní kredity).
 
