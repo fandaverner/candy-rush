@@ -19,10 +19,13 @@ const START_MULTI = { 3: 0, 4: 10, 5: 100 };
 const RETRIGGER = 5;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
-  scatterP: 0.0055, scatterPBonus: 0.0042,
-  multiP: 0.0032, multiPBonus: 0.013,
-  payScale: 0.33, bonusPayScale: 0.55,
+  scatterP: 0.0053, scatterPBonus: 0.0042,
+  multiP: 0, multiPBonus: 0.013,
+  payScale: 0.24, bonusPayScale: 0.54,
 };
+// základní hra má „hustší“ váhy (víc propojení), bonus původní
+const W_BASE = [25, 22, 18, 15, 10, 7, 3];
+CFG.wBase = W_BASE;
 const TOTAL_W = SYMS.reduce((a, s) => a + s.w, 0);
 
 function sizeIdx(n) {
@@ -37,8 +40,9 @@ function newCell(bonus, rnd) {
   const mp = bonus ? CFG.multiPBonus : CFG.multiP;
   if (r < sp) return { s: SCATTER };
   if (r < sp + mp) return { s: MULTI, m: pick(bonus ? MULTI_VALUES_BONUS : MULTI_VALUES, rnd) };
-  let x = rnd() * TOTAL_W;
-  for (const s of SYMS) { if ((x -= s.w) < 0) return { s: s.id }; }
+  const W = bonus ? SYMS.map(s => s.w) : CFG.wBase;
+  let x = rnd() * W.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < W.length; i++) { if ((x -= W[i]) < 0) return { s: i }; }
   return { s: 0 };
 }
 
@@ -91,11 +95,12 @@ function multis(g) { const a = []; g.forEach((col, c) => col.forEach((x, r) => {
 
 // Kompletní spin bez animace (pro simulaci); vrací výhru v násobcích sázky
 function playSpin(bonus, rnd, state) {
-  let g = fillGrid(bonus, rnd), win = 0;
+  let g = fillGrid(bonus, rnd), win = 0, step = 0;
   for (;;) {
     const cl = findClusters(g, bonus);
     if (!cl.length) break;
-    win += cl.reduce((a, x) => a + x.win, 0);
+    step++;
+    win += cl.reduce((a, x) => a + x.win, 0) * (bonus ? 1 : cascadeMulti(step));
     g = tumble(g, cl.flatMap(x => x.cells), bonus, rnd);
   }
   const sc = countSym(g, SCATTER);
@@ -103,10 +108,14 @@ function playSpin(bonus, rnd, state) {
   if (bonus) {
     state.meter += ms;
     if (win > 0 && state.meter > 0) win *= state.meter;
-  } else if (win > 0 && ms > 0) win *= ms;
+  }
+  state.steps = step;
   if (sc >= 3) win += SCATTER_PAY[Math.min(sc, 7)];
   return { win, sc };
 }
+
+// základní hra: každé další propojení násobí výhru ×2, ×4, ×6, ×8, ×10 …
+function cascadeMulti(step) { return 2 * step; }
 
 function playBonus(spins, rnd, start = 0) {
   const st = { meter: start }; let total = 0, left = spins;
@@ -119,4 +128,4 @@ function playBonus(spins, rnd, start = 0) {
   return total;
 }
 
-if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, SCATTER_PAY, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
+if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };

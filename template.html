@@ -74,6 +74,11 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 .banner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;text-align:center;
  font-weight:700;font-size:calc(var(--cell)*.8);color:#fff;text-shadow:0 3px 0 #b0145d,0 0 14px #000a;animation:bannerIn 1.4s ease-out forwards;white-space:nowrap}
 @keyframes bannerIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}40%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{opacity:0}}
+.combo{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:9;padding:4px 14px;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap;
+ background:linear-gradient(90deg,#ffe94a,#ffb02e);color:#8a2a00;box-shadow:0 3px 0 #b06d00,0 4px 10px #0004;opacity:0;transition:opacity .25s}
+.combo.on{opacity:1}
+.combo.bump{animation:comboBump .45s}
+@keyframes comboBump{40%{transform:translateX(-50%) scale(1.3)}}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat{background:#ffffff22;border:2px solid #ffffff55;border-radius:14px;padding:6px 10px;text-align:center;backdrop-filter:blur(4px)}
 .stat .k{font-size:11px;letter-spacing:1.5px;opacity:.85;text-transform:uppercase}
@@ -139,10 +144,10 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
     <div style="text-align:right">VÝHRA BONUSU<br><b id="fsWin">0</b></div>
   </div>
 
-  <div class="frame"><div class="board" id="board"></div></div>
+  <div class="frame"><div class="combo" id="combo">PROPOJENÍ ×2</div><div class="board" id="board"></div></div>
 
   <div class="stats">
-    <div class="stat"><div class="k">Kredit</div><div class="v" id="bal">10 000</div></div>
+    <div class="stat"><div class="k">Kredit</div><div class="v" id="bal">1 000</div></div>
     <div class="stat winv"><div class="k">Výhra</div><div class="v" id="win">0</div></div>
   </div>
 
@@ -172,10 +177,10 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 const $ = id => document.getElementById(id);
 const board = $('board');
 const BUY_X = 80;
-const BETS = [10, 20, 30, 50, 100, 200, 500, 1000];
-let st = { bal: 10000, betI: 0 };
-try { const s = JSON.parse(localStorage.getItem('cukrova8b') || 'null'); if (s && typeof s.bal === 'number') { st = s; st.bal = Math.round(st.bal); st.betI = Math.min(Math.max(0, st.betI|0), BETS.length - 1); } } catch (e) {}
-const save = () => { try { localStorage.setItem('cukrova8b', JSON.stringify(st)); } catch (e) {} };
+const BETS = [10, 20, 30, 50, 100, 200, 500];
+let st = { bal: 1000, betI: 0 };
+try { const s = JSON.parse(localStorage.getItem('cukrova8c') || 'null'); if (s && typeof s.bal === 'number') { st = s; st.bal = Math.round(st.bal); st.betI = Math.min(Math.max(0, st.betI|0), BETS.length - 1); } } catch (e) {}
+const save = () => { try { localStorage.setItem('cukrova8c', JSON.stringify(st)); } catch (e) {} };
 
 let grid = null, busy = false, auto = false, turbo = false, sound = true;
 let bonus = false, fsLeft = 0, meter = 0, fsTotal = 0, bonusBet = 1;
@@ -209,6 +214,7 @@ const sfx = {
 
 // ---------- Vykreslení ----------
 function render(g, spinMode = false) {
+  let maxEnd = 0;
   board.querySelectorAll('.cell').forEach(e => e.remove());
   const els = [];
   for (let c = 0; c < COLS; c++) for (let r = 0; r < ROWS; r++) {
@@ -225,8 +231,9 @@ function render(g, spinMode = false) {
     if (from !== r) {
       // každý symbol padá samostatně: spodní řady dřív, sloupce s malým posunem
       const k = turbo ? 0.45 : 1, dist = r - from;
-      const delay = spinMode ? ((ROWS - 1 - r) * 55 + c * 18) * k : ((ROWS - 1 - r) * 30 + c * 22) * k;
-      const dur = (170 + Math.sqrt(dist) * 95) * k;
+      const delay = spinMode ? ((ROWS - 1 - r) * 95 + c * 32) * k : ((ROWS - 1 - r) * 55 + c * 40) * k;
+      const dur = (320 + Math.sqrt(dist) * 175) * k;
+      maxEnd = Math.max(maxEnd, delay + dur);
       el.style.setProperty('--from', `${(from - r) * 100}%`);
       el.style.animation = `drop ${dur}ms ${delay}ms both`;
       el.addEventListener('animationend', () => { sfx.land(); el.style.animation = ''; }, { once: true });
@@ -235,16 +242,18 @@ function render(g, spinMode = false) {
   }
   // vymazat 'from', aby se příště nepřehrávalo
   for (const col of g) for (const x of col) delete x.from;
+  return maxEnd;
 }
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 // staré symboly postupně vypadnou dolů
 async function dropOut() {
   const k = turbo ? 0.45 : 1;
   board.querySelectorAll('.cell').forEach(el => {
     const c = +el.dataset.c, r = +el.dataset.r;
-    el.style.transition = `transform ${260 * k}ms cubic-bezier(.55,0,1,.45) ${((ROWS - 1 - r) * 40 + c * 14) * k}ms`;
+    el.style.transition = `transform ${420 * k}ms cubic-bezier(.55,0,1,.45) ${((ROWS - 1 - r) * 60 + c * 22) * k}ms`;
     el.style.transform = `translateY(${(ROWS - r + 1) * 100}%)`;
   });
-  await new Promise(r => setTimeout(r, (ROWS * 40 + COLS * 14 + 260) * k));
+  await sleep(((ROWS - 1) * 60 + (COLS - 1) * 22 + 420) * k);
 }
 const cellEl = (c, r) => board.querySelector(`.cell[data-c="${c}"][data-r="${r}"]`);
 
@@ -270,6 +279,11 @@ function updateUI() {
   $('buyBtn').disabled = busy || bonus || st.bal < BETS[st.betI] * BUY_X;
   $('betMinus').disabled = $('betPlus').disabled = busy || bonus;
 }
+function showCombo(m) {
+  const el = $('combo'); el.textContent = 'PROPOJENÍ ×' + m; el.classList.add('on');
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+}
+function hideCombo() { setTimeout(() => $('combo').classList.remove('on'), 600); }
 function setWin(x) { $('win').textContent = fmt(x); }
 
 // ---------- Jeden spin s animací ----------
@@ -279,17 +293,18 @@ async function spinRound() {
   await dropOut();
   grid = fillGrid(bonus, Math.random);
   for (const col of grid) col.forEach((x, r) => x.from = -1.5);
-  render(grid, true);
-  await wait(1020);
+  await sleep(render(grid, true) + 80);
   setWin(0);
   let step = 0;
   for (;;) {
     const cl = findClusters(grid, bonus);
     if (!cl.length) break;
     step++;
+    const cm = bonus ? 1 : cascadeMulti(step);
+    if (!bonus) showCombo(cm);
     let sw = 0;
     for (const k of cl) {
-      const kw = Math.max(1, Math.round(k.win * b)); sw += kw;
+      const kw = Math.max(1, Math.round(k.win * b * cm)); sw += kw;
       for (const [c, r] of k.cells) cellEl(c, r)?.classList.add('win');
       const cx = k.cells.reduce((a, p) => a + p[0], 0) / k.cells.length;
       const cy = k.cells.reduce((a, p) => a + p[1], 0) / k.cells.length;
@@ -302,10 +317,10 @@ async function spinRound() {
     sfx.pop();
     await wait(260);
     grid = tumble(grid, cl.flatMap(k => k.cells), bonus, Math.random);
-    render(grid);
-    await wait(820);
+    await sleep(render(grid) + 80);
   }
 
+  hideCombo();
   // Násobky
   const ms = multis(grid);
   if (ms.length) {
@@ -419,8 +434,8 @@ function modal(html, btn, autoClose = 0, after) {
 function noMoney() {
   auto = false; $('autoBtn').classList.remove('on');
   modal(`<h2>Došel kredit 😢</h2><p>Na tuhle sázku nemáš dost kreditů.</p>
-    <button class="go" id="refill">Doplnit 10 000</button><button class="go ghost" id="nope">Zavřít</button>`, null).then(() => {});
-  $('refill').onclick = () => { st.bal += 10000; save(); updateUI(); $('ov').classList.remove('on'); };
+    <button class="go" id="refill">Doplnit 1 000</button><button class="go ghost" id="nope">Zavřít</button>`, null).then(() => {});
+  $('refill').onclick = () => { st.bal += 1000; save(); updateUI(); $('ov').classList.remove('on'); };
   $('nope').onclick = () => $('ov').classList.remove('on');
 }
 
@@ -436,13 +451,14 @@ function showInfo() {
   <ul class="rules">
    <li>Hrací plocha <b>8×8</b>. Výhra padá za <b>shluk 5 a více stejných symbolů</b>, které se dotýkají stranou – kdekoli na ploše, i uprostřed.</li>
    <li>Výherní symboly zmizí, ostatní <b>propadnou dolů</b> a shora spadnou nové – výhry se můžou řetězit.</li>
-   <li>🌈 <b>Násobky</b> (×2 až ×100): v základní hře se na konci spinu sečtou a vynásobí celou výhru spinu.</li>
+   <li>🔗 <b>Propojení v základní hře</b>: každé další propojení ve stejném spinu násobí výhru – 1. ×2, 2. ×4, 3. ×6, 4. ×8, 5. ×10 …</li>
+   <li>🌈 <b>Násobky</b> (×2 až ×50) padají <b>jen ve free spinech</b>.</li>
    <li>🍭 <b>Scatter</b>: 3 = 10 free spinů, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
    <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. 3+ scattery v bonusu = +${RETRIGGER} spinů.</li>
    <li>Bonus (10 spinů) lze koupit za ${BUY_X}× sázka. Teoretická návratnost (RTP) ≈ 96 %.</li>
   </ul>
   <table class="pt"><tr><th></th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${rows}</table>
-  <p style="font-size:12px;opacity:.75">Výplaty pro aktuální sázku ${fmt(b)} • Fiktivní kredity, jen pro zábavu.</p>
+  <p style="font-size:12px;opacity:.75">Základní výplaty pro sázku ${fmt(b)} (před násobkem propojení) • Fiktivní kredity, jen pro zábavu.</p>
   <button class="go" id="ovGo">ROZUMÍM</button>`;
   $('ov').classList.add('on');
   $('ovGo').onclick = () => $('ov').classList.remove('on');
