@@ -1,3 +1,3 @@
-# Sestaví candy-rush.html z template.html + engine.js
-t = open('template.html').read()
-open('candy-rush.html', 'w').write(t.replace('/*ENGINE*/', open('engine.js').read()))
+# Sestaví hry z šablon: candy-rush.html (template.html + engine.js), halo-horns.html (hh-template.html + hh-engine.js)
+for tpl, eng, out in [('template.html', 'engine.js', 'candy-rush.html'), ('hh-template.html', 'hh-engine.js', 'halo-horns.html')]:
+    open(out, 'w').write(open(tpl).read().replace('/*ENGINE*/', open(eng).read()))

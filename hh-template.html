@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Halo & Horns – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Cinzel+Decorative:wght@700;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f3c969;--gold2:#b8862b;--red:#e0313b;--cw:72px;--ch:62px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:'Fredoka',system-ui,sans-serif;color:#fff;min-height:100vh;overflow-x:hidden;
+ background:
+  radial-gradient(ellipse 90% 45% at 50% -5%,#fff3c4 0%,#f3c96988 25%,transparent 60%),
+  radial-gradient(ellipse 90% 45% at 50% 105%,#ff4a1c 0%,#a3121a88 30%,transparent 65%),
+  linear-gradient(180deg,#5a4a7a 0%,#2a1838 38%,#1a0a14 62%,#3a0608 100%) fixed}
+body::before,body::after{content:"";position:fixed;left:0;right:0;pointer-events:none;z-index:0}
+body::before{top:0;height:30vh;background:
+  radial-gradient(circle at 15% 40%,#ffffff55 0 2px,transparent 3px),radial-gradient(circle at 70% 20%,#ffffff66 0 1.5px,transparent 3px),
+  radial-gradient(circle at 40% 70%,#fff4c766 0 2px,transparent 3px),radial-gradient(circle at 88% 55%,#ffffff55 0 1.5px,transparent 3px);
+  background-size:180px 120px;animation:twinkle 4s ease-in-out infinite}
+body::after{bottom:0;height:35vh;background:
+  radial-gradient(circle,#ffb34a 0 1.5px,transparent 2.5px),radial-gradient(circle,#ff5a2a 0 2px,transparent 3px);
+  background-size:90px 110px,140px 160px;background-position:10px 0,50px 40px;animation:embers 6s linear infinite;opacity:.8}
+@keyframes twinkle{50%{opacity:.35}}
+@keyframes embers{to{background-position:10px -220px,50px -280px}}
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:8px 8px 18px;display:flex;flex-direction:column;gap:8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.icon{width:36px;height:36px;border-radius:50%;border:1.5px solid #f3c96988;background:#0005;color:#fff;font-size:16px;display:grid;place-items:center;cursor:pointer;text-decoration:none;font-family:inherit}
+.title{text-align:center;line-height:1}
+.title .t{font-family:'Cinzel Decorative',serif;font-weight:900;font-size:23px;letter-spacing:1px}
+.title .t .h{background:linear-gradient(180deg,#fffbe6,#f3c969 55%,#b8862b);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px #f3c96988)}
+.title .t .a{color:#fff;font-family:'Cinzel',serif;font-size:18px;margin:0 3px;opacity:.85}
+.title .t .r{background:linear-gradient(180deg,#ffb38a,#e0313b 55%,#6a0a0f);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px #ff3b3b88)}
+.title small{display:block;font-size:9px;letter-spacing:4px;opacity:.7;margin-top:3px}
+/* jackpoty */
+.jps{display:grid;grid-template-columns:1fr 1.15fr 1.3fr;gap:5px}
+.jp{border-radius:12px;padding:4px 4px 5px;text-align:center;position:relative;overflow:hidden;box-shadow:0 3px 10px #0008,inset 0 1px 0 #fff4}
+.jp small{display:block;font-family:'Cinzel',serif;font-weight:800;font-size:10px;letter-spacing:2px;opacity:.95}
+.jp b{font-size:15px;font-weight:700;text-shadow:0 1px 2px #0009}
+.jp.mini{background:linear-gradient(180deg,#9fd3ff,#3a6fb0);border:1px solid #cfe9ff}
+.jp.major{background:linear-gradient(180deg,#ffe28a,#c4831c);border:1px solid #fff0b8;color:#3a2200}
+.jp.major b{text-shadow:none}
+.jp.grand{background:linear-gradient(180deg,#ff7a6a,#a3121a 60%,#4a0508);border:1px solid #ffb3a8}
+.jp::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,#ffffff55 50%,transparent 65%);transform:translateX(-120%);animation:sheen 3.5s infinite}
+.jp.major::after{animation-delay:1.1s}.jp.grand::after{animation-delay:2.2s}
+@keyframes sheen{40%,100%{transform:translateX(120%)}}
+.jp.hit{animation:jphit .5s 6}
+@keyframes jphit{50%{filter:brightness(1.8);transform:scale(1.06)}}
+/* cashback */
+.cb{display:flex;align-items:center;gap:8px;background:#0006;border:1px solid #f3c96955;border-radius:12px;padding:5px 8px}
+.cb .lbl{font-size:10px;letter-spacing:1.5px;opacity:.8;line-height:1.2}
+.cb .lbl b{display:block;font-size:14px;letter-spacing:0;opacity:1;color:#9ff0c0}
+.cb .bar{flex:1;height:10px;border-radius:999px;background:#ffffff1a;overflow:hidden;position:relative}
+.cb .bar i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#3ad98a,#b6ff6a);border-radius:999px;transition:width .4s}
+.cb .lv{font-weight:700;font-size:13px;color:#9ff0c0;min-width:30px;text-align:center}
+.cb button{border:0;border-radius:9px;padding:6px 9px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:#05301a;background:linear-gradient(180deg,#b6ff9a,#2fbf6f);box-shadow:0 2px 0 #13693a}
+.cb button:disabled{filter:grayscale(1);opacity:.45}
+/* bonus lišta */
+.fsbar{display:none;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:12px;font-weight:600;font-size:13px;
+ background:linear-gradient(90deg,#f3c969,#e0313b);color:#fff;text-shadow:0 1px 2px #0008;box-shadow:0 0 16px #ff6a3a88}
+.fsbar.on{display:flex}
+.fsbar b{font-size:20px}
+/* hrací plocha */
+.frame{position:relative;padding:7px;border-radius:18px;
+ background:linear-gradient(180deg,#fff2c4 0%,#d9a441 30%,#8a5a12 50%,#b0141e 72%,#4a0508 100%);
+ box-shadow:0 0 0 2px #2a0a0a,0 0 26px #ff6a3a55,0 0 40px #f3c96933,0 10px 24px #000a}
+.frame::before,.frame::after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:54px;height:18px;z-index:3;border-radius:50%}
+.frame::before{top:-9px;border:3px solid #ffe9a0;box-shadow:0 0 12px #ffe28a,inset 0 0 6px #ffe28a}
+.frame::after{bottom:-8px;width:44px;height:14px;background:radial-gradient(#ff8a3a,#a3121a);filter:blur(2px)}
+.board{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;border-radius:12px;overflow:hidden;
+ background:linear-gradient(180deg,#2a2045 0%,#1a0f22 50%,#2a0a10 100%)}
+.reel{position:relative;height:calc(var(--ch) * 6);overflow:hidden;background:linear-gradient(180deg,#ffffff0d,#00000033);border-radius:6px}
+.strip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.strip.blur .sym svg{filter:blur(1.2px) brightness(1.1)}
+.sym{height:var(--ch);display:grid;place-items:center;position:relative}
+.sym svg{width:82%;height:88%;overflow:visible;filter:drop-shadow(0 2px 2px #000a)}
+.sym.win svg{animation:symwin .7s ease-in-out infinite}
+.sym.win::before{content:"";position:absolute;inset:3px;border-radius:10px;background:radial-gradient(circle,#ffe8a066,transparent 70%);box-shadow:inset 0 0 0 2px #ffe28acc}
+@keyframes symwin{50%{transform:scale(1.14)}}
+.board.dim .sym:not(.win){opacity:.32;transition:opacity .3s}
+.sym.sc svg{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.reel.antic{box-shadow:inset 0 0 0 2px #ffe28a,inset 0 0 20px #ff8a3a}
+/* rozšířený válec */
+.wildreel{position:absolute;inset:0;z-index:4;border-radius:6px;overflow:hidden;transform-origin:50% 50%;
+ background:linear-gradient(180deg,#fffbe8 0%,#f7dc8a 18%,#c7932e 40%,#5a1a2a 58%,#a3121a 78%,#2a0305 100%);
+ box-shadow:inset 0 0 0 2px #ffe9a0,inset 0 0 22px #fff6,0 0 18px #ffb34a;animation:expand .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes expand{0%{transform:scaleY(.05);filter:brightness(3)}60%{filter:brightness(1.6)}100%{transform:scaleY(1);filter:brightness(1)}}
+.wildreel::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent 0 20deg,#ffffff30 25deg,transparent 30deg 80deg,#ffffff25 85deg,transparent 90deg 150deg,#ffffff30 155deg,transparent 160deg 220deg,#ffffff25 225deg,transparent 230deg 290deg,#ffffff30 295deg,transparent 300deg);animation:rays 8s linear infinite;mix-blend-mode:overlay}
+@keyframes rays{to{transform:rotate(360deg)}}
+.wildreel .art{position:absolute;left:0;right:0;display:grid;place-items:center}
+.wildreel .art svg{width:82%;filter:drop-shadow(0 2px 4px #0008)}
+.wildreel .a1{top:20%}.wildreel .a2{bottom:20%}
+.wildreel .w{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-family:'Cinzel Decorative',serif;font-weight:900;font-size:calc(var(--cw)*.28);
+ color:#fff;text-shadow:0 0 6px #000,0 0 12px #ff8a3a,0 2px 0 #4a0508;letter-spacing:1px}
+.badge{position:absolute;left:50%;transform:translateX(-50%);width:calc(var(--cw)*.82);height:calc(var(--cw)*.82);max-width:62px;max-height:62px;border-radius:50%;display:grid;place-items:center;
+ font-weight:700;font-size:calc(var(--cw)*.27);z-index:2}
+.badge.top{top:4px;color:#4a2c00;background:radial-gradient(circle at 35% 30%,#fff 0 12%,#ffe28a 40%,#c4831c);box-shadow:0 0 0 3px #fff6,0 0 16px #ffe28a}
+.badge.bot{bottom:4px;color:#fff;background:radial-gradient(circle at 35% 30%,#ffb3a0 0 10%,#e0313b 45%,#5a0508);box-shadow:0 0 0 3px #ff8a6a88,0 0 16px #ff3a2a;text-shadow:0 1px 2px #000}
+.badge.roll span{animation:roll .09s linear infinite}
+@keyframes roll{50%{opacity:.5;transform:translateY(-3px)}}
+.badge.land{animation:land .45s}
+@keyframes land{40%{transform:translateX(-50%) scale(1.45)}}
+/* výherní text */
+.winpop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;text-align:center;
+ font-family:'Cinzel',serif;font-weight:900;color:#ffe9a0;text-shadow:0 0 6px #000,0 0 18px #ff8a3a,0 3px 0 #6a3a00;font-size:34px;opacity:0;white-space:nowrap}
+.winpop.on{animation:pop 1.8s ease-out forwards}
+.winpop small{display:block;font-family:'Fredoka';font-size:13px;font-weight:600;color:#fff;letter-spacing:1px}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+.wins{min-height:20px;text-align:center;font-size:12px;opacity:.9;letter-spacing:.3px}
+/* stav a ovládání */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat{background:#0007;border:1px solid #f3c96944;border-radius:12px;padding:4px 8px;text-align:center}
+.stat small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.75}
+.stat b{font-size:19px}
+.stat.w b{color:var(--gold);text-shadow:0 0 8px #f3c96966}
+.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.betbox{display:flex;align-items:center;justify-content:space-between;gap:4px;background:#0007;border:1px solid #f3c96955;border-radius:999px;padding:3px}
+.betbox button{width:32px;height:32px;border-radius:50%;border:0;font-size:20px;font-weight:700;cursor:pointer;color:#3a2400;background:linear-gradient(180deg,#ffe28a,#c4831c);font-family:inherit;line-height:1}
+.betbox button:disabled{opacity:.4}
+.betbox .bv{text-align:center;font-weight:700;font-size:15px;line-height:1.05}
+.betbox .bv small{display:block;font-size:9px;letter-spacing:1px;opacity:.7;font-weight:400}
+.spin{position:relative;width:86px;height:86px;border-radius:50%;cursor:pointer;border:0;padding:0;font-family:'Cinzel',serif;font-weight:900;font-size:15px;color:#fff;letter-spacing:1px;
+ background:radial-gradient(circle at 50% 30%,#fff8 0 8%,transparent 30%),linear-gradient(180deg,#f7d57a 0%,#c4831c 46%,#a3121a 54%,#4a0508 100%);
+ box-shadow:0 0 0 3px #ffe9a0,0 0 0 5px #4a0508,0 0 22px #ff8a3a88,0 6px 12px #000a;text-shadow:0 1px 3px #000}
+.spin:active{transform:scale(.95)}
+.spin:disabled{filter:grayscale(.5) brightness(.8)}
+.spin .ic{display:block;font-size:26px;line-height:1;font-family:'Fredoka'}
+.side{display:flex;gap:6px;justify-content:center}
+.pill{border:1.5px solid #f3c96988;border-radius:12px;padding:8px 9px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:#fff;background:#0007}
+.pill.on{background:linear-gradient(180deg,#ffe28a,#c4831c);color:#3a2400}
+.buy{border:0;border-radius:12px;padding:9px;font-family:'Cinzel',serif;font-weight:800;font-size:14px;cursor:pointer;color:#fff;letter-spacing:1px;
+ background:linear-gradient(90deg,#c4831c,#a3121a);box-shadow:0 3px 0 #4a0508,0 0 14px #ff6a3a55;text-shadow:0 1px 2px #000}
+.buy:disabled{filter:grayscale(.7);opacity:.6}
+.buy small{font-family:'Fredoka';font-weight:600;opacity:.85}
+.foot{text-align:center;font-size:10px;opacity:.6}
+/* modální okna */
+.ov{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:#0a0410cc;backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.card{max-width:420px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:20px 18px;text-align:center;color:#fff;
+ background:linear-gradient(180deg,#3a2a52 0%,#1a0f22 50%,#3a0608 100%);border:1px solid #f3c96988;box-shadow:0 0 0 4px #00000066,0 0 40px #ff6a3a55;animation:cin .4s cubic-bezier(.2,1.5,.4,1)}
+@keyframes cin{from{transform:scale(.6);opacity:0}}
+.card h2{margin:0 0 6px;font-family:'Cinzel Decorative',serif;font-size:26px;color:var(--gold);text-shadow:0 0 12px #f3c96988}
+.card .big{font-family:'Cinzel',serif;font-weight:900;font-size:44px;color:#ffe9a0;text-shadow:0 0 16px #ff8a3a;margin:4px 0}
+.card p{margin:6px 0;font-size:14px;line-height:1.45}
+.card .go{margin-top:10px;border:0;border-radius:999px;padding:11px 26px;font-family:'Cinzel',serif;font-weight:800;font-size:16px;cursor:pointer;color:#3a2400;background:linear-gradient(180deg,#ffe28a,#c4831c);box-shadow:0 3px 0 #6a3a00}
+.card .ghost{background:#ffffff22;color:#fff;box-shadow:none;margin-left:6px}
+.pt{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.pt td,.pt th{padding:3px;border-bottom:1px solid #ffffff1a}
+.pt th{font-size:10px;letter-spacing:1px;color:var(--gold);font-weight:600}
+.pt svg{width:34px;height:30px;vertical-align:middle}
+.rules{text-align:left;font-size:13px;line-height:1.45;padding-left:18px}
+.rules li{margin:3px 0}
+.confetti{position:fixed;top:-20px;z-index:60;pointer-events:none;font-size:20px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.flash{position:fixed;inset:0;z-index:40;pointer-events:none;background:radial-gradient(circle,#fff8,transparent 70%);opacity:0}
+.flash.on{animation:flash .5s}
+@keyframes flash{30%{opacity:1}}
+</style>
+</head>
+<body>
+<!-- sprite se symboly -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffbe0"/><stop offset=".45" stop-color="#f3c969"/><stop offset="1" stop-color="#9a6a12"/></linearGradient>
+  <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2fbff"/><stop offset=".5" stop-color="#8fd0ff"/><stop offset="1" stop-color="#2a5aa8"/></linearGradient>
+  <linearGradient id="gPearl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#c9f0e6"/><stop offset="1" stop-color="#3a9a8a"/></linearGradient>
+  <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe0ea"/><stop offset=".5" stop-color="#ff7aa0"/><stop offset="1" stop-color="#a3123a"/></linearGradient>
+  <linearGradient id="gBlood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb3a0"/><stop offset=".5" stop-color="#e0313b"/><stop offset="1" stop-color="#5a0508"/></linearGradient>
+  <linearGradient id="gViolet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d9ff"/><stop offset=".5" stop-color="#b06aff"/><stop offset="1" stop-color="#4a128a"/></linearGradient>
+  <linearGradient id="gFire" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7a0508"/><stop offset=".4" stop-color="#e0313b"/><stop offset=".75" stop-color="#ff8a2a"/><stop offset="1" stop-color="#ffd24a"/></linearGradient>
+  <linearGradient id="gFireIn" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6c0"/><stop offset=".6" stop-color="#ffd24a"/><stop offset="1" stop-color="#ff8a2a"/></linearGradient>
+  <linearGradient id="gIron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a0508"/><stop offset=".5" stop-color="#c8202f"/><stop offset="1" stop-color="#3a0508"/></linearGradient>
+  <linearGradient id="gHorn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2d8"/><stop offset=".5" stop-color="#c9a27a"/><stop offset="1" stop-color="#5a2a12"/></linearGradient>
+  <radialGradient id="gDemon" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#ff6a5a"/><stop offset=".6" stop-color="#b0141e"/><stop offset="1" stop-color="#3a0305"/></radialGradient>
+  <linearGradient id="gWing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e6eeff"/><stop offset="1" stop-color="#a9b8e0"/></linearGradient>
+  <radialGradient id="gGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c0" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gHell" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff8a3a" stop-opacity=".8"/><stop offset="1" stop-color="#ff3a1a" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gPortal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff2b0"/><stop offset=".48" stop-color="#d9a441"/><stop offset=".52" stop-color="#c8202f"/><stop offset="1" stop-color="#5a0508"/></linearGradient>
+  <radialGradient id="gGem" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#7ae8ff"/><stop offset=".7" stop-color="#2a5ad8"/><stop offset="1" stop-color="#120a4a"/></radialGradient>
+ </defs>
+ <symbol id="s-0" viewBox="0 0 100 100"><text x="50" y="75" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="66" fill="url(#gSky)" stroke="#0a1a3a" stroke-width="3" paint-order="stroke">9</text></symbol>
+ <symbol id="s-1" viewBox="0 0 100 100"><text x="50" y="73" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="54" letter-spacing="-4" fill="url(#gPearl)" stroke="#0a2a26" stroke-width="3" paint-order="stroke">10</text></symbol>
+ <symbol id="s-2" viewBox="0 0 100 100"><text x="50" y="75" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="66" fill="url(#gGold)" stroke="#3a2200" stroke-width="3" paint-order="stroke">J</text></symbol>
+ <symbol id="s-3" viewBox="0 0 100 100"><text x="50" y="75" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#gRose)" stroke="#3a0518" stroke-width="3" paint-order="stroke">Q</text></symbol>
+ <symbol id="s-4" viewBox="0 0 100 100"><text x="50" y="75" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#gBlood)" stroke="#2a0204" stroke-width="3" paint-order="stroke">K</text></symbol>
+ <symbol id="s-5" viewBox="0 0 100 100"><text x="50" y="75" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="66" fill="url(#gViolet)" stroke="#1a0530" stroke-width="3" paint-order="stroke">A</text></symbol>
+ <symbol id="s-6" viewBox="0 0 100 100">
+  <circle cx="50" cy="62" r="34" fill="url(#gHell)"/>
+  <path d="M50 6C61 26 82 36 78 62C75 83 62 94 50 94C37 94 22 84 22 62C22 45 35 39 37 23C44 32 46 39 50 44C53 30 51 17 50 6Z" fill="url(#gFire)" stroke="#5a0508" stroke-width="2"/>
+  <path d="M50 44C59 55 68 62 66 75C64 85 57 89 50 89C42 89 34 84 34 75C34 64 45 59 50 44Z" fill="url(#gFireIn)"/>
+  <path d="M30 40C28 30 32 22 34 18C35 26 38 30 40 33Z" fill="#ff8a2a" opacity=".85"/>
+ </symbol>
+ <symbol id="s-7" viewBox="0 0 100 100">
+  <rect x="46" y="38" width="8" height="58" rx="3" fill="url(#gIron)" stroke="#2a0204" stroke-width="1.5"/>
+  <path d="M50 2L59 22H54V40L50 44L46 40V22H41Z" fill="url(#gBlood)" stroke="#2a0204" stroke-width="2"/>
+  <path d="M18 8L26 30C29 41 39 46 50 46C61 46 71 41 74 30L82 8L72 24C68 33 60 37 50 37C40 37 32 33 28 24Z" fill="url(#gBlood)" stroke="#2a0204" stroke-width="2"/>
+  <circle cx="50" cy="44" r="5" fill="#ffd24a" stroke="#5a0508" stroke-width="1.5"/>
+  <rect x="43" y="88" width="14" height="6" rx="3" fill="#ffd24a"/>
+ </symbol>
+ <symbol id="s-8" viewBox="0 0 100 100">
+  <path d="M32 50C14 40 10 20 18 4C23 20 31 31 43 38Z" fill="url(#gHorn)" stroke="#3a1a08" stroke-width="2"/>
+  <path d="M68 50C86 40 90 20 82 4C77 20 69 31 57 38Z" fill="url(#gHorn)" stroke="#3a1a08" stroke-width="2"/>
+  <path d="M24 56C24 40 36 32 50 32C64 32 76 40 76 56C76 74 66 92 50 94C34 92 24 74 24 56Z" fill="url(#gDemon)" stroke="#2a0204" stroke-width="2"/>
+  <path d="M33 56L46 62L34 65Z" fill="#ffe14a"/><path d="M67 56L54 62L66 65Z" fill="#ffe14a"/>
+  <path d="M33 56L46 62L34 65Z" fill="#fff6" transform="translate(1 0)"/>
+  <path d="M38 76Q50 84 62 76L59 82L55 78L50 84L45 78L41 82Z" fill="#1a0000"/>
+  <path d="M40 44Q50 40 60 44" stroke="#5a0508" stroke-width="2" fill="none"/>
+ </symbol>
+ <symbol id="s-9" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="44" fill="url(#gGlow)"/>
+  <ellipse cx="50" cy="52" rx="38" ry="15" fill="none" stroke="#9a6a12" stroke-width="12"/>
+  <ellipse cx="50" cy="50" rx="38" ry="15" fill="none" stroke="url(#gGold)" stroke-width="9"/>
+  <ellipse cx="50" cy="47" rx="34" ry="11" fill="none" stroke="#fffbe0" stroke-width="2" opacity=".8"/>
+  <path d="M82 22L84 30L92 32L84 34L82 42L80 34L72 32L80 30Z" fill="#fff"/>
+  <path d="M20 66L21.5 71L26 72L21.5 73.5L20 78L18.5 73.5L14 72L18.5 71Z" fill="#fff"/>
+ </symbol>
+ <symbol id="s-10" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="url(#gGlow)" opacity=".7"/>
+  <g id="wingL">
+   <path d="M47 46C36 26 16 18 3 26C13 29 17 33 19 37C9 37 5 43 5 48C13 46 19 48 21 51C13 55 11 61 13 66C21 60 28 60 33 60C29 66 31 72 35 75C40 67 46 58 48 50Z" fill="url(#gWing)" stroke="#8a9ac8" stroke-width="1.6"/>
+   <path d="M44 46C34 34 22 30 12 32M42 52C32 46 22 46 12 50M40 57C32 56 24 60 18 64" stroke="#8a9ac8" stroke-width="1.2" fill="none"/>
+  </g>
+  <use href="#wingL" transform="translate(100 0) scale(-1 1)"/>
+  <ellipse cx="50" cy="18" rx="13" ry="5" fill="none" stroke="url(#gGold)" stroke-width="4"/>
+  <circle cx="50" cy="50" r="5" fill="#fffbe0"/>
+ </symbol>
+ <symbol id="s-11" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="url(#gGlow)" opacity=".6"/>
+  <circle cx="50" cy="50" r="42" fill="url(#gPortal)" stroke="#2a0204" stroke-width="2"/>
+  <circle cx="50" cy="50" r="33" fill="#140818" stroke="#ffe9a0" stroke-width="2"/>
+  <path d="M50 22C38 34 38 66 50 78C62 66 62 34 50 22Z" fill="#ffe28a" opacity=".22"/>
+  <text x="50" y="57" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="19" fill="#ffe9a0" stroke="#5a0508" stroke-width="1" paint-order="stroke">BONUS</text>
+ </symbol>
+ <symbol id="s-12" viewBox="0 0 100 100">
+  <circle cx="50" cy="55" r="34" fill="url(#gGem)" stroke="#fffbe0" stroke-width="3"/>
+  <path d="M24 32L32 12L42 26L50 6L58 26L68 12L76 32Z" fill="url(#gGold)" stroke="#5a3a00" stroke-width="2"/>
+  <circle cx="50" cy="6" r="3.5" fill="#ff5a6a"/><circle cx="32" cy="12" r="3" fill="#7ae8ff"/><circle cx="68" cy="12" r="3" fill="#7ae8ff"/>
+  <text x="50" y="66" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="26" fill="#fff" stroke="#120a4a" stroke-width="2" paint-order="stroke">JP</text>
+ </symbol>
+</svg>
+
+<div class="app">
+  <header>
+    <a class="icon" href="index.html" title="Lobby">🏠</a>
+    <div class="title"><div class="t"><span class="h">HALO</span><span class="a">&amp;</span><span class="r">HORNS</span></div><small>7 776 CEST K VÝHŘE</small></div>
+    <div style="display:flex;gap:5px"><button class="icon" id="soundBtn">🔊</button><button class="icon" id="infoBtn">ℹ️</button></div>
+  </header>
+
+  <div class="jps">
+    <div class="jp mini" id="jp0"><small>MINI</small><b>0</b></div>
+    <div class="jp major" id="jp1"><small>MAJOR</small><b>0</b></div>
+    <div class="jp grand" id="jp2"><small>GRAND</small><b>0</b></div>
+  </div>
+
+  <div class="cb">
+    <div class="lbl">CASHBACK<b id="cbPot">0</b></div>
+    <div style="flex:1"><div class="bar"><i id="cbBar"></i></div><div style="font-size:9px;opacity:.65;margin-top:2px" id="cbNext">další úroveň za 50 spinů</div></div>
+    <div class="lv" id="cbLv">1 %</div>
+    <button id="cbBtn">Vybrat</button>
+  </div>
+
+  <div class="fsbar" id="fsbar"><div>FREE SPINY <b id="fsLeft">10</b></div><div style="text-align:right">VÝHRA BONUSU <b id="fsWin">0</b></div></div>
+
+  <div class="frame"><div class="board" id="board"></div><div class="winpop" id="winpop"></div></div>
+  <div class="wins" id="wins">Vyhrává 3 a více stejných symbolů na sousedních válcích zleva.</div>
+
+  <div class="stats">
+    <div class="stat"><small>KREDIT</small><b id="bal">0</b></div>
+    <div class="stat w"><small>VÝHRA</small><b id="win">0</b></div>
+  </div>
+  <div class="controls">
+    <div class="betbox"><button id="betM">−</button><div class="bv"><small>SÁZKA</small><span id="bet">10</span></div><button id="betP">+</button></div>
+    <button class="spin" id="spinBtn"><span class="ic">⟳</span>TOČIT</button>
+    <div class="side"><button class="pill" id="autoBtn">AUTO</button><button class="pill" id="turboBtn">⚡</button></div>
+  </div>
+  <button class="buy" id="buyBtn">⚔ KOUPIT BONUS <small id="buyCost">(800)</small></button>
+  <div class="foot">Lucky 7 Casino • jen pro zábavu, fiktivní kredity</div>
+</div>
+<div class="ov" id="ov"><div class="card" id="card"></div></div>
+<div class="flash" id="flash"></div>
+
+<script>
+/*ENGINE*/
+
+const $ = id => document.getElementById(id);
+const { REELS, ROWS, SYMS, SCATTER, JACKPOT, MULTS, FREE_SPINS, RETRIGGER, JP, CFG } = HH;
+const BETS = [10, 20, 30, 50, 100, 200, 500];
+const BUY_X = 80;
+const fmt = x => Math.round(x).toLocaleString('cs-CZ');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ---------- uložený stav ----------
+const WKEY = 'lucky7_wallet';
+let bal = 1000;
+let S = { betI: 0, jp: JP.map(j => j.seed), cbPot: 0, cbLv: 1, cbSpins: 0 };
+try { const s = localStorage.getItem(WKEY); if (s !== null && isFinite(+s)) bal = +s; } catch (e) {}
+try { const s = JSON.parse(localStorage.getItem('hh_state') || 'null'); if (s && Array.isArray(s.jp)) S = Object.assign(S, s); } catch (e) {}
+function save() { try { localStorage.setItem(WKEY, String(Math.round(bal))); localStorage.setItem('hh_state', JSON.stringify(S)); } catch (e) {} }
+
+let busy = false, auto = false, turbo = false, sound = true;
+let bonus = false, fsLeft = 0, fsTotal = 0, bonusBet = 10;
+const bet = () => bonus ? bonusBet : BETS[S.betI];
+const T = ms => turbo ? ms * 0.45 : ms;
+
+// ---------- zvuk ----------
+let actx = null;
+function tone(f, d = .1, type = 'sine', v = .08, delay = 0, f2) {
+  if (!sound) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + .02);
+  } catch (e) {}
+}
+const sfx = {
+  stop: i => tone(140 + i * 25, .09, 'triangle', .09),
+  win: () => [523, 659, 784].forEach((f, i) => tone(f, .25, 'sine', .08, i * .08)),
+  big: () => [392, 523, 659, 784, 1046].forEach((f, i) => tone(f, .4, 'triangle', .1, i * .1)),
+  choir: () => [523, 659, 784].forEach(f => tone(f, 1.1, 'sine', .05)),
+  whoosh: () => { tone(200, .5, 'sawtooth', .05, 0, 900); tone(80, .6, 'square', .04, .05, 40); },
+  tick: () => tone(1200, .03, 'square', .03),
+  scatter: n => tone(500 + n * 120, .3, 'sine', .1),
+  jp: () => [784, 988, 1175, 1568, 1175, 1568, 2093].forEach((f, i) => tone(f, .3, 'triangle', .1, i * .12)),
+};
+
+// ---------- válce ----------
+const board = $('board');
+const reels = [], strips = [];
+let grid = HH.spinGrid(Math.random);
+const symHTML = (s, extra = '') => `<div class="sym${s === SCATTER ? ' sc' : ''}${extra}"><svg viewBox="0 0 100 100"><use href="#s-${s}"/></svg></div>`;
+for (let r = 0; r < REELS; r++) {
+  const el = document.createElement('div'); el.className = 'reel';
+  const st = document.createElement('div'); st.className = 'strip';
+  el.appendChild(st); board.appendChild(el); reels.push(el); strips.push(st);
+}
+function sizeVars() {
+  const w = board.clientWidth / REELS;
+  document.documentElement.style.setProperty('--cw', w + 'px');
+  document.documentElement.style.setProperty('--ch', Math.round(w * 0.84) + 'px');
+}
+function drawStatic() {
+  for (let r = 0; r < REELS; r++) { strips[r].style.transition = 'none'; strips[r].style.transform = 'translateY(0)'; strips[r].innerHTML = grid[r].map(s => symHTML(s)).join(''); }
+}
+const cellH = () => reels[0].clientHeight / ROWS;
+
+async function spinReels(newGrid, anticipate) {
+  board.classList.remove('dim');
+  board.querySelectorAll('.wildreel').forEach(e => e.remove());
+  reels.forEach(r => r.classList.remove('antic'));
+  const h = cellH(), done = [];
+  let delay = 0, scSoFar = 0;
+  for (let r = 0; r < REELS; r++) {
+    const filler = 14 + r * 4 + (anticipate && r >= 2 && scSoFar >= 2 ? 16 : 0);
+    const rnd = Array.from({ length: filler }, () => HH.spinGrid(Math.random)[0][0]);
+    const seq = [...newGrid[r], ...rnd, ...grid[r]]; // nahoře nové, dole staré
+    const st = strips[r];
+    st.style.transition = 'none';
+    st.innerHTML = seq.map(s => symHTML(s)).join('');
+    const startY = -(seq.length - ROWS) * h;
+    st.style.transform = `translateY(${startY}px)`;
+    st.classList.add('blur');
+    const dur = T(650 + filler * 38);
+    const antic = anticipate && r >= 2 && scSoFar >= 2;
+    done.push(new Promise(res => {
+      setTimeout(() => {
+        if (antic) { reels[r].classList.add('antic'); tone(300, .8, 'sine', .04, 0, 900); }
+        st.style.transition = `transform ${dur}ms cubic-bezier(.25,.1,.25,1.06)`;
+        st.style.transform = 'translateY(0)';
+        setTimeout(() => { st.classList.remove('blur'); reels[r].classList.remove('antic'); sfx.stop(r); st.innerHTML = newGrid[r].map(s => symHTML(s)).join(''); st.style.transition = 'none'; st.style.transform = 'translateY(0)'; res(); }, dur);
+      }, delay);
+    }));
+    delay += T(120);
+    scSoFar += newGrid[r].filter(s => s === SCATTER).length;
+  }
+  await Promise.all(done);
+  grid = newGrid;
+}
+
+// rozšířený válec s násobkem nahoře i dole
+async function expandReel(f) {
+  sfx.whoosh(); $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
+  const w = document.createElement('div'); w.className = 'wildreel';
+  w.innerHTML = `<div class="badge top roll"><span>×2</span></div>
+    <div class="art a1"><svg viewBox="0 0 100 100"><use href="#s-10"/></svg></div>
+    <div class="w">WILD</div>
+    <div class="art a2"><svg viewBox="0 0 100 100"><use href="#s-8"/></svg></div>
+    <div class="badge bot roll"><span>×2</span></div>`;
+  reels[f.reel].appendChild(w);
+  await sleep(T(450));
+  const spans = w.querySelectorAll('.badge span');
+  const steps = turbo ? 10 : 20;
+  for (let i = 0; i < steps; i++) {
+    const v = MULTS[(i * 3 + Math.floor(Math.random() * 3)) % MULTS.length];
+    spans.forEach(s => s.textContent = '×' + v); sfx.tick();
+    await sleep(40 + i * (turbo ? 4 : 7));
+  }
+  spans.forEach(s => s.textContent = '×' + f.mult);
+  w.querySelectorAll('.badge').forEach(b => { b.classList.remove('roll'); b.classList.add('land'); });
+  f.mult >= 25 ? sfx.big() : sfx.choir();
+  await sleep(T(500));
+}
+
+// ---------- UI ----------
+function cbNeed() { return 50; }
+function updateUI() {
+  $('bal').textContent = fmt(bal);
+  $('bet').textContent = fmt(bet());
+  JP.forEach((j, i) => $('jp' + i).querySelector('b').textContent = fmt(S.jp[i] * bet()));
+  $('cbPot').textContent = fmt(S.cbPot);
+  $('cbLv').textContent = S.cbLv + ' %';
+  const left = S.cbLv >= 5 ? 0 : cbNeed() - (S.cbSpins % cbNeed());
+  $('cbBar').style.width = S.cbLv >= 5 ? '100%' : ((S.cbSpins % cbNeed()) / cbNeed() * 100) + '%';
+  $('cbNext').textContent = S.cbLv >= 5 ? 'maximální úroveň 5 %' : `další úroveň (${S.cbLv + 1} %) za ${left} spinů`;
+  $('cbBtn').disabled = busy || S.cbPot < 1;
+  $('fsbar').classList.toggle('on', bonus);
+  $('fsLeft').textContent = fsLeft; $('fsWin').textContent = fmt(fsTotal);
+  $('spinBtn').disabled = busy && !auto;
+  $('buyBtn').disabled = busy || bonus || bal < BETS[S.betI] * BUY_X;
+  $('buyCost').textContent = '(' + fmt(BETS[S.betI] * BUY_X) + ')';
+  $('betM').disabled = $('betP').disabled = busy || bonus;
+}
+const setWin = x => $('win').textContent = fmt(x);
+function winpop(text, sub) { const p = $('winpop'); p.innerHTML = text + (sub ? `<small>${sub}</small>` : ''); p.classList.remove('on'); void p.offsetWidth; p.classList.add('on'); }
+const symName = id => ['9', '10', 'J', 'Q', 'K', 'A', 'Plamen', 'Trojzubec', 'Démon', 'Svatozář', 'Křídla'][id];
+
+function highlight(wins, feat) {
+  const set = new Set();
+  wins.forEach(w => w.cells.forEach(([r, y]) => set.add(r * 10 + y)));
+  for (let r = 0; r < REELS; r++) {
+    const cells = strips[r].children;
+    for (let y = 0; y < ROWS; y++) cells[y]?.classList.toggle('win', set.has(r * 10 + y) && !feat.some(f => f.reel === r));
+  }
+  board.classList.toggle('dim', wins.length > 0);
+}
+
+// ---------- jeden spin ----------
+async function spinRound() {
+  const b = bet();
+  if (!bonus) { JP.forEach((j, i) => S.jp[i] += j.grow); }
+  const g = HH.spinGrid(Math.random);
+  const feat = HH.rollFeature(bonus, Math.random);
+  setWin(0); $('wins').textContent = bonus ? 'Free spin – aspoň jeden válec s násobkem je jistý!' : ' ';
+  await spinReels(g, true);
+  for (const f of feat) await expandReel(f);
+
+  const ev = HH.evaluate(g, feat, bonus);
+  let total = Math.floor(ev.total * b);
+  if (ev.wins.length) {
+    highlight(ev.wins, feat);
+    const best = ev.wins.slice().sort((a, c) => c.win - a.win).slice(0, 3);
+    $('wins').textContent = best.map(w => `${symName(w.s)} ×${w.len} • ${w.ways} cest${w.mult > 1 ? ' • násobek ×' + w.mult : ''}`).join('   |   ');
+    if (total > 0) {
+      setWin(total);
+      const r = total / b;
+      winpop(fmt(total), r >= 50 ? 'MEGA VÝHRA' : r >= 15 ? 'VELKÁ VÝHRA' : r >= 5 ? 'PĚKNÁ VÝHRA' : '');
+      r >= 15 ? sfx.big() : sfx.win();
+      await sleep(T(r >= 15 ? 2200 : 1300));
+    } else await sleep(T(400));
+  }
+
+  // jackpot
+  const jl = HH.jackpotLevel(ev.jp);
+  if (jl >= 0) {
+    const v = Math.floor(S.jp[jl] * b);
+    S.jp[jl] = JP[jl].seed; total += v;
+    $('jp' + jl).classList.add('hit'); setTimeout(() => $('jp' + jl).classList.remove('hit'), 3200);
+    sfx.jp(); confetti(jl === 2 ? 80 : 35, ['💎', '👑', '✨', '🪽', '🔥']);
+    await modal(`<h2>${JP[jl].name} JACKPOT</h2><div class="big">${fmt(v)}</div><p>${ev.jp} jackpotových symbolů 💎</p>`, 'SUPER', auto ? 2800 : 0);
+    setWin(total);
+  }
+
+  // scattery
+  let trig = 0;
+  if (ev.sc >= 3) {
+    board.querySelectorAll('.sym.sc').forEach(e => e.classList.add('win'));
+    for (let i = 0; i < ev.sc; i++) sfx.scatter(i);
+    trig = bonus ? RETRIGGER : FREE_SPINS[Math.min(ev.sc, 5)];
+    winpop(bonus ? `+${trig} SPINŮ` : `${trig} FREE SPINŮ`, ev.sc + '× BONUS');
+    await sleep(T(1800));
+  }
+  return { total, trig };
+}
+
+async function spin() {
+  if (busy) return;
+  const b = BETS[S.betI];
+  if (bal < b) { stopAuto(); return modal('<h2>Došel kredit</h2><p>Doplnit kredit můžeš v lobby kasina, když klesne pod 10.</p>', 'OK'); }
+  busy = true; bal -= b; updateUI();
+  const r = await spinRound();
+  bal += r.total;
+  // rostoucí cashback z prohraných spinů
+  let bw = 0;
+  if (r.trig) bw = await runBonus(r.trig, b);
+  const net = b - r.total - bw;
+  if (net > 0) S.cbPot += net * S.cbLv / 100;
+  S.cbSpins++; if (S.cbSpins % cbNeed() === 0 && S.cbLv < 5) { S.cbLv++; tone(880, .3, 'sine', .06); }
+  save(); busy = false; updateUI();
+  if (auto) { await sleep(T(300)); if (auto) spin(); }
+}
+
+async function runBonus(spins, b) {
+  bonusBet = b;
+  confetti(25, ['🪽', '🔥', '✨']);
+  await modal(`<h2>Nebe vs. Peklo</h2><div class="big">${spins} FREE SPINŮ</div>
+    <p>V každém free spinu je <b>zaručený aspoň jeden rozšířený válec</b> s násobkem ×2 až ×100.</p>
+    <p style="opacity:.8;font-size:13px">3+ scattery v bonusu = +${RETRIGGER} spinů</p>`, 'START', auto ? 2200 : 0);
+  bonus = true; fsLeft = spins; fsTotal = 0; updateUI();
+  while (fsLeft > 0) {
+    fsLeft--; updateUI();
+    const r = await spinRound();
+    fsTotal += r.total; bal += r.total; save();
+    if (r.trig) fsLeft += r.trig;
+    updateUI(); await sleep(T(350));
+  }
+  const t = fsTotal; bonus = false; updateUI();
+  confetti(t >= b * 20 ? 60 : 20, ['✨', '🪽', '🔥', '💰']);
+  await modal(`<h2>Konec bonusu</h2><p>Celková výhra</p><div class="big">${fmt(t)}</div><p>${(Math.round(t / b * 10) / 10).toLocaleString('cs-CZ')}× sázka</p>`, 'POKRAČOVAT', auto ? 3000 : 0);
+  fsTotal = 0; updateUI();
+  return t;
+}
+
+function modal(html, btn, autoClose = 0) {
+  return new Promise(res => {
+    $('card').innerHTML = html + (btn ? `<div><button class="go" id="ovGo">${btn}</button></div>` : '');
+    $('ov').classList.add('on');
+    let done = false; const close = () => { if (done) return; done = true; $('ov').classList.remove('on'); res(); };
+    if (btn) $('ovGo').onclick = close;
+    if (autoClose) setTimeout(close, autoClose);
+  });
+}
+function confetti(n, set) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div'); s.className = 'confetti'; s.textContent = set[i % set.length];
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = (2 + Math.random() * 2) + 's'; s.style.animationDelay = Math.random() * .8 + 's';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 5000);
+  }
+}
+function stopAuto() { auto = false; $('autoBtn').classList.remove('on'); }
+
+function showInfo() {
+  const b = BETS[S.betI];
+  const f2 = x => (Math.round(x * 1000) / 1000).toLocaleString('cs-CZ');
+  let rows = '';
+  for (let i = SYMS.length - 1; i >= 0; i--) {
+    const s = SYMS[i];
+    rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#s-${i}"/></svg></td>${s.pay.map(p => `<td>${f2(p * CFG.payScale)}×</td>`).join('')}</tr>`;
+  }
+  $('card').innerHTML = `<h2>Pravidla</h2>
+   <ul class="rules">
+    <li><b>5 válců × 6 řad = 7 776 cest.</b> Vyhrává 3, 4 nebo 5 stejných symbolů na sousedních válcích zleva, na libovolné pozici. Výhra = výplata × počet cest.</li>
+    <li><b>Rozšířený válec:</b> náhodně se roztáhne jeden z 5 válců přes celou výšku, stane se WILD a nahoře i dole se vylosuje násobek <b>×2, ×4, ×6, ×8, ×10, ×25, ×50 nebo ×100</b>. Násobí všechny výhry, které přes válec vedou (více válců se sčítá).</li>
+    <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-11"/></svg> <b>Bonus:</b> 3 scattery = 10 free spinů, 4 = 12, 5+ = 15. Ve free spinech je v každém zatočení <b>zaručený aspoň jeden rozšířený válec</b>. 3+ scattery = +${RETRIGGER} spinů.</li>
+    <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-12"/></svg> <b>Jackpoty:</b> 3 symboly = MINI, 4 = MAJOR, 5+ = GRAND. Jackpoty rostou s každým spinem.</li>
+    <li><b>Rostoucí cashback:</b> z každého prohraného spinu se do cashbacku vrací 1 % sázky, každých 50 spinů o 1 % víc (max. 5 %). Vybráním se úroveň vrátí na 1 %.</li>
+    <li>Koupě bonusu (10 free spinů) za ${BUY_X}× sázka. Teoretická návratnost ≈ 96 %.</li>
+   </ul>
+   <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table>
+   <p style="font-size:11px;opacity:.7">Výplaty jsou v násobcích sázky za jednu cestu.</p>
+   <button class="go" id="ovGo">ROZUMÍM</button>`;
+  $('ov').classList.add('on'); $('ovGo').onclick = () => $('ov').classList.remove('on');
+}
+
+// ---------- ovládání ----------
+$('spinBtn').onclick = () => { if (auto) { stopAuto(); updateUI(); return; } spin(); };
+$('autoBtn').onclick = () => { auto = !auto; $('autoBtn').classList.toggle('on', auto); if (auto && !busy) spin(); updateUI(); };
+$('turboBtn').onclick = () => { turbo = !turbo; $('turboBtn').classList.toggle('on', turbo); };
+$('soundBtn').onclick = () => { sound = !sound; $('soundBtn').textContent = sound ? '🔊' : '🔇'; };
+$('infoBtn').onclick = showInfo;
+$('betM').onclick = () => { if (S.betI > 0) S.betI--; save(); updateUI(); };
+$('betP').onclick = () => { if (S.betI < BETS.length - 1) S.betI++; save(); updateUI(); };
+$('cbBtn').onclick = () => {
+  if (busy || S.cbPot < 1) return;
+  const v = Math.floor(S.cbPot); bal += v; S.cbPot = 0; S.cbLv = 1; S.cbSpins = 0; save(); updateUI();
+  winpop('+' + fmt(v), 'CASHBACK'); sfx.win();
+};
+$('buyBtn').onclick = async () => {
+  const b = BETS[S.betI], cost = b * BUY_X;
+  if (busy || bonus || bal < cost) return;
+  let ok = false;
+  await new Promise(res => {
+    $('card').innerHTML = `<h2>Koupit bonus?</h2><p>10 free spinů, v každém zaručený rozšířený válec s násobkem.</p><div class="big">${fmt(cost)}</div>
+      <button class="go" id="y">KOUPIT</button><button class="go ghost" id="n">Zpět</button>`;
+    $('ov').classList.add('on');
+    $('y').onclick = () => { ok = true; $('ov').classList.remove('on'); res(); };
+    $('n').onclick = () => { $('ov').classList.remove('on'); res(); };
+  });
+  if (!ok) return;
+  busy = true; bal -= cost; save(); updateUI();
+  await runBonus(10, b);
+  save(); busy = false; updateUI();
+};
+document.addEventListener('keydown', e => { if (e.code === 'Space' && !$('ov').classList.contains('on')) { e.preventDefault(); $('spinBtn').click(); } });
+addEventListener('resize', () => { sizeVars(); drawStatic(); });
+
+sizeVars(); drawStatic(); updateUI();
+</script>
+</body>
+</html>
