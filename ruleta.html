@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Ruleta – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f3c969;--gold2:#b8862b;--felt:#0d5c3a;--felt2:#083d27;--red:#c8202f;--black:#1b1b1f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:'Fredoka',system-ui,sans-serif;color:#fff;min-height:100vh;
+ background:radial-gradient(ellipse at 50% 0%,#16764b 0%,var(--felt) 40%,var(--felt2) 100%) fixed}
+.app{max-width:520px;margin:0 auto;padding:10px 10px 20px;display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:center;justify-content:space-between}
+.back{color:#fff;text-decoration:none;border:2px solid #fff6;border-radius:999px;padding:6px 12px;font-weight:600;font-size:14px;background:#0003}
+h1{margin:0;font-family:'Cinzel',serif;font-size:24px;color:var(--gold);text-shadow:0 2px 0 #0008;letter-spacing:2px}
+.bal{font-weight:700;background:#0004;border:2px solid var(--gold2);border-radius:999px;padding:5px 12px;font-size:15px}
+.wheelwrap{position:relative;width:min(64vw,250px);aspect-ratio:1;margin:4px auto 0}
+.wheelwrap svg{width:100%;height:100%;display:block}
+#wheel{transform-origin:150px 150px;transition:transform 5.5s cubic-bezier(.12,.6,.18,1)}
+#ballRot{transform-origin:150px 150px;transition:transform 5.5s cubic-bezier(.15,.55,.2,1)}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:16px solid var(--gold);filter:drop-shadow(0 2px 2px #0008)}
+.result{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;display:grid;place-items:center;
+ font-size:30px;font-weight:700;border:3px solid var(--gold);box-shadow:0 0 18px #0009;background:#222;opacity:0;transition:opacity .3s,transform .3s}
+.result.on{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
+.hist{display:flex;gap:4px;justify-content:center;min-height:26px;flex-wrap:wrap}
+.hist span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:1px solid #fff5}
+.r{background:var(--red)}.b{background:var(--black)}.g{background:#0a8f4c}
+.info{display:flex;justify-content:space-between;gap:8px}
+.info div{flex:1;text-align:center;background:#0003;border:1px solid #fff3;border-radius:12px;padding:5px}
+.info small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.8}
+.info b{font-size:18px}
+.info .w b{color:var(--gold)}
+/* stůl */
+.table{display:grid;grid-template-columns:repeat(3,1fr) 46px;gap:3px;background:#f3c96955;border:3px solid var(--gold2);border-radius:12px;padding:4px;user-select:none}
+.c{position:relative;height:30px;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:15px;cursor:pointer;border:1px solid #ffffff40;transition:filter .15s}
+.c:active{filter:brightness(1.4)}
+.c.zero{grid-column:1/4;background:#0a8f4c}
+.c.out{background:#0d5c3a;font-size:12px;letter-spacing:.5px}
+.c.dz{grid-row:span 4;writing-mode:vertical-rl;background:#0d5c3a;font-size:12px}
+.c.win{animation:winc 1s 3;outline:3px solid var(--gold)}
+@keyframes winc{50%{filter:brightness(1.8)}}
+.chipOn{position:absolute;right:-4px;top:-6px;min-width:24px;height:24px;border-radius:50%;padding:0 3px;font-size:10px;display:grid;place-items:center;color:#222;
+ background:radial-gradient(circle,#fff 0 45%,var(--cc,#f3c969) 46%);border:2px dashed #fff;box-shadow:0 2px 3px #0008;z-index:2;pointer-events:none}
+.outs{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:3px}
+.outs .c{height:38px}
+.chips{display:flex;justify-content:center;gap:10px}
+.chip{width:52px;height:52px;border-radius:50%;border:4px dashed #fff;display:grid;place-items:center;font-weight:700;cursor:pointer;color:#fff;
+ text-shadow:0 1px 2px #000;box-shadow:0 3px 0 #0006;transition:transform .15s;font-size:14px}
+.chip.sel{transform:translateY(-6px) scale(1.08);box-shadow:0 0 0 3px var(--gold),0 6px 10px #0008}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{border:0;border-radius:12px;padding:10px 6px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;background:#ffffff22;color:#fff;border:2px solid #fff5}
+.btn:disabled{opacity:.45}
+.spin{grid-column:1/4;background:linear-gradient(180deg,#ffe28a,#d49b2c);color:#4a2c00;border:0;font-size:20px;padding:13px;box-shadow:0 4px 0 #8a5a10;font-family:'Cinzel',serif;letter-spacing:2px}
+.toast{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);background:#000c;border:2px solid var(--gold);border-radius:16px;padding:14px 22px;font-size:22px;font-weight:700;color:var(--gold);
+ opacity:0;pointer-events:none;transition:opacity .3s;z-index:20;text-align:center}
+.toast.on{opacity:1}
+.foot{text-align:center;font-size:11px;opacity:.7}
+.rules{font-size:13px;opacity:.85;background:#0003;border-radius:12px;padding:8px 12px;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <a class="back" href="index.html">← Lobby</a>
+    <h1>RULETA</h1>
+    <div class="bal">💰 <span id="bal">0</span></div>
+  </header>
+
+  <div class="wheelwrap">
+    <div class="pointer"></div>
+    <svg viewBox="0 0 300 300">
+      <defs>
+        <radialGradient id="rim" cx="50%" cy="50%" r="50%"><stop offset="80%" stop-color="#5a3412"/><stop offset="100%" stop-color="#2b1606"/></radialGradient>
+        <radialGradient id="hub" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#ffe9a8"/><stop offset="100%" stop-color="#9a6a1c"/></radialGradient>
+      </defs>
+      <circle cx="150" cy="150" r="149" fill="url(#rim)"/>
+      <g id="wheel"></g>
+      <g id="ballRot"><circle id="ball" cx="150" cy="22" r="6.5" fill="#fff" stroke="#bbb"/></g>
+    </svg>
+    <div class="result" id="result">0</div>
+  </div>
+  <div class="hist" id="hist"></div>
+
+  <div class="info">
+    <div><small>SÁZKA</small><b id="tbet">0</b></div>
+    <div class="w"><small>VÝHRA</small><b id="lwin">0</b></div>
+  </div>
+
+  <div>
+    <div class="table" id="table"></div>
+    <div class="outs" id="outs"></div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="btns">
+    <button class="btn" id="undo">↶ Zpět</button>
+    <button class="btn" id="clear">✕ Vymazat</button>
+    <button class="btn" id="rebet">⟳ Opakovat</button>
+    <button class="btn spin" id="spin">TOČIT</button>
+  </div>
+  <div class="rules">Evropská ruleta s jednou nulou. Výplaty: číslo 35:1 • tucet a sloupec 2:1 • červená/černá, sudá/lichá, 1–18/19–36 1:1.</div>
+  <div class="foot">Lucky 7 Casino • jen pro zábavu, fiktivní kredity</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- sdílená peněženka ----------
+const WKEY = 'lucky7_wallet';
+function loadBal() { try { const s = localStorage.getItem(WKEY); if (s !== null && isFinite(+s)) return +s; } catch (e) {} return 1000; }
+function saveBal(v) { try { localStorage.setItem(WKEY, String(Math.round(v))); } catch (e) {} }
+let bal = loadBal();
+
+const $ = id => document.getElementById(id);
+const fmt = x => Math.round(x).toLocaleString('cs-CZ');
+const ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+const REDS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const color = n => n === 0 ? 'g' : REDS.has(n) ? 'r' : 'b';
+const CHIPS = [[10,'#2f6fd6'],[50,'#d6402f'],[100,'#1d1d1d'],[500,'#7b2fd6']];
+let chip = 10, bets = {}, history = [], lastBets = null, spinning = false, wheelRot = 0, ballRot = 0;
+
+// ---------- kolo ----------
+(function drawWheel() {
+  const g = $('wheel'), n = ORDER.length, a = 360 / n, R = 140, r1 = 96, ns = 'http://www.w3.org/2000/svg';
+  const pt = (rad, deg) => { const t = (deg - 90) * Math.PI / 180; return [150 + rad * Math.cos(t), 150 + rad * Math.sin(t)]; };
+  ORDER.forEach((num, i) => {
+    const s = i * a - a / 2, e = s + a;
+    const [x1, y1] = pt(R, s), [x2, y2] = pt(R, e), [x3, y3] = pt(r1, e), [x4, y4] = pt(r1, s);
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', `M${x1},${y1} A${R},${R} 0 0 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 0 0 ${x4},${y4}Z`);
+    p.setAttribute('fill', num === 0 ? '#0a8f4c' : REDS.has(num) ? '#c8202f' : '#1b1b1f');
+    p.setAttribute('stroke', '#d9b45a'); p.setAttribute('stroke-width', '1');
+    g.appendChild(p);
+    const [tx, ty] = pt(124, i * a), t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', tx); t.setAttribute('y', ty); t.setAttribute('fill', '#fff'); t.setAttribute('font-size', '11'); t.setAttribute('font-weight', '700');
+    t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'middle'); t.setAttribute('font-family', 'Fredoka, sans-serif');
+    t.setAttribute('transform', `rotate(${i * a} ${tx} ${ty})`); t.textContent = num;
+    g.appendChild(t);
+  });
+  const inner = document.createElementNS(ns, 'circle');
+  inner.setAttribute('cx', 150); inner.setAttribute('cy', 150); inner.setAttribute('r', r1); inner.setAttribute('fill', '#3a220c'); inner.setAttribute('stroke', '#d9b45a'); inner.setAttribute('stroke-width', '2');
+  g.appendChild(inner);
+  for (let i = 0; i < 8; i++) {
+    const [x, y] = pt(70, i * 45), l = document.createElementNS(ns, 'line');
+    l.setAttribute('x1', 150); l.setAttribute('y1', 150); l.setAttribute('x2', x); l.setAttribute('y2', y); l.setAttribute('stroke', '#d9b45a'); l.setAttribute('stroke-width', '5'); l.setAttribute('stroke-linecap', 'round');
+    g.appendChild(l);
+  }
+  const hub = document.createElementNS(ns, 'circle');
+  hub.setAttribute('cx', 150); hub.setAttribute('cy', 150); hub.setAttribute('r', 22); hub.setAttribute('fill', 'url(#hub)');
+  g.appendChild(hub);
+})();
+
+// ---------- stůl ----------
+const table = $('table'), outs = $('outs');
+function cell(parent, key, label, cls, style) {
+  const d = document.createElement('div'); d.className = 'c ' + (cls || ''); d.dataset.k = key; d.innerHTML = label;
+  if (style) Object.assign(d.style, style);
+  d.onclick = () => place(key); parent.appendChild(d); return d;
+}
+cell(table, 'n0', '0', 'zero');
+table.appendChild(Object.assign(document.createElement('div'), { style: 'grid-row:span 1' }));
+for (let row = 0; row < 12; row++) {
+  for (let col = 1; col <= 3; col++) { const n = row * 3 + col; cell(table, 'n' + n, n, color(n)); }
+  if (row % 4 === 0) cell(table, 'd' + (row / 4 + 1), ['1.–12.', '13.–24.', '25.–36.'][row / 4], 'dz');
+}
+for (let col = 1; col <= 3; col++) cell(table, 'c' + col, '2:1', 'out');
+table.appendChild(document.createElement('div'));
+[['low', '1–18'], ['even', 'SUDÁ'], ['red', '<span style="color:#ff5566">◆</span> ČERV.'], ['black', '◆ ČERNÁ'], ['odd', 'LICHÁ'], ['high', '19–36']]
+  .forEach(([k, l]) => cell(outs, k, l, 'out'));
+
+CHIPS.forEach(([v, c]) => {
+  const d = document.createElement('div'); d.className = 'chip' + (v === chip ? ' sel' : ''); d.textContent = v; d.style.background = c;
+  d.onclick = () => { chip = v; document.querySelectorAll('.chip').forEach(x => x.classList.toggle('sel', x === d)); };
+  $('chips').appendChild(d);
+});
+
+let stack = [];
+const total = () => Object.values(bets).reduce((a, b) => a + b, 0);
+function place(k) {
+  if (spinning) return;
+  if (total() + chip > bal) return toast('Nedostatek kreditu');
+  bets[k] = (bets[k] || 0) + chip; stack.push([k, chip]);
+  if (lastWinShown) clearWin();
+  draw();
+}
+function drawChips() {
+  document.querySelectorAll('.chipOn').forEach(e => e.remove());
+  for (const [k, v] of Object.entries(bets)) {
+    const el = document.querySelector(`.c[data-k="${k}"]`); if (!el) continue;
+    const c = document.createElement('div'); c.className = 'chipOn'; c.textContent = v >= 1000 ? (v / 1000) + 'k' : v;
+    const cc = CHIPS.slice().reverse().find(([x]) => v >= x); c.style.setProperty('--cc', cc ? cc[1] : '#f3c969');
+    el.appendChild(c);
+  }
+}
+function draw() {
+  $('bal').textContent = fmt(bal - (spinning ? 0 : total()));
+  $('tbet').textContent = fmt(total());
+  drawChips();
+  $('spin').disabled = spinning || total() === 0;
+  $('undo').disabled = $('clear').disabled = spinning || !stack.length;
+  $('rebet').disabled = spinning || !lastBets;
+  $('hist').innerHTML = history.slice(0, 12).map(n => `<span class="${color(n)}">${n}</span>`).join('');
+}
+$('undo').onclick = () => { const x = stack.pop(); if (!x) return; bets[x[0]] -= x[1]; if (!bets[x[0]]) delete bets[x[0]]; draw(); };
+$('clear').onclick = () => { bets = {}; stack = []; draw(); };
+$('rebet').onclick = () => {
+  const t = Object.values(lastBets).reduce((a, b) => a + b, 0);
+  if (t > bal) return toast('Nedostatek kreditu');
+  bets = { ...lastBets }; stack = Object.entries(bets); draw();
+};
+
+function payout(k, n) {
+  if (k[0] === 'n') return +k.slice(1) === n ? 36 : 0;
+  if (n === 0) return 0;
+  switch (k) {
+    case 'red': return REDS.has(n) ? 2 : 0;
+    case 'black': return !REDS.has(n) ? 2 : 0;
+    case 'odd': return n % 2 ? 2 : 0;
+    case 'even': return n % 2 ? 0 : 2;
+    case 'low': return n <= 18 ? 2 : 0;
+    case 'high': return n >= 19 ? 2 : 0;
+    case 'd1': case 'd2': case 'd3': return Math.ceil(n / 12) === +k[1] ? 3 : 0;
+    case 'c1': case 'c2': case 'c3': return ((n - 1) % 3) + 1 === +k[1] ? 3 : 0;
+  }
+  return 0;
+}
+function winningKeys(n) {
+  const ks = ['n' + n];
+  if (n) {
+    ks.push(REDS.has(n) ? 'red' : 'black', n % 2 ? 'odd' : 'even', n <= 18 ? 'low' : 'high', 'd' + Math.ceil(n / 12), 'c' + (((n - 1) % 3) + 1));
+  }
+  return ks;
+}
+
+let lastWinShown = false;
+function clearWin() { document.querySelectorAll('.c.win').forEach(e => e.classList.remove('win')); $('result').classList.remove('on'); lastWinShown = false; }
+
+let actx;
+function tick(f = 1200, d = .03, v = .05) { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = f; g.gain.setValueAtTime(v, actx.currentTime); g.gain.exponentialRampToValueAtTime(.001, actx.currentTime + d); o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + d + .01); } catch (e) {} }
+
+$('spin').onclick = () => {
+  const t = total(); if (!t || spinning) return;
+  if (t > bal) return toast('Nedostatek kreditu');
+  clearWin();
+  spinning = true; bal -= t; saveBal(bal); lastBets = { ...bets };
+  draw(); $('bal').textContent = fmt(bal);
+  const n = ORDER[Math.floor(Math.random() * 37)];
+  const idx = ORDER.indexOf(n), a = 360 / 37;
+  // kolo se točí po směru, kulička proti; výsledná kapsa skončí nahoře pod šipkou
+  const target = -idx * a;
+  wheelRot = wheelRot - (wheelRot % 360) + 360 * 5 + ((target % 360) + 360) % 360;
+  ballRot = ballRot - (ballRot % 360) - 360 * 4;
+  $('wheel').style.transform = `rotate(${wheelRot}deg)`;
+  $('ballRot').style.transform = `rotate(${ballRot}deg)`;
+  let tk = 0; const iv = setInterval(() => { tick(1400 - tk * 12); if (++tk > 60) clearInterval(iv); }, 40 + tk);
+  setTimeout(() => {
+    clearInterval(iv);
+    let win = 0;
+    for (const [k, v] of Object.entries(bets)) win += v * payout(k, n);
+    bal += win; saveBal(bal);
+    history.unshift(n);
+    const r = $('result'); r.textContent = n; r.className = 'result on ' + color(n);
+    winningKeys(n).forEach(k => document.querySelector(`.c[data-k="${k}"]`)?.classList.add('win'));
+    lastWinShown = true;
+    $('lwin').textContent = fmt(win);
+    toast(win > 0 ? `${n} – výhra ${fmt(win)}!` : `${n} ${color(n) === 'r' ? 'červená' : color(n) === 'b' ? 'černá' : 'zelená'}`);
+    if (win > 0) [660, 880, 1100].forEach((f, i) => setTimeout(() => tick(f, .2, .1), i * 90));
+    bets = {}; stack = []; spinning = false; draw();
+  }, 5700);
+};
+
+let tt;
+function toast(s) { const t = $('toast'); t.textContent = s; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 1800); }
+draw();
+</script>
+</body>
+</html>

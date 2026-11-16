@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Candy Rush 8×8</title>
+<title>Candy Rush – Lucky 7 Casino</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -133,6 +133,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
   <header>
     <h1>Candy Rush<small>8 × 8 • SHLUKY</small></h1>
     <div class="hbtns">
+      <a class="icon" href="index.html" title="Lobby" style="text-decoration:none">🏠</a>
       <button class="icon" id="soundBtn" title="Zvuk">🔊</button>
       <button class="icon" id="infoBtn" title="Pravidla a výplaty">ℹ️</button>
     </div>
@@ -178,9 +179,11 @@ const $ = id => document.getElementById(id);
 const board = $('board');
 const BUY_X = 80;
 const BETS = [10, 20, 30, 50, 100, 200, 500];
+// sdílená peněženka kasina (lobby, ruleta, blackjack)
+const WKEY = 'lucky7_wallet';
 let st = { bal: 1000, betI: 0 };
-try { const s = JSON.parse(localStorage.getItem('cukrova8c') || 'null'); if (s && typeof s.bal === 'number') { st = s; st.bal = Math.round(st.bal); st.betI = Math.min(Math.max(0, st.betI|0), BETS.length - 1); } } catch (e) {}
-const save = () => { try { localStorage.setItem('cukrova8c', JSON.stringify(st)); } catch (e) {} };
+try { const s = localStorage.getItem(WKEY); if (s !== null && isFinite(+s)) st.bal = Math.round(+s); const b = +localStorage.getItem('candyrush_bet'); if (b >= 0 && b < BETS.length) st.betI = b | 0; } catch (e) {}
+const save = () => { try { localStorage.setItem(WKEY, String(Math.round(st.bal))); localStorage.setItem('candyrush_bet', String(st.betI)); } catch (e) {} };
 
 let grid = null, busy = false, auto = false, turbo = false, sound = true;
 let bonus = false, fsLeft = 0, meter = 0, fsTotal = 0, bonusBet = 1;
