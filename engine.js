@@ -21,7 +21,7 @@ const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
   multiP: 0, multiPBonus: 0.013,
-  payScale: 0.44, bonusPayScale: 0.54,
+  payScale: 0.285, bonusPayScale: 0.54,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
 const W_BASE = [25, 22, 18, 15, 10, 7, 3];
@@ -99,8 +99,8 @@ function playSpin(bonus, rnd, state) {
   for (;;) {
     const cl = findClusters(g, bonus);
     if (!cl.length) break;
-    step++;
-    win += cl.reduce((a, x) => a + x.win, 0) * (bonus ? 1 : cascadeMulti(step));
+    // každý výherní shluk (symbol) se počítá jako samostatné propojení
+    for (const k of cl) { step++; win += k.win * (bonus ? 1 : cascadeMulti(step)); }
     g = tumble(g, cl.flatMap(x => x.cells), bonus, rnd);
   }
   const sc = countSym(g, SCATTER);
@@ -114,7 +114,7 @@ function playSpin(bonus, rnd, state) {
   return { win, sc };
 }
 
-// základní hra: 1. propojení ×1, od 2. propojení ×2, ×4, ×6, ×8 …
+// základní hra: každý výherní shluk = propojení; 1. ×1, 2. ×2, 3. ×4, 4. ×6 …
 function cascadeMulti(step) { return step <= 1 ? 1 : 2 * (step - 1); }
 
 function playBonus(spins, rnd, start = 0) {

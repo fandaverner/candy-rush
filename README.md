@@ -4,7 +4,7 @@ Cukrovinkový výherní automat v prohlížeči (jen pro zábavu, fiktivní kred
 
 - Plocha 8×8, výhra za shluk **5+ stejných symbolů** (sousedí stranou), kdekoli na ploše
 - Padání symbolů (tumble) – výhry se řetězí
-- 🔗 Základní hra: 1. propojení ×1, od 2. propojení násobí výhru ×2, ×4, ×6, ×8 …
+- 🔗 Základní hra: každý výherní shluk (symbol) je propojení: 1. ×1, 2. ×2, 3. ×4, 4. ×6 …
 - 🌈 Násobky ×2–×50 padají jen ve free spinech
 - Start s 1 000 kredity, sázky 10–500
 - 🍭 Scatter: 3 = 10, 4 = 12, 5+ = 15 free spinů
