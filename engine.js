@@ -2,13 +2,13 @@
 const COLS = 8, ROWS = 8;
 const SYMS = [
   // id, emoji, váha, výplata (× sázka) pro shluk 5,6,7,8,9,10-11,12-14,15+
-  { id: 0, e: '🍬', name: 'Bonbon',    w: 22, pay: [0.2, 0.3, 0.4, 0.5, 0.7, 1, 2, 5] },
-  { id: 1, e: '🍪', name: 'Sušenka',   w: 21, pay: [0.25, 0.35, 0.5, 0.6, 0.8, 1.2, 2.5, 6] },
-  { id: 2, e: '🍇', name: 'Hroznové želé', w: 19, pay: [0.3, 0.4, 0.6, 0.8, 1, 1.5, 3, 8] },
-  { id: 3, e: '🍓', name: 'Jahodový drops', w: 17, pay: [0.4, 0.5, 0.8, 1, 1.5, 2, 4, 10] },
-  { id: 4, e: '🍩', name: 'Donut',     w: 14, pay: [0.5, 0.8, 1, 1.5, 2, 3, 6, 15] },
-  { id: 5, e: '🧁', name: 'Cupcake',   w: 11, pay: [0.8, 1, 1.5, 2, 3, 5, 10, 25] },
-  { id: 6, e: '🍫', name: 'Čokoláda',  w: 8,  pay: [1, 1.5, 2, 3, 5, 8, 20, 50] },
+  { id: 0, e: '🍬', name: 'Bonbon',    w: 22, pay: [0.2, 0.3, 0.4, 0.5, 0.7, 1, 2, 5], base: [1,1,1,1,2,2,3,8] },
+  { id: 1, e: '🍪', name: 'Sušenka',   w: 21, pay: [0.25, 0.35, 0.5, 0.6, 0.8, 1.2, 2.5, 6], base: [1,1,1,1,2,2,4,10] },
+  { id: 2, e: '🍇', name: 'Hroznové želé', w: 19, pay: [0.3, 0.4, 0.6, 0.8, 1, 1.5, 3, 8], base: [1,1,1,2,2,3,5,13] },
+  { id: 3, e: '🍓', name: 'Jahodový drops', w: 17, pay: [0.4, 0.5, 0.8, 1, 1.5, 2, 4, 10], base: [1,1,2,2,3,3,7,17] },
+  { id: 4, e: '🍩', name: 'Donut',     w: 14, pay: [0.5, 0.8, 1, 1.5, 2, 3, 6, 15], base: [1,2,2,3,3,5,10,25] },
+  { id: 5, e: '🧁', name: 'Cupcake',   w: 11, pay: [0.8, 1, 1.5, 2, 3, 5, 10, 25], base: [2,2,3,3,5,8,17,40] },
+  { id: 6, e: '🍫', name: 'Čokoláda',  w: 8,  pay: [1, 1.5, 2, 3, 5, 8, 20, 50], base: [2,3,4,5,8,13,33,80] },
 ];
 const SCATTER = 7, MULTI = 8;
 const MULTI_VALUES = [2,2,2,3,3,3,4,5,5,6,8,10,10,12,15,20,25,50,100];
@@ -21,10 +21,10 @@ const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
   multiP: 0, multiPBonus: 0.013,
-  payScale: 0.285, bonusPayScale: 0.54,
+  payScale: 0.17, baseScale: 1, bonusPayScale: 0.54,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
-const W_BASE = [25, 22, 18, 15, 10, 7, 3];
+const W_BASE = [21, 20, 19, 17, 13, 7, 3];
 CFG.wBase = W_BASE;
 const TOTAL_W = SYMS.reduce((a, s) => a + s.w, 0);
 
@@ -70,7 +70,8 @@ function findClusters(g, bonus) {
         if (g[nx][ny].s === s) { seen[nx][ny] = true; stack.push([nx, ny]); }
       }
     }
-    if (cells.length >= 5) out.push({ s, cells, win: SYMS[s].pay[sizeIdx(cells.length)] * sc });
+    // základní hra: celočíselná tabulka pro sázku 10 (base / 10 × sázka), bonus: pay × bonusPayScale
+    if (cells.length >= 5) out.push({ s, cells, win: bonus ? SYMS[s].pay[sizeIdx(cells.length)] * sc : SYMS[s].base[sizeIdx(cells.length)] * CFG.baseScale / 10 });
   }
   return out;
 }
@@ -100,11 +101,13 @@ function playSpin(bonus, rnd, state) {
     const cl = findClusters(g, bonus);
     if (!cl.length) break;
     // každý výherní shluk (symbol) se počítá jako samostatné propojení
-    for (const k of cl) { step++; win += k.win * (bonus ? 1 : cascadeMulti(step)); }
+    for (const k of cl) { step++; win += k.win; }
     g = tumble(g, cl.flatMap(x => x.cells), bonus, rnd);
   }
   const sc = countSym(g, SCATTER);
   const ms = multis(g).reduce((a, x) => a + x.m, 0);
+  // základní hra: celá výhra kola se na konci vynásobí dosaženým násobkem propojení
+  if (!bonus && win > 0) win *= cascadeMulti(step);
   if (bonus) {
     state.meter += ms;
     if (win > 0 && state.meter > 0) win *= state.meter;
@@ -114,7 +117,7 @@ function playSpin(bonus, rnd, state) {
   return { win, sc };
 }
 
-// základní hra: každý výherní shluk = propojení; 1. ×1, 2. ×2, 3. ×4, 4. ×6 …
+// základní hra: každý výherní shluk = propojení; po konci kola se výhra násobí: 1 propojení ×1, 2 ×2, 3 ×4, 4 ×6 …
 function cascadeMulti(step) { return step <= 1 ? 1 : 2 * (step - 1); }
 
 function playBonus(spins, rnd, start = 0) {
