@@ -21,7 +21,7 @@ const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
   multiP: 0, multiPBonus: 0.013,
-  payScale: 0.24, bonusPayScale: 0.54,
+  payScale: 0.44, bonusPayScale: 0.54,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
 const W_BASE = [25, 22, 18, 15, 10, 7, 3];
@@ -114,8 +114,8 @@ function playSpin(bonus, rnd, state) {
   return { win, sc };
 }
 
-// základní hra: každé další propojení násobí výhru ×2, ×4, ×6, ×8, ×10 …
-function cascadeMulti(step) { return 2 * step; }
+// základní hra: 1. propojení ×1, od 2. propojení ×2, ×4, ×6, ×8 …
+function cascadeMulti(step) { return step <= 1 ? 1 : 2 * (step - 1); }
 
 function playBonus(spins, rnd, start = 0) {
   const st = { meter: start }; let total = 0, left = spins;
