@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Poklad faraona – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#07101f;--acc:#ffd76a;--acc2:#c9a24a88;--glow:#ffcf4a66;--winglow:#ffe8a066;--tfont:'Cinzel',serif;
+ --tgrad:linear-gradient(180deg,#fff7d0,#ffd76a 50%,#a8741c);
+ --bgimg:radial-gradient(ellipse 80% 40% at 50% 0%,#1d3d7a 0%,transparent 70%),radial-gradient(ellipse 100% 35% at 50% 100%,#c8913a 0%,#7a4a14 40%,transparent 75%),linear-gradient(180deg,#0b1a3a 0%,#08142c 55%,#2a1a08 100%);
+ --frame:linear-gradient(180deg,#ffe9a0,#c9922a 30%,#6a4410 60%,#e8c060 100%);--boardbg:#0a1530;--reelbg:linear-gradient(180deg,#14306a,#0a1838);
+ --fsbar:linear-gradient(90deg,#1d3d7a,#c9922a);--btn:linear-gradient(180deg,#ffe28a,#c4831c);--btntext:#3a2400;
+ --spinbg:radial-gradient(circle at 50% 30%,#fff8 0 8%,transparent 30%),linear-gradient(180deg,#2a5ab0,#0a1f5a);
+ --buybg:linear-gradient(90deg,#1d4aa0,#c4831c);--cardbg:linear-gradient(180deg,#14306a,#0a1530 60%,#3a2408)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:40vh;pointer-events:none;background:radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px),radial-gradient(circle at 70% 60%,#fff9 0 1px,transparent 2px),radial-gradient(circle at 45% 15%,#fffa 0 1.5px,transparent 2.5px);background-size:120px 90px,170px 110px,210px 140px;opacity:.7}
+.jps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.jp{border-radius:10px;padding:4px 2px;text-align:center;box-shadow:0 3px 8px #0008,inset 0 1px 0 #fff5;position:relative;overflow:hidden}
+.jp small{display:block;font-family:Cinzel;font-weight:900;font-size:9px;letter-spacing:1.5px}
+.jp b{font-size:14px}
+.jp.j0{background:linear-gradient(180deg,#7fd3ff,#2a6ab0)}.jp.j1{background:linear-gradient(180deg,#8affc0,#1f8a55)}
+.jp.j2{background:linear-gradient(180deg,#ff9aa8,#a3122a)}.jp.j3{background:linear-gradient(180deg,#fff2a8,#c4831c);color:#3a2200}
+.jp::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,#fff6 50%,transparent 65%);transform:translateX(-120%);animation:sh 4s infinite}
+.jp.j1::after{animation-delay:1s}.jp.j2::after{animation-delay:2s}.jp.j3::after{animation-delay:3s}
+@keyframes sh{40%,100%{transform:translateX(120%)}}
+.jp.hit{animation:jh .5s 6}@keyframes jh{50%{filter:brightness(1.8);transform:scale(1.08)}}
+.sym.s9 .val{bottom:auto;top:50%;transform:translate(-50%,-50%);background:none;font-size:calc(var(--cw)*.24);color:#3a2200;text-shadow:0 1px 0 #fff8}
+.sym.s9 .val.jp{font-size:calc(var(--cw)*.16);color:#fff;text-shadow:0 0 4px #000,0 1px 0 #000}
+.sym.empty{background:radial-gradient(circle,#ffffff08,transparent 70%)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff7d0"/><stop offset=".45" stop-color="#ffd76a"/><stop offset="1" stop-color="#8a5a10"/></linearGradient>
+  <linearGradient id="pl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0ff"/><stop offset=".5" stop-color="#2a6ad8"/><stop offset="1" stop-color="#0a1f6a"/></linearGradient>
+  <linearGradient id="pt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8fff0"/><stop offset=".5" stop-color="#1fb89a"/><stop offset="1" stop-color="#0a4a3a"/></linearGradient>
+  <linearGradient id="pr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".5" stop-color="#d8402a"/><stop offset="1" stop-color="#5a0a05"/></linearGradient>
+  <linearGradient id="pv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d8ff"/><stop offset=".5" stop-color="#9a4ae0"/><stop offset="1" stop-color="#3a0a6a"/></linearGradient>
+  <radialGradient id="pc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fffbe0"/><stop offset=".5" stop-color="#ffcf3a"/><stop offset="1" stop-color="#a8640a"/></radialGradient>
+  <radialGradient id="pglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe8a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffe8a0" stop-opacity="0"/></radialGradient>
+ </defs>
+ <symbol id="p0" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#pt)" stroke="#022a22" stroke-width="3" paint-order="stroke">J</text></symbol>
+ <symbol id="p1" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="62" fill="url(#pl)" stroke="#020a2a" stroke-width="3" paint-order="stroke">Q</text></symbol>
+ <symbol id="p2" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="62" fill="url(#pr)" stroke="#2a0402" stroke-width="3" paint-order="stroke">K</text></symbol>
+ <symbol id="p3" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#pv)" stroke="#1a0230" stroke-width="3" paint-order="stroke">A</text></symbol>
+ <symbol id="p4" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="url(#pglow)" opacity=".5"/>
+  <path d="M50 6C36 6 30 18 30 28C30 38 38 46 44 50H22V60H44V94H56V60H78V50H56C62 46 70 38 70 28C70 18 64 6 50 6ZM50 16C57 16 60 22 60 28C60 36 55 42 50 46C45 42 40 36 40 28C40 22 43 16 50 16Z" fill="url(#pg)" stroke="#5a3a00" stroke-width="2"/></symbol>
+ <symbol id="p5" viewBox="0 0 100 100">
+  <path d="M8 46C22 26 78 26 92 46C78 62 22 62 8 46Z" fill="#fff8e8" stroke="#0a1f6a" stroke-width="5"/>
+  <circle cx="50" cy="45" r="13" fill="url(#pl)" stroke="#020a2a" stroke-width="3"/><circle cx="46" cy="41" r="4" fill="#fff"/>
+  <path d="M6 30C30 16 70 16 94 26" stroke="#0a1f6a" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M40 58L36 86M36 86C30 90 22 88 22 80" stroke="#0a1f6a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M60 58C66 70 78 76 90 72" stroke="#0a1f6a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M8 46C22 26 78 26 92 46" stroke="url(#pg)" stroke-width="2" fill="none"/></symbol>
+ <symbol id="p6" viewBox="0 0 100 100">
+  <path d="M30 40C14 34 4 42 2 56C12 50 22 50 30 52Z" fill="url(#pt)" stroke="#022a22" stroke-width="2"/>
+  <path d="M70 40C86 34 96 42 98 56C88 50 78 50 70 52Z" fill="url(#pt)" stroke="#022a22" stroke-width="2"/>
+  <ellipse cx="50" cy="58" rx="22" ry="30" fill="url(#pt)" stroke="#022a22" stroke-width="2.5"/>
+  <path d="M50 30V88M30 50H70" stroke="#022a22" stroke-width="2"/>
+  <circle cx="50" cy="22" r="11" fill="url(#pc)" stroke="#6a4400" stroke-width="2"/>
+  <path d="M28 70L16 84M72 70L84 84M30 58L14 62M70 58L86 62" stroke="#022a22" stroke-width="3" stroke-linecap="round"/></symbol>
+ <symbol id="p7" viewBox="0 0 100 100">
+  <path d="M34 26L30 6L42 18C46 17 54 17 58 18L70 6L66 26C72 32 72 42 66 48C70 56 74 68 74 80C74 90 70 94 62 94H38C30 94 26 90 26 80C26 68 30 56 34 48C28 42 28 32 34 26Z" fill="#1a1a2a" stroke="url(#pg)" stroke-width="3"/>
+  <path d="M38 34L46 36L40 38ZM62 34L54 36L60 38Z" fill="#7affc0"/>
+  <path d="M38 52C44 56 56 56 62 52" stroke="url(#pg)" stroke-width="4" fill="none"/>
+  <circle cx="50" cy="58" r="4" fill="url(#pc)"/>
+  <path d="M72 84C86 82 92 70 86 60" stroke="#1a1a2a" stroke-width="6" fill="none" stroke-linecap="round"/></symbol>
+ <symbol id="p8" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="url(#pglow)"/>
+  <path d="M20 40C20 14 80 14 80 40L88 92H12Z" fill="url(#pl)" stroke="#020a2a" stroke-width="2.5"/>
+  <path d="M24 46L14 88M76 46L86 88M30 42L22 88M70 42L78 88" stroke="url(#pg)" stroke-width="4"/>
+  <path d="M32 34C32 20 68 20 68 34V64C68 76 60 84 50 84C40 84 32 76 32 64Z" fill="url(#pc)" stroke="#6a4400" stroke-width="2"/>
+  <path d="M38 44H46M54 44H62" stroke="#0a1f6a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M44 66H56" stroke="#8a4a00" stroke-width="3"/>
+  <path d="M46 84H54V96H46Z" fill="url(#pl)"/>
+  <path d="M44 22C46 14 54 14 56 22" fill="url(#pg)"/>
+  <text x="50" y="99" text-anchor="middle" font-family="Cinzel" font-weight="900" font-size="15" fill="#fff" stroke="#020a2a" stroke-width="3" paint-order="stroke">WILD</text></symbol>
+ <symbol id="p9" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="url(#pglow)"/>
+  <circle cx="50" cy="50" r="40" fill="url(#pc)" stroke="#8a5400" stroke-width="3"/>
+  <circle cx="50" cy="50" r="31" fill="none" stroke="#fff6c0" stroke-width="2" opacity=".8"/>
+  <path d="M50 14L54 22L50 20L46 22ZM86 50L78 54L80 50L78 46ZM14 50L22 46L20 50L22 54ZM50 86L46 78L50 80L54 78Z" fill="#a8640a"/></symbol>
+</svg>
+
+<script>
+// Sdílená matematika automatů: výplaty „ways“ s wildy a násobky
+const SlotMath = (() => {
+  function pickW(arr, w, rnd) { let t = 0; for (const x of w) t += x; let x = rnd() * t; for (let i = 0; i < arr.length; i++) if ((x -= w[i]) < 0) return arr[i]; return arr[arr.length - 1]; }
+  // g[reel][row] = {s, m?}; syms = [{id, pay:[3,4,5]}]; wild = id wildu
+  // Násobky wildů v jedné cestě se NÁSOBÍ (součet přes cesty = součin součtů po válcích)
+  function ways(g, syms, wild, scale = 1) {
+    const out = [];
+    for (const s of syms) {
+      let factor = 1, count = 1, len = 0, real = false; const cells = [];
+      for (let r = 0; r < g.length; r++) {
+        let f = 0, c = 0;
+        for (let y = 0; y < g[r].length; y++) {
+          const x = g[r][y];
+          if (x.s === s.id) { f += 1; c++; real = true; cells.push([r, y]); }
+          else if (x.s === wild) { f += x.m || 1; c++; cells.push([r, y]); }
+        }
+        if (!f) break;
+        factor *= f; count *= c; len++;
+      }
+      if (len >= 3 && real) {
+        const win = s.pay[Math.min(len, 5) - 3] * factor * scale;
+        out.push({ s: s.id, len, ways: count, mult: Math.round(factor / count * 100) / 100, win, cells: cells.filter(([r]) => r < len) });
+      }
+    }
+    return { wins: out, total: out.reduce((a, w) => a + w.win, 0) };
+  }
+  const count = (g, s) => { let n = 0; for (const col of g) for (const x of col) if (x.s === s) n++; return n; };
+  return { pickW, ways, count };
+})();
+if (typeof module !== 'undefined') module.exports = SlotMath;
+
+// Poklad faraona – 5×3, 243 cest, Hold & Win s mincemi a 4 jackpoty
+const Game = (() => {
+  const SM = typeof SlotMath !== 'undefined' ? SlotMath : require('./slotmath.js');
+  const REELS = 5, ROWS = 3;
+  const SYMS = [
+    { id: 0, name: 'J', w: 14, pay: [0.10, 0.25, 0.50] },
+    { id: 1, name: 'Q', w: 13, pay: [0.10, 0.25, 0.60] },
+    { id: 2, name: 'K', w: 12, pay: [0.15, 0.30, 0.75] },
+    { id: 3, name: 'A', w: 11, pay: [0.20, 0.40, 1.00] },
+    { id: 4, name: 'Ankh', w: 8, pay: [0.30, 0.75, 1.50] },
+    { id: 5, name: 'Horovo oko', w: 7, pay: [0.40, 1.00, 2.00] },
+    { id: 6, name: 'Skarab', w: 6, pay: [0.50, 1.25, 2.50] },
+    { id: 7, name: 'Kočka Bastet', w: 5, pay: [0.75, 2.00, 4.00] },
+  ];
+  const WILD = 8, COIN = 9;
+  const COIN_V = [1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 50, 'MINI', 'MINOR', 'MAJOR'];
+  const COIN_W = [22, 20, 15, 12, 10, 7, 5, 3.5, 2.2, 1.5, 0.6, 1.2, 0.35, 0.08];
+  const JPV = { MINI: 20, MINOR: 50, MAJOR: 200, GRAND: 1000 };
+  const CFG = { wildP: 0.05, coinP: 0.122, respinP: 0.062, payScale: 2.15, buyX: 55 };
+  const TRIG = 6;
+
+  function coin(rnd) { return { s: COIN, v: SM.pickW(COIN_V, COIN_W, rnd) }; }
+  function cell(r, rnd) {
+    const x = rnd();
+    if (x < CFG.coinP) return coin(rnd);
+    if (r >= 1 && r <= 3 && x < CFG.coinP + CFG.wildP) return { s: WILD };
+    return { s: SM.pickW(SYMS.map(s => s.id), SYMS.map(s => s.w), rnd) };
+  }
+  const filler = rnd => cell(Math.floor(rnd() * 5), rnd);
+  function grid(rnd) { return Array.from({ length: REELS }, (_, r) => Array.from({ length: ROWS }, () => cell(r, rnd))); }
+  const coinValue = v => typeof v === 'number' ? v : JPV[v];
+
+  // základní spin
+  function base(rnd) {
+    const g = grid(rnd), ev = SM.ways(g, SYMS, WILD, CFG.payScale);
+    const coins = SM.count(g, COIN);
+    return { g, wins: ev.wins, total: ev.total, trigger: coins >= TRIG };
+  }
+  // Hold & Win: vrací seznam kroků (pro animaci) a celkovou výhru
+  function holdAndWin(startGrid, rnd) {
+    const locked = startGrid.map(col => col.map(x => x.s === COIN ? x : null));
+    const steps = []; let respins = 3;
+    const filled = () => locked.flat().filter(Boolean).length;
+    while (respins > 0 && filled() < REELS * ROWS) {
+      const news = [];
+      for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++)
+        if (!locked[r][y] && rnd() < CFG.respinP) { locked[r][y] = coin(rnd); news.push([r, y, locked[r][y]]); }
+      respins = news.length ? 3 : respins - 1;
+      steps.push({ news, respins });
+    }
+    let total = 0; for (const col of locked) for (const x of col) if (x) total += coinValue(x.v);
+    const grand = filled() === REELS * ROWS;
+    if (grand) total += JPV.GRAND;
+    return { steps, locked, total, grand };
+  }
+  function buyGrid(rnd) { // koupený bonus: 6 mincí na náhodných místech
+    const g = grid(rnd).map(col => col.map(x => x.s === COIN ? { s: 0 } : x));
+    const pos = []; for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++) pos.push([r, y]);
+    for (let i = pos.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pos[i], pos[j]] = [pos[j], pos[i]]; }
+    pos.slice(0, TRIG).forEach(([r, y]) => g[r][y] = coin(rnd));
+    return g;
+  }
+  return { REELS, ROWS, SYMS, WILD, COIN, JPV, CFG, TRIG, filler, base, holdAndWin, buyGrid, coinValue };
+})();
+if (typeof module !== 'undefined') module.exports = Game;
+
+// SlotKit – sdílené UI pro automaty Lucky 7 Casina (válce, ovládání, peněženka, okna, zvuky)
+const Kit = (() => {
+  const css = `
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg0)}html,body{margin:0}
+body{font-family:'Fredoka',system-ui,sans-serif;color:#fff;min-height:100vh;overflow-x:hidden;background:var(--bgimg) fixed}
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:8px 8px 18px;display:flex;flex-direction:column;gap:8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.icon{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--acc2);background:#0005;color:#fff;font-size:16px;display:grid;place-items:center;cursor:pointer;text-decoration:none;font-family:inherit}
+.title{text-align:center;line-height:1}
+.title .t{font-family:var(--tfont);font-weight:900;font-size:24px;letter-spacing:1px;background:var(--tgrad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #0008) drop-shadow(0 0 10px var(--glow))}
+.title small{display:block;font-size:9px;letter-spacing:4px;opacity:.75;margin-top:3px}
+.fsbar{display:none;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:12px;font-weight:600;font-size:13px;background:var(--fsbar);color:#fff;text-shadow:0 1px 2px #0008;box-shadow:0 0 16px var(--glow)}
+.fsbar.on{display:flex}.fsbar b{font-size:20px}
+.frame{position:relative;padding:7px;border-radius:18px;background:var(--frame);box-shadow:0 0 0 2px #0008,0 0 24px var(--glow),0 10px 24px #000a}
+.board{position:relative;display:grid;gap:3px;border-radius:12px;overflow:hidden;background:var(--boardbg)}
+.reel{position:relative;overflow:hidden;background:var(--reelbg);border-radius:6px}
+.strip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.strip.blur .sym svg{filter:blur(1.3px)}
+.sym{height:var(--ch);display:grid;place-items:center;position:relative}
+.sym svg{width:84%;height:88%;overflow:visible;filter:drop-shadow(0 2px 2px #000a)}
+.sym .val{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);font-weight:700;font-size:calc(var(--cw)*.2);color:#fff;white-space:nowrap;
+ text-shadow:0 0 3px #000,0 1px 0 #000,0 0 8px #000;padding:0 4px;border-radius:6px;background:#0007;line-height:1.25}
+.sym .val.jp{color:var(--jpc,#ffe28a);font-family:var(--tfont)}
+.sym.empty svg{opacity:0}
+.sym.win svg{animation:kwin .7s ease-in-out infinite}
+.sym.win::before{content:"";position:absolute;inset:3px;border-radius:10px;background:radial-gradient(circle,var(--winglow),transparent 70%);box-shadow:inset 0 0 0 2px var(--acc)}
+@keyframes kwin{50%{transform:scale(1.13)}}
+.board.dim .sym:not(.win){opacity:.33;transition:opacity .3s}
+.sym.pulse svg{animation:kpulse 1.4s ease-in-out infinite}
+@keyframes kpulse{50%{transform:scale(1.1)}}
+.sym.flick svg{animation:kflick .12s linear infinite}
+@keyframes kflick{50%{opacity:.3;transform:translateY(-6px)}}
+.sym.landed svg{animation:kland .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes kland{from{transform:scale(.3);opacity:0}}
+.reel.antic{box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 20px var(--glow)}
+.ovl{position:absolute;left:0;right:0;height:var(--ch);z-index:3;display:grid;place-items:center;pointer-events:none}
+.winpop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;text-align:center;font-family:var(--tfont);font-weight:900;color:#fff6d0;
+ text-shadow:0 0 6px #000,0 0 18px var(--glow),0 3px 0 #000;font-size:34px;opacity:0;white-space:nowrap}
+.winpop.on{animation:kpop 1.8s ease-out forwards}
+.winpop small{display:block;font-family:'Fredoka';font-size:13px;font-weight:600;letter-spacing:1px}
+@keyframes kpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+.msgline{min-height:18px;text-align:center;font-size:12px;opacity:.9}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat{background:#0007;border:1px solid var(--acc2);border-radius:12px;padding:4px 8px;text-align:center}
+.stat small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.75}
+.stat b{font-size:19px}.stat.w b{color:var(--acc);text-shadow:0 0 8px var(--glow)}
+.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.betbox{display:flex;align-items:center;justify-content:space-between;gap:4px;background:#0007;border:1px solid var(--acc2);border-radius:999px;padding:3px}
+.betbox button{width:32px;height:32px;border-radius:50%;border:0;font-size:20px;font-weight:700;cursor:pointer;color:var(--btntext);background:var(--btn);font-family:inherit;line-height:1}
+.betbox button:disabled{opacity:.4}
+.betbox .bv{text-align:center;font-weight:700;font-size:15px;line-height:1.05}.betbox .bv small{display:block;font-size:9px;letter-spacing:1px;opacity:.7;font-weight:400}
+.spin{width:86px;height:86px;border-radius:50%;cursor:pointer;border:0;padding:0;font-family:var(--tfont);font-weight:900;font-size:15px;color:#fff;letter-spacing:1px;background:var(--spinbg);
+ box-shadow:0 0 0 3px var(--acc),0 0 0 5px #0008,0 0 22px var(--glow),0 6px 12px #000a;text-shadow:0 1px 3px #000}
+.spin:active{transform:scale(.95)}.spin:disabled{filter:grayscale(.5) brightness(.8)}
+.spin .ic{display:block;font-size:26px;line-height:1;font-family:'Fredoka'}
+.side{display:flex;gap:6px;justify-content:center}
+.pill{border:1.5px solid var(--acc2);border-radius:12px;padding:8px 9px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:#fff;background:#0007}
+.pill.on{background:var(--btn);color:var(--btntext)}
+.buy{border:0;border-radius:12px;padding:9px;font-family:var(--tfont);font-weight:800;font-size:14px;cursor:pointer;color:#fff;letter-spacing:1px;background:var(--buybg);box-shadow:0 3px 0 #0008,0 0 14px var(--glow);text-shadow:0 1px 2px #000}
+.buy:disabled{filter:grayscale(.7);opacity:.6}.buy small{font-family:'Fredoka';font-weight:600;opacity:.85}
+.foot{text-align:center;font-size:10px;opacity:.6}
+.ov{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:#000c;backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.card{max-width:420px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:20px 18px;text-align:center;color:#fff;background:var(--cardbg);border:1px solid var(--acc2);box-shadow:0 0 40px var(--glow);animation:kcin .4s cubic-bezier(.2,1.5,.4,1)}
+@keyframes kcin{from{transform:scale(.6);opacity:0}}
+.card h2{margin:0 0 6px;font-family:var(--tfont);font-size:26px;color:var(--acc);text-shadow:0 0 12px var(--glow)}
+.card .big{font-family:var(--tfont);font-weight:900;font-size:44px;color:#fff6d0;text-shadow:0 0 16px var(--glow);margin:4px 0}
+.card p{margin:6px 0;font-size:14px;line-height:1.45}
+.card .go{margin-top:10px;border:0;border-radius:999px;padding:11px 26px;font-family:var(--tfont);font-weight:800;font-size:16px;cursor:pointer;color:var(--btntext);background:var(--btn);box-shadow:0 3px 0 #0008}
+.card .ghost{background:#ffffff22;color:#fff;margin-left:6px}
+.pt{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}.pt td,.pt th{padding:3px;border-bottom:1px solid #ffffff1a}.pt th{font-size:10px;color:var(--acc)}
+.pt svg{width:34px;height:30px;vertical-align:middle}
+.rules{text-align:left;font-size:13px;line-height:1.45;padding-left:18px}.rules li{margin:3px 0}
+.confetti{position:fixed;top:-20px;z-index:60;pointer-events:none;font-size:20px;animation:kfall linear forwards}
+@keyframes kfall{to{transform:translateY(110vh) rotate(540deg)}}
+.fly{position:fixed;z-index:30;pointer-events:none;font-weight:700;font-size:16px;color:#fff;text-shadow:0 0 4px #000,0 0 10px var(--glow);transition:transform .6s cubic-bezier(.5,0,.3,1),opacity .6s}
+`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  const $ = id => document.getElementById(id);
+  const fmt = x => Math.round(x).toLocaleString('cs-CZ');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const WKEY = 'lucky7_wallet';
+  const K = { fmt, sleep, busy: false, auto: false, turbo: false, sound: true, bonus: false, bonusBet: 10 };
+  let bal = 1000; try { const s = localStorage.getItem(WKEY); if (s !== null && isFinite(+s)) bal = +s; } catch (e) {}
+  let O, betI = 0, grid, reels = [], strips = [];
+  const save = () => { try { localStorage.setItem(WKEY, String(Math.round(bal))); localStorage.setItem(O.key + '_bet', String(betI)); } catch (e) {} };
+  K.bet = () => K.bonus ? K.bonusBet : O.bets[betI];
+  K.wait = ms => sleep(K.turbo ? ms * .45 : ms);
+  K.addBal = x => { bal += x; save(); K.update(); };
+  K.getBal = () => bal;
+
+  // zvuk
+  let actx = null;
+  K.tone = (f, d = .1, type = 'sine', v = .08, delay = 0, f2) => {
+    if (!K.sound) return;
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + .02); } catch (e) {}
+  };
+  K.sfx = {
+    stop: i => K.tone(140 + i * 25, .09, 'triangle', .09),
+    win: () => [523, 659, 784].forEach((f, i) => K.tone(f, .25, 'sine', .08, i * .08)),
+    big: () => [392, 523, 659, 784, 1046].forEach((f, i) => K.tone(f, .4, 'triangle', .1, i * .1)),
+    tick: () => K.tone(1200, .03, 'square', .03),
+    ding: (i = 0) => K.tone(700 + i * 90, .25, 'sine', .09),
+    whoosh: () => K.tone(200, .5, 'sawtooth', .05, 0, 900),
+    jp: () => [784, 988, 1175, 1568, 1175, 1568, 2093].forEach((f, i) => K.tone(f, .3, 'triangle', .1, i * .12)),
+  };
+
+  // ---------- sestavení stránky ----------
+  K.create = opts => {
+    O = Object.assign({ bets: [10, 20, 30, 50, 100, 200, 500], cellRatio: .84, buyX: 0 }, opts);
+    try { const b = +localStorage.getItem(O.key + '_bet'); if (b >= 0 && b < O.bets.length) betI = b | 0; } catch (e) {}
+    document.body.insertAdjacentHTML('beforeend', `
+<div class="app">
+  <header><a class="icon" href="index.html" title="Lobby">🏠</a>
+    <div class="title"><div class="t">${O.title}</div><small>${O.subtitle}</small></div>
+    <div style="display:flex;gap:5px"><button class="icon" id="kSound">🔊</button><button class="icon" id="kInfo">ℹ️</button></div></header>
+  <div id="kTop"></div>
+  <div class="fsbar" id="kFs"><div id="kFsL">FREE SPINY <b>0</b></div><div id="kFsR" style="text-align:right">VÝHRA BONUSU <b>0</b></div></div>
+  <div class="frame"><div class="board" id="kBoard" style="grid-template-columns:repeat(${O.reels},1fr)"></div><div class="winpop" id="kPop"></div></div>
+  <div class="msgline" id="kMsg">${O.hint || ''}</div>
+  <div class="stats"><div class="stat"><small>KREDIT</small><b id="kBal">0</b></div><div class="stat w"><small>VÝHRA</small><b id="kWin">0</b></div></div>
+  <div class="controls">
+    <div class="betbox"><button id="kBm">−</button><div class="bv"><small>SÁZKA</small><span id="kBet">10</span></div><button id="kBp">+</button></div>
+    <button class="spin" id="kSpin"><span class="ic">⟳</span>TOČIT</button>
+    <div class="side"><button class="pill" id="kAuto">AUTO</button><button class="pill" id="kTurbo">⚡</button></div>
+  </div>
+  ${O.buyX ? `<button class="buy" id="kBuy">${O.buyLabel || 'KOUPIT BONUS'} <small id="kBuyC"></small></button>` : ''}
+  <div class="foot">Lucky 7 Casino • jen pro zábavu, fiktivní kredity</div>
+</div>
+<div class="ov" id="kOv"><div class="card" id="kCard"></div></div>`);
+    const board = $('kBoard');
+    for (let r = 0; r < O.reels; r++) {
+      const el = document.createElement('div'); el.className = 'reel';
+      const s = document.createElement('div'); s.className = 'strip'; el.appendChild(s); board.appendChild(el); reels.push(el); strips.push(s);
+    }
+    const size = () => { const w = board.clientWidth / O.reels; document.documentElement.style.setProperty('--cw', w + 'px'); document.documentElement.style.setProperty('--ch', Math.round(w * O.cellRatio) + 'px'); reels.forEach(r => r.style.height = `calc(var(--ch) * ${O.rows})`); };
+    size(); addEventListener('resize', () => { size(); K.render(grid); });
+    grid = Array.from({ length: O.reels }, () => Array.from({ length: O.rows }, () => O.filler(Math.random)));
+    K.render(grid);
+    $('kSpin').onclick = () => { if (K.auto) { K.stopAuto(); return; } K.spin(); };
+    $('kAuto').onclick = () => { K.auto = !K.auto; $('kAuto').classList.toggle('on', K.auto); if (K.auto && !K.busy) K.spin(); K.update(); };
+    $('kTurbo').onclick = () => { K.turbo = !K.turbo; $('kTurbo').classList.toggle('on', K.turbo); };
+    $('kSound').onclick = () => { K.sound = !K.sound; $('kSound').textContent = K.sound ? '🔊' : '🔇'; };
+    $('kInfo').onclick = () => { $('kCard').innerHTML = O.info() + '<button class="go" id="kGo">ROZUMÍM</button>'; $('kOv').classList.add('on'); $('kGo').onclick = () => $('kOv').classList.remove('on'); };
+    $('kBm').onclick = () => { if (betI > 0) betI--; save(); K.update(); };
+    $('kBp').onclick = () => { if (betI < O.bets.length - 1) betI++; save(); K.update(); };
+    if (O.buyX) $('kBuy').onclick = K.buy;
+    document.addEventListener('keydown', e => { if (e.code === 'Space' && !$('kOv').classList.contains('on')) { e.preventDefault(); $('kSpin').click(); } });
+    K.update();
+  };
+
+  K.update = () => {
+    $('kBal').textContent = fmt(bal); $('kBet').textContent = fmt(K.bet());
+    $('kSpin').disabled = K.busy && !K.auto;
+    $('kBm').disabled = $('kBp').disabled = K.busy || K.bonus;
+    if (O.buyX) { $('kBuy').disabled = K.busy || K.bonus || bal < O.bets[betI] * O.buyX; $('kBuyC').textContent = '(' + fmt(O.bets[betI] * O.buyX) + ')'; }
+    O.onUpdate && O.onUpdate();
+  };
+  K.setWin = x => $('kWin').textContent = fmt(x);
+  K.msg = t => $('kMsg').innerHTML = t || ' ';
+  K.fsBar = (on, left, win, leftLabel = 'FREE SPINY', rightLabel = 'VÝHRA BONUSU') => {
+    $('kFs').classList.toggle('on', on);
+    $('kFsL').innerHTML = `${leftLabel} <b>${left}</b>`; $('kFsR').innerHTML = `${rightLabel} <b>${fmt(win)}</b>`;
+  };
+  K.top = () => $('kTop');
+
+  // ---------- válce ----------
+  K.symHTML = (c, extra = '') => {
+    const lab = O.label ? O.label(c, K.bet()) : null;
+    return `<div class="sym s${c.s}${extra}${O.pulse && O.pulse.includes(c.s) ? ' pulse' : ''}"><svg viewBox="0 0 100 100"><use href="#${O.prefix}${c.s}"/></svg>${lab ? `<span class="val${lab.cls ? ' ' + lab.cls : ''}">${lab.t}</span>` : ''}</div>`;
+  };
+  K.render = g => { grid = g; for (let r = 0; r < O.reels; r++) { strips[r].style.transition = 'none'; strips[r].style.transform = 'translateY(0)'; strips[r].innerHTML = g[r].map(c => K.symHTML(c)).join(''); } };
+  K.cell = (r, y) => strips[r].children[y];
+  K.setCell = (r, y, c, extra = '') => { grid[r][y] = c; const el = K.cell(r, y); el.outerHTML = K.symHTML(c, extra); };
+  K.reelEl = r => reels[r];
+  const cellH = () => reels[0].clientHeight / O.rows;
+  // roztočí válce a zastaví je na nové mřížce; keep[r][y] = buňky, které zůstávají (lepivé)
+  K.spinTo = async (ng, o = {}) => {
+    $('kBoard').classList.remove('dim');
+    const h = cellH(), done = []; let delay = 0, cnt = 0;
+    for (let r = 0; r < O.reels; r++) {
+      const antic = o.anticSym != null && r >= 2 && cnt >= 2;
+      const n = 12 + r * 4 + (antic ? 14 : 0);
+      const seq = [...ng[r], ...Array.from({ length: n }, () => O.filler(Math.random)), ...grid[r]];
+      const s = strips[r];
+      s.style.transition = 'none'; s.innerHTML = seq.map(c => K.symHTML(c)).join('');
+      s.style.transform = `translateY(${-(seq.length - O.rows) * h}px)`; s.classList.add('blur');
+      const dur = (K.turbo ? .45 : 1) * (600 + n * 36);
+      done.push(new Promise(res => setTimeout(() => {
+        if (antic) { reels[r].classList.add('antic'); K.tone(300, .8, 'sine', .04, 0, 900); }
+        s.style.transition = `transform ${dur}ms cubic-bezier(.25,.1,.25,1.06)`; s.style.transform = 'translateY(0)';
+        setTimeout(() => { s.classList.remove('blur'); reels[r].classList.remove('antic'); K.sfx.stop(r); s.style.transition = 'none'; s.innerHTML = ng[r].map(c => K.symHTML(c)).join(''); res(); }, dur);
+      }, delay)));
+      delay += K.turbo ? 50 : 120;
+      if (o.anticSym != null) cnt += ng[r].filter(c => c.s === o.anticSym).length;
+    }
+    await Promise.all(done); grid = ng;
+  };
+  K.highlight = cells => {
+    const set = new Set(cells.map(([r, y]) => r * 10 + y));
+    for (let r = 0; r < O.reels; r++) for (let y = 0; y < O.rows; y++) K.cell(r, y)?.classList.toggle('win', set.has(r * 10 + y));
+    $('kBoard').classList.toggle('dim', cells.length > 0);
+  };
+  K.clearHighlight = () => K.highlight([]);
+  K.overlay = (r, y, html, cls = '') => { const d = document.createElement('div'); d.className = 'ovl ' + cls; d.style.top = `calc(var(--ch) * ${y})`; d.innerHTML = html; reels[r].appendChild(d); return d; };
+  K.clearOverlays = cls => document.querySelectorAll('.ovl' + (cls ? '.' + cls : '')).forEach(e => e.remove());
+  K.fly = (fromEl, toEl, text) => new Promise(res => {
+    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    const f = document.createElement('div'); f.className = 'fly'; f.textContent = text;
+    f.style.left = (a.left + a.width / 2 - 14) + 'px'; f.style.top = (a.top + a.height / 2 - 10) + 'px'; document.body.appendChild(f);
+    requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = `translate(${b.left - a.left}px,${b.top - a.top}px) scale(1.3)`; }));
+    setTimeout(() => { f.style.opacity = 0; }, K.turbo ? 300 : 550); setTimeout(() => { f.remove(); res(); }, K.turbo ? 350 : 650);
+  });
+  K.winpop = (t, sub) => { const p = $('kPop'); p.innerHTML = t + (sub ? `<small>${sub}</small>` : ''); p.classList.remove('on'); void p.offsetWidth; p.classList.add('on'); };
+  // standardní prezentace výher „ways“
+  K.showWays = async (wins, total, names) => {
+    if (!wins.length) return;
+    K.highlight(wins.flatMap(w => w.cells));
+    const best = wins.slice().sort((a, b) => b.win - a.win).slice(0, 3);
+    K.msg(best.map(w => `${names[w.s]} ×${w.len} • ${w.ways} cest${w.mult > 1 ? ' • ×' + (Math.round(w.mult * 10) / 10) : ''}`).join(' &nbsp;|&nbsp; '));
+    if (total > 0) {
+      const r = total / K.bet();
+      K.setWin(total); K.winpop(fmt(total), r >= 50 ? 'MEGA VÝHRA' : r >= 15 ? 'VELKÁ VÝHRA' : r >= 5 ? 'PĚKNÁ VÝHRA' : '');
+      r >= 15 ? K.sfx.big() : K.sfx.win();
+      await K.wait(r >= 15 ? 2100 : 1250);
+    }
+  };
+  K.coins = w => w > 0 ? Math.max(1, Math.floor(w * K.bet())) : 0; // výhra × sázka → celé kredity (min. 1)
+
+  K.modal = (html, btn, autoClose = 0) => new Promise(res => {
+    $('kCard').innerHTML = html + (btn ? `<div><button class="go" id="kGo">${btn}</button></div>` : '');
+    $('kOv').classList.add('on'); let d = false; const c = () => { if (d) return; d = true; $('kOv').classList.remove('on'); res(); };
+    if (btn) $('kGo').onclick = c; if (autoClose) setTimeout(c, autoClose);
+  });
+  K.confirm = html => new Promise(res => {
+    $('kCard').innerHTML = html + '<div><button class="go" id="kY">KOUPIT</button><button class="go ghost" id="kN">Zpět</button></div>';
+    $('kOv').classList.add('on'); $('kY').onclick = () => { $('kOv').classList.remove('on'); res(true); }; $('kN').onclick = () => { $('kOv').classList.remove('on'); res(false); };
+  });
+  K.confetti = (n, set) => { for (let i = 0; i < n; i++) { const s = document.createElement('div'); s.className = 'confetti'; s.textContent = set[i % set.length];
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = (2 + Math.random() * 2) + 's'; s.style.animationDelay = Math.random() * .8 + 's'; document.body.appendChild(s); setTimeout(() => s.remove(), 5000); } };
+  K.stopAuto = () => { K.auto = false; $('kAuto').classList.remove('on'); K.update(); };
+
+  // ---------- hlavní smyčka ----------
+  K.spin = async () => {
+    if (K.busy) return;
+    const b = O.bets[betI];
+    if (bal < b) { K.stopAuto(); return K.modal('<h2>Došel kredit</h2><p>Doplnit kredit můžeš v lobby kasina, když klesne pod 10.</p>', 'OK'); }
+    K.busy = true; bal -= b; save(); K.update(); K.setWin(0); K.msg('');
+    const w = await O.round(b);
+    bal += w; save(); K.busy = false; K.update();
+    if (K.auto) { await K.wait(300); if (K.auto) K.spin(); }
+  };
+  K.buy = async () => {
+    const b = O.bets[betI], cost = b * O.buyX;
+    if (K.busy || K.bonus || bal < cost) return;
+    if (!(await K.confirm(`<h2>Koupit bonus?</h2><p>${O.buyText}</p><div class="big">${fmt(cost)}</div>`))) return;
+    K.busy = true; bal -= cost; save(); K.update();
+    const w = await O.buy(b);
+    bal += w; save(); K.busy = false; K.update();
+  };
+  // pomocník pro free spiny: přičítá výhry průběžně do kreditu
+  K.credit = x => { bal += x; save(); K.update(); };
+  return K;
+})();
+
+
+const names = ['J', 'Q', 'K', 'A', 'Ankh', 'Horovo oko', 'Skarab', 'Bastet'];
+const JPN = ['MINI', 'MINOR', 'MAJOR', 'GRAND'];
+Kit.create({
+  key: 'pharaoh', prefix: 'p', reels: Game.REELS, rows: Game.ROWS, cellRatio: .9,
+  title: 'POKLAD FARAONA', subtitle: '243 CEST • HOLD & WIN', hint: '6 a více zlatých mincí spustí Poklad faraona',
+  filler: Game.filler, pulse: [Game.COIN], buyX: Game.CFG.buyX, buyLabel: '🪙 KOUPIT POKLAD', buyText: 'Hold &amp; Win se 6 zlatými mincemi.',
+  label: (c, b) => c.s === Game.COIN ? (typeof c.v === 'number' ? { t: Kit.fmt(c.v * b) } : { t: c.v, cls: 'jp' }) : null,
+  onUpdate: () => JPN.forEach((n, i) => { const el = document.getElementById('jp' + i); if (el) el.querySelector('b').textContent = Kit.fmt(Game.JPV[n] * Kit.bet()); }),
+  info: () => {
+    const b = Kit.bet(), f = x => Kit.fmt(Math.max(1, x * Game.CFG.payScale * b));
+    let rows = ''; for (let i = Game.SYMS.length - 1; i >= 0; i--) rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#p${i}"/></svg></td>${Game.SYMS[i].pay.map(p => `<td>${(Math.round(p * Game.CFG.payScale * 100) / 100).toLocaleString('cs-CZ')}×</td>`).join('')}</tr>`;
+    return `<h2>Pravidla</h2><ul class="rules">
+      <li><b>5 válců × 3 řady = 243 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p8"/></svg> <b>Faraon</b> (WILD, válce 2–4) nahrazuje všechny symboly.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p9"/></svg> <b>Poklad faraona:</b> 6+ zlatých mincí spustí Hold &amp; Win. Mince zůstanou na místě, máš 3 respiny a každá nová mince je vrátí na 3.</li>
+      <li>Mince mají hodnotu 1× až 50× sázka nebo jackpot MINI (20×), MINOR (50×), MAJOR (200×). <b>Zaplníš-li všech 15 polí, vyhráváš GRAND (1000×)!</b></li>
+      <li>Koupě pokladu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
+      <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu.</p>`;
+  },
+  round: async b => {
+    const r = Game.base(Math.random);
+    await Kit.spinTo(r.g, { anticSym: Game.COIN });
+    let total = Kit.coins(r.total);
+    await Kit.showWays(r.wins, total, names);
+    if (r.trigger) total += await holdWin(r.g, b);
+    return total;
+  },
+  buy: async b => { const g = Game.buyGrid(Math.random); await Kit.spinTo(g, {}); return holdWin(g, b); },
+});
+Kit.top().innerHTML = `<div class="jps">${JPN.map((n, i) => `<div class="jp j${i}" id="jp${i}"><small>${n}</small><b>0</b></div>`).join('')}</div>`;
+Kit.update();
+
+async function holdWin(g, b) {
+  Kit.clearHighlight();
+  document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
+  Kit.sfx.jp(); await Kit.wait(1200);
+  await Kit.modal(`<h2>Poklad faraona</h2><div class="big">HOLD &amp; WIN</div><p>Zlaté mince zůstávají na místě. Máš <b>3 respiny</b> – každá nová mince je vrátí na 3.</p><p>Zaplň všech 15 polí a vyhraj <b>GRAND</b>!</p>`, 'START', Kit.auto ? 2200 : 0);
+  Kit.bonus = true; Kit.bonusBet = b;
+  const h = Game.holdAndWin(g, Math.random);
+  const val = c => Game.coinValue(c.v) * b;
+  let sum = 0;
+  const grid = g.map(col => col.map(c => c.s === Game.COIN ? c : { s: -1 }));
+  Kit.render(grid);
+  for (const col of grid) for (const c of col) if (c.s === Game.COIN) sum += val(c);
+  Kit.clearHighlight(); document.querySelectorAll('.sym.s-1').forEach(e => e.classList.add('empty'));
+  Kit.fsBar(true, 3, sum, 'RESPINY', 'SOUČET MINCÍ');
+  for (const step of h.steps) {
+    const empties = [];
+    grid.forEach((col, r) => col.forEach((c, y) => { if (c.s === -1) empties.push([r, y]); }));
+    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('empty'); el.classList.add('flick'); el.querySelector('use').setAttribute('href', '#p9'); });
+    await Kit.wait(650);
+    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('flick'); el.classList.add('empty'); el.querySelector('use').setAttribute('href', '#p-1'); });
+    for (const [r, y, c] of step.news) { grid[r][y] = c; Kit.setCell(r, y, c, ' landed'); sum += val(c); Kit.sfx.ding(); await Kit.wait(220); }
+    Kit.fsBar(true, step.respins, sum, 'RESPINY', 'SOUČET MINCÍ');
+    await Kit.wait(step.news.length ? 500 : 350);
+  }
+  // výplata
+  let total = 0;
+  for (let r = 0; r < Game.REELS; r++) for (let y = 0; y < Game.ROWS; y++) {
+    const c = grid[r][y]; if (c.s !== Game.COIN) continue;
+    const v = val(c); total += v; Kit.cell(r, y).classList.add('win'); Kit.setWin(total); Kit.sfx.ding(y + r);
+    if (typeof c.v === 'string') { const i = JPN.indexOf(c.v); document.getElementById('jp' + i).classList.add('hit'); Kit.sfx.jp(); await Kit.wait(900); }
+    await Kit.wait(160);
+  }
+  if (h.grand) { total += Game.JPV.GRAND * b; document.getElementById('jp3').classList.add('hit'); Kit.sfx.jp(); Kit.confetti(80, ['🪙', '👑', '✨', '💎']); await Kit.modal(`<h2>GRAND JACKPOT</h2><div class="big">${Kit.fmt(Game.JPV.GRAND * b)}</div><p>Zaplnil jsi všech 15 polí!</p>`, 'SUPER', Kit.auto ? 3000 : 0); }
+  Kit.setWin(total);
+  document.querySelectorAll('.jp.hit').forEach(e => setTimeout(() => e.classList.remove('hit'), 2500));
+  Kit.confetti(total >= b * 30 ? 50 : 18, ['🪙', '✨', '💰']);
+  await Kit.modal(`<h2>Poklad nalezen</h2><div class="big">${Kit.fmt(total)}</div><p>${(Math.round(total / b * 10) / 10).toLocaleString('cs-CZ')}× sázka</p>`, 'POKRAČOVAT', Kit.auto ? 2800 : 0);
+  Kit.bonus = false; Kit.fsBar(false, 0, 0);
+  Kit.render(grid.map(col => col.map(c => c.s === -1 ? Game.filler(Math.random) : c)));
+  return total;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Divoký západ – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#1a0c05;--acc:#ffc44a;--acc2:#d9884a88;--glow:#ff8a2a66;--winglow:#ffd08a66;--tfont:'Rye',serif;
+ --tgrad:linear-gradient(180deg,#fff0c0,#ffc44a 50%,#b85a10);
+ --bgimg:radial-gradient(circle at 50% 18%,#ffd36a 0,#ff8a2a 10%,transparent 26%),linear-gradient(180deg,#ff9a4a 0%,#e0603a 20%,#8a2a3a 42%,#3a1418 60%,#5a3010 78%,#2a1406 100%);
+ --frame:repeating-linear-gradient(90deg,#8a4a1a 0 14px,#7a3e14 14px 16px,#9a5a24 16px 30px);--boardbg:#2a1608;--reelbg:linear-gradient(180deg,#f4dcae,#e0bf86);
+ --fsbar:linear-gradient(90deg,#8a2a1a,#d9882a);--btn:linear-gradient(180deg,#ffd88a,#c4721c);--btntext:#3a1a00;
+ --spinbg:radial-gradient(circle at 50% 30%,#fff8 0 8%,transparent 30%),linear-gradient(180deg,#c4721c,#6a2a08);
+ --buybg:linear-gradient(90deg,#8a2a1a,#c4721c);--cardbg:linear-gradient(180deg,#5a2a10,#2a1406)}
+body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:22vh;pointer-events:none;z-index:0;
+ background:radial-gradient(ellipse 30% 100% at 15% 100%,#2a1406 0 60%,transparent 61%),radial-gradient(ellipse 40% 80% at 80% 100%,#3a1a08 0 60%,transparent 61%)}
+.frame{box-shadow:0 0 0 3px #3a1a06,inset 0 0 0 2px #c4721c,0 10px 24px #000a!important}
+.reel{border:1px solid #b88a4a}
+.sym svg{filter:drop-shadow(0 2px 1px #0006)}
+.sym.s8 .val{bottom:2%;background:linear-gradient(180deg,#ffd88a,#c4721c);color:#3a1a00;text-shadow:none;font-size:calc(var(--cw)*.19);border:1px solid #3a1a00}
+.stk{animation:stk .5s cubic-bezier(.2,1.6,.4,1)}
+.stk .sym{height:var(--ch);width:100%}
+.stk::before{content:"";position:absolute;inset:3px;border-radius:10px;box-shadow:inset 0 0 0 3px #ffc44a,0 0 14px #ff8a2a;background:#ffc44a22}
+.stk .lock{position:absolute;right:4px;top:3px;font-size:12px}
+@keyframes stk{from{transform:scale(1.6);opacity:0}}
+.wanted{display:flex;align-items:center;gap:8px;justify-content:center;padding:4px 10px;border-radius:10px;background:#f4dcae;color:#3a1a00;border:2px solid #6a3a10;font-family:Rye;font-size:13px;box-shadow:0 3px 8px #0008}
+.wanted b{font-size:17px;color:#8a1a0a}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <linearGradient id="bw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d89a5a"/><stop offset="1" stop-color="#6a3410"/></linearGradient>
+  <linearGradient id="bgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#ffc44a"/><stop offset="1" stop-color="#9a5a08"/></linearGradient>
+  <linearGradient id="bst" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f8"/><stop offset=".5" stop-color="#9aa4b8"/><stop offset="1" stop-color="#3a4250"/></linearGradient>
+  <linearGradient id="brd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a6a"/><stop offset="1" stop-color="#8a1a0a"/></linearGradient>
+ </defs>
+ <symbol id="b0" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="62" fill="#2a6a8a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">J</text></symbol>
+ <symbol id="b1" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="60" fill="#3a8a3a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">Q</text></symbol>
+ <symbol id="b2" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="60" fill="#8a3a8a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">K</text></symbol>
+ <symbol id="b3" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="62" fill="#b8321a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">A</text></symbol>
+ <symbol id="b4" viewBox="0 0 100 100">
+  <path d="M28 88C14 70 14 34 34 18C42 12 58 12 66 18C86 34 86 70 72 88L60 88C70 70 70 40 58 30C54 27 46 27 42 30C30 40 30 70 40 88Z" fill="url(#bst)" stroke="#2a2a30" stroke-width="2.5"/>
+  <g fill="#2a2a30"><circle cx="24" cy="66" r="3"/><circle cx="22" cy="50" r="3"/><circle cx="27" cy="34" r="3"/><circle cx="76" cy="66" r="3"/><circle cx="78" cy="50" r="3"/><circle cx="73" cy="34" r="3"/></g></symbol>
+ <symbol id="b5" viewBox="0 0 100 100">
+  <path d="M4 66C20 76 80 76 96 66C92 58 80 58 74 60L70 30C68 20 60 18 50 24C40 18 32 20 30 30L26 60C20 58 8 58 4 66Z" fill="url(#bw)" stroke="#2a1406" stroke-width="2.5"/>
+  <path d="M27 54C40 60 60 60 73 54L72 48C60 54 40 54 28 48Z" fill="#8a1a0a"/>
+  <path d="M50 24C48 34 48 42 50 50" stroke="#4a2408" stroke-width="2" fill="none"/></symbol>
+ <symbol id="b6" viewBox="0 0 100 100">
+  <path d="M8 34H70L78 28H86V40H70L66 46H30V40H8Z" fill="url(#bst)" stroke="#1a1a20" stroke-width="2.5"/>
+  <rect x="30" y="38" width="22" height="16" rx="5" fill="#6a7080" stroke="#1a1a20" stroke-width="2"/>
+  <circle cx="36" cy="46" r="2.5" fill="#1a1a20"/><circle cx="46" cy="46" r="2.5" fill="#1a1a20"/>
+  <path d="M52 46L70 46C74 60 72 76 62 92H44C50 78 50 62 52 46Z" fill="url(#bw)" stroke="#2a1406" stroke-width="2.5"/>
+  <path d="M40 54C40 64 46 66 52 62" stroke="#1a1a20" stroke-width="3" fill="none"/>
+  <path d="M8 34V28H14" stroke="#1a1a20" stroke-width="3" fill="none"/></symbol>
+ <symbol id="b7" viewBox="0 0 100 100">
+  <path d="M38 22C30 14 34 8 42 10C46 6 54 6 58 10C66 8 70 14 62 22Z" fill="#c8a06a" stroke="#4a2a08" stroke-width="2"/>
+  <path d="M38 22H62C82 34 90 56 86 74C82 92 18 92 14 74C10 56 18 34 38 22Z" fill="#d8b47a" stroke="#4a2a08" stroke-width="2.5"/>
+  <path d="M36 24H64" stroke="#8a1a0a" stroke-width="5"/>
+  <text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="34" fill="url(#bgd)" stroke="#4a2a08" stroke-width="2" paint-order="stroke">$</text>
+  <circle cx="20" cy="88" r="7" fill="url(#bgd)" stroke="#6a3a00" stroke-width="1.5"/><circle cx="82" cy="90" r="6" fill="url(#bgd)" stroke="#6a3a00" stroke-width="1.5"/></symbol>
+ <symbol id="b8" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#ffc44a33"/>
+  <path d="M30 46C30 70 40 84 50 84C60 84 70 70 70 46Z" fill="#e8b48a" stroke="#3a1a06" stroke-width="2"/>
+  <path d="M30 56C40 50 60 50 70 56L70 72C60 80 40 80 30 72Z" fill="url(#brd)" stroke="#3a1a06" stroke-width="2"/>
+  <path d="M38 62L42 66M48 60L52 66M58 62L62 66" stroke="#fff8" stroke-width="2"/>
+  <path d="M36 46H64" stroke="#1a0a04" stroke-width="2"/><path d="M38 44L46 47L38 49ZM62 44L54 47L62 49Z" fill="#1a0a04"/>
+  <path d="M4 40C20 48 80 48 96 40C92 34 82 34 74 36L70 12C68 4 60 4 50 10C40 4 32 4 30 12L26 36C18 34 8 34 4 40Z" fill="#2a1a10" stroke="#ffc44a" stroke-width="2"/>
+  <path d="M27 30C40 34 60 34 73 30L72 25C60 29 40 29 28 25Z" fill="#ffc44a"/></symbol>
+ <symbol id="b9" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#ffc44a44"/>
+  <path d="M50 4L61 34L94 34L67 54L77 86L50 66L23 86L33 54L6 34L39 34Z" fill="url(#bgd)" stroke="#6a3a00" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="url(#bgd)" stroke="#6a3a00" stroke-width="2"><circle cx="50" cy="4" r="5"/><circle cx="94" cy="34" r="5"/><circle cx="6" cy="34" r="5"/><circle cx="77" cy="86" r="5"/><circle cx="23" cy="86" r="5"/></g>
+  <circle cx="50" cy="50" r="15" fill="#c4721c" stroke="#6a3a00" stroke-width="2"/>
+  <text x="50" y="56" text-anchor="middle" font-family="Rye,serif" font-size="15" fill="#fff2b0">FREE</text></symbol>
+</svg>
+
+<script>
+/*SLOTMATH*/
+/*ENGINE*/
+/*KIT*/
+
+const names = ['J', 'Q', 'K', 'A', 'Podkova', 'Klobouk', 'Revolver', 'Měšec'];
+Kit.create({
+  key: 'bandits', prefix: 'b', reels: Game.REELS, rows: Game.ROWS, cellRatio: .78,
+  title: 'DIVOKÝ ZÁPAD', subtitle: '1 024 CEST • LEPIVÍ BANDITÉ',
+  hint: 'Bandita je WILD s násobkem – v jedné cestě se násobky násobí!',
+  filler: Game.filler, pulse: [Game.SCATTER], buyX: Game.CFG.buyX, buyLabel: '🤠 KOUPIT FREE SPINY', buyText: '10 free spinů s lepivými bandity.',
+  label: c => c.s === Game.WILD ? { t: '×' + c.m } : null,
+  info: () => {
+    let rows = ''; for (let i = Game.SYMS.length - 1; i >= 0; i--) rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#b${i}"/></svg></td>${Game.SYMS[i].pay.map(p => `<td>${(Math.round(p * Game.CFG.payScale * 1000) / 1000).toLocaleString('cs-CZ')}×</td>`).join('')}</tr>`;
+    return `<h2>Pravidla</h2><ul class="rules">
+      <li><b>5 válců × 4 řady = 1 024 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b8"/></svg> <b>Bandita</b> (WILD, válce 2–4) má násobek ×2, ×3 nebo ×5. Prochází-li cesta více bandity, <b>násobky se navzájem násobí</b> (×3 a ×5 = ×15).</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b9"/></svg> <b>Šerifská hvězda:</b> 3 = 10 free spinů, 4 = 12, 5 = 15. Ve free spinech je každý bandita <b>lepivý</b> – zůstane na místě až do konce bonusu. 3+ hvězdy = +${Game.RETRIGGER} spinů.</li>
+      <li>Maximální výhra bonusu ${Kit.fmt(Game.MAX_WIN)}× sázka. Koupě bonusu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
+      <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu (ve free spinech jiné tabulky).</p>`;
+  },
+  round: async b => {
+    const r = Game.spin(Math.random);
+    await Kit.spinTo(r.g, { anticSym: Game.SCATTER });
+    let total = Kit.coins(r.total);
+    await Kit.showWays(r.wins, total, names);
+    if (r.sc >= 3) {
+      document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
+      Kit.winpop(Game.FREE_SPINS[Math.min(r.sc, 5)] + ' FREE SPINŮ', r.sc + '× ŠERIF'); Kit.sfx.jp(); await Kit.wait(1700);
+      total += await freeSpins(Game.FREE_SPINS[Math.min(r.sc, 5)], b);
+    }
+    return total;
+  },
+  buy: b => freeSpins(10, b),
+});
+
+async function freeSpins(n, b) {
+  Kit.confetti(20, ['🤠', '⭐', '💰']);
+  await Kit.modal(`<h2>Hledá se!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý bandita, který padne, je <b>lepivý</b> a zůstane na místě až do konce bonusu – se svým násobkem.</p>`, 'JEDEME', Kit.auto ? 2200 : 0);
+  Kit.bonus = true; Kit.bonusBet = b;
+  const st = Game.emptySticky(); let left = n, tot = 0, sticky = 0;
+  Kit.top().innerHTML = '<div class="wanted">🤠 LEPIVÍ BANDITÉ: <b id="nb">0</b></div>';
+  Kit.fsBar(true, left, 0);
+  while (left > 0) {
+    left--; Kit.fsBar(true, left, tot); Kit.msg('');
+    const r = Game.spin(Math.random, true, st);
+    await Kit.spinTo(r.g, { anticSym: Game.SCATTER });
+    const news = Game.addSticky(st, r.g);
+    for (const [rr, y] of news) {
+      const c = st[rr][y];
+      Kit.overlay(rr, y, Kit.symHTML(c) + '<span class="lock">🔒</span>', 'stk'); Kit.tone(220, .2, 'square', .06); Kit.tone(660, .2, 'sine', .06, .08);
+      sticky++; document.getElementById('nb').textContent = sticky;
+      await Kit.wait(350);
+    }
+    let w = Kit.coins(r.total);
+    if (tot + w > Game.MAX_WIN * b) w = Game.MAX_WIN * b - tot;
+    if (r.wins.length) { Kit.clearOverlays('stk'); await Kit.showWays(r.wins, w, names); restoreSticky(st); }
+    tot += w; Kit.fsBar(true, left, tot);
+    if (r.sc >= 3) { left += Game.RETRIGGER; Kit.winpop('+' + Game.RETRIGGER + ' SPINŮ', 'ŠERIF'); Kit.sfx.jp(); await Kit.wait(1400); }
+    if (tot >= Game.MAX_WIN * b) { Kit.winpop('MAX VÝHRA'); await Kit.wait(1500); break; }
+    await Kit.wait(300);
+  }
+  Kit.clearOverlays('stk'); Kit.top().innerHTML = '';
+  Kit.confetti(tot >= b * 30 ? 50 : 18, ['🤠', '💰', '⭐']);
+  await Kit.modal(`<h2>Odměna vyplacena</h2><div class="big">${Kit.fmt(tot)}</div><p>${(Math.round(tot / b * 10) / 10).toLocaleString('cs-CZ')}× sázka • ${sticky} banditů chyceno</p>`, 'POKRAČOVAT', Kit.auto ? 2800 : 0);
+  Kit.bonus = false; Kit.fsBar(false, 0, 0);
+  return tot;
+}
+function restoreSticky(st) { st.forEach((col, r) => col.forEach((c, y) => { if (c) Kit.overlay(r, y, Kit.symHTML(c) + '<span class="lock">🔒</span>', 'stk'); })); document.querySelectorAll('.stk').forEach(e => e.style.animation = 'none'); }
+</script>
+</body>
+</html>

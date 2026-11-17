@@ -7,6 +7,9 @@ Malé herní kasino v prohlížeči – jen pro zábavu, fiktivní kredity. Kred
 | `index.html` | Lobby kasina s kreditem a výběrem her |
 | `candy-rush.html` | 🍭 Candy Rush 8×8 – cukrovinkový automat |
 | `halo-horns.html` | 😇😈 Halo & Horns – automat 5×6, 7 776 cest, rozšiřující se válce s násobkem, 3 jackpoty, cashback |
+| `poklad-faraona.html` | 🪙 Poklad faraona – 243 cest, Hold & Win s mincemi, 4 jackpoty |
+| `divoky-zapad.html` | 🤠 Divoký západ – 1024 cest, bandité s násobky (násobí se), lepiví ve free spinech |
+| `zlaty-ulovek.html` | 🎣 Zlatý úlovek – 243 cest, rybář ve free spinech sbírá hodnoty ryb |
 | `ruleta.html` | 🎡 Evropská ruleta (jedna nula) |
 | `blackjack.html` | 🃏 Blackjack (6 balíčků, BJ 3:2, krupiér stojí na 17, zdvojení, rozdělení) |
 
@@ -29,3 +32,7 @@ Vývoj: `engine.js` (logika) + `template.html` (UI) → `python3 build.py` vytvo
 - **3 progresivní jackpoty** (MINI/MAJOR/GRAND za 3/4/5 jackpotových symbolů)
 - **Rostoucí cashback** 1–5 % z prohraných spinů (+1 % každých 50 spinů, výběr vrací úroveň na 1 %)
 - Logika `hh-engine.js`, UI `hh-template.html`, simulace `node hh-sim.js 300000`
+
+## Poklad faraona, Divoký západ, Zlatý úlovek
+Sdílené UI je ve `slots/slotkit.js`, výpočet výher „ways“ ve `slots/slotmath.js`, logika her v `slots/*-engine.js`, šablony `slots/*.tpl.html`.
+`python3 build.py` sestaví všechny hry. Simulace: `node slots/sim-pharaoh.js`, `node slots/sim-bandits.js`, `node slots/sim-fisher.js` (cíl RTP ≈ 96 %).

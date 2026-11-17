@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Divoký západ – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#1a0c05;--acc:#ffc44a;--acc2:#d9884a88;--glow:#ff8a2a66;--winglow:#ffd08a66;--tfont:'Rye',serif;
+ --tgrad:linear-gradient(180deg,#fff0c0,#ffc44a 50%,#b85a10);
+ --bgimg:radial-gradient(circle at 50% 18%,#ffd36a 0,#ff8a2a 10%,transparent 26%),linear-gradient(180deg,#ff9a4a 0%,#e0603a 20%,#8a2a3a 42%,#3a1418 60%,#5a3010 78%,#2a1406 100%);
+ --frame:repeating-linear-gradient(90deg,#8a4a1a 0 14px,#7a3e14 14px 16px,#9a5a24 16px 30px);--boardbg:#2a1608;--reelbg:linear-gradient(180deg,#f4dcae,#e0bf86);
+ --fsbar:linear-gradient(90deg,#8a2a1a,#d9882a);--btn:linear-gradient(180deg,#ffd88a,#c4721c);--btntext:#3a1a00;
+ --spinbg:radial-gradient(circle at 50% 30%,#fff8 0 8%,transparent 30%),linear-gradient(180deg,#c4721c,#6a2a08);
+ --buybg:linear-gradient(90deg,#8a2a1a,#c4721c);--cardbg:linear-gradient(180deg,#5a2a10,#2a1406)}
+body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:22vh;pointer-events:none;z-index:0;
+ background:radial-gradient(ellipse 30% 100% at 15% 100%,#2a1406 0 60%,transparent 61%),radial-gradient(ellipse 40% 80% at 80% 100%,#3a1a08 0 60%,transparent 61%)}
+.frame{box-shadow:0 0 0 3px #3a1a06,inset 0 0 0 2px #c4721c,0 10px 24px #000a!important}
+.reel{border:1px solid #b88a4a}
+.sym svg{filter:drop-shadow(0 2px 1px #0006)}
+.sym.s8 .val{bottom:2%;background:linear-gradient(180deg,#ffd88a,#c4721c);color:#3a1a00;text-shadow:none;font-size:calc(var(--cw)*.19);border:1px solid #3a1a00}
+.stk{animation:stk .5s cubic-bezier(.2,1.6,.4,1)}
+.stk .sym{height:var(--ch);width:100%}
+.stk::before{content:"";position:absolute;inset:3px;border-radius:10px;box-shadow:inset 0 0 0 3px #ffc44a,0 0 14px #ff8a2a;background:#ffc44a22}
+.stk .lock{position:absolute;right:4px;top:3px;font-size:12px}
+@keyframes stk{from{transform:scale(1.6);opacity:0}}
+.wanted{display:flex;align-items:center;gap:8px;justify-content:center;padding:4px 10px;border-radius:10px;background:#f4dcae;color:#3a1a00;border:2px solid #6a3a10;font-family:Rye;font-size:13px;box-shadow:0 3px 8px #0008}
+.wanted b{font-size:17px;color:#8a1a0a}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <linearGradient id="bw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d89a5a"/><stop offset="1" stop-color="#6a3410"/></linearGradient>
+  <linearGradient id="bgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2b0"/><stop offset=".5" stop-color="#ffc44a"/><stop offset="1" stop-color="#9a5a08"/></linearGradient>
+  <linearGradient id="bst" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f8"/><stop offset=".5" stop-color="#9aa4b8"/><stop offset="1" stop-color="#3a4250"/></linearGradient>
+  <linearGradient id="brd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff8a6a"/><stop offset="1" stop-color="#8a1a0a"/></linearGradient>
+ </defs>
+ <symbol id="b0" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="62" fill="#2a6a8a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">J</text></symbol>
+ <symbol id="b1" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="60" fill="#3a8a3a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">Q</text></symbol>
+ <symbol id="b2" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="60" fill="#8a3a8a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">K</text></symbol>
+ <symbol id="b3" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="62" fill="#b8321a" stroke="#f8eed8" stroke-width="5" paint-order="stroke">A</text></symbol>
+ <symbol id="b4" viewBox="0 0 100 100">
+  <path d="M28 88C14 70 14 34 34 18C42 12 58 12 66 18C86 34 86 70 72 88L60 88C70 70 70 40 58 30C54 27 46 27 42 30C30 40 30 70 40 88Z" fill="url(#bst)" stroke="#2a2a30" stroke-width="2.5"/>
+  <g fill="#2a2a30"><circle cx="24" cy="66" r="3"/><circle cx="22" cy="50" r="3"/><circle cx="27" cy="34" r="3"/><circle cx="76" cy="66" r="3"/><circle cx="78" cy="50" r="3"/><circle cx="73" cy="34" r="3"/></g></symbol>
+ <symbol id="b5" viewBox="0 0 100 100">
+  <path d="M4 66C20 76 80 76 96 66C92 58 80 58 74 60L70 30C68 20 60 18 50 24C40 18 32 20 30 30L26 60C20 58 8 58 4 66Z" fill="url(#bw)" stroke="#2a1406" stroke-width="2.5"/>
+  <path d="M27 54C40 60 60 60 73 54L72 48C60 54 40 54 28 48Z" fill="#8a1a0a"/>
+  <path d="M50 24C48 34 48 42 50 50" stroke="#4a2408" stroke-width="2" fill="none"/></symbol>
+ <symbol id="b6" viewBox="0 0 100 100">
+  <path d="M8 34H70L78 28H86V40H70L66 46H30V40H8Z" fill="url(#bst)" stroke="#1a1a20" stroke-width="2.5"/>
+  <rect x="30" y="38" width="22" height="16" rx="5" fill="#6a7080" stroke="#1a1a20" stroke-width="2"/>
+  <circle cx="36" cy="46" r="2.5" fill="#1a1a20"/><circle cx="46" cy="46" r="2.5" fill="#1a1a20"/>
+  <path d="M52 46L70 46C74 60 72 76 62 92H44C50 78 50 62 52 46Z" fill="url(#bw)" stroke="#2a1406" stroke-width="2.5"/>
+  <path d="M40 54C40 64 46 66 52 62" stroke="#1a1a20" stroke-width="3" fill="none"/>
+  <path d="M8 34V28H14" stroke="#1a1a20" stroke-width="3" fill="none"/></symbol>
+ <symbol id="b7" viewBox="0 0 100 100">
+  <path d="M38 22C30 14 34 8 42 10C46 6 54 6 58 10C66 8 70 14 62 22Z" fill="#c8a06a" stroke="#4a2a08" stroke-width="2"/>
+  <path d="M38 22H62C82 34 90 56 86 74C82 92 18 92 14 74C10 56 18 34 38 22Z" fill="#d8b47a" stroke="#4a2a08" stroke-width="2.5"/>
+  <path d="M36 24H64" stroke="#8a1a0a" stroke-width="5"/>
+  <text x="50" y="74" text-anchor="middle" font-family="Rye,serif" font-size="34" fill="url(#bgd)" stroke="#4a2a08" stroke-width="2" paint-order="stroke">$</text>
+  <circle cx="20" cy="88" r="7" fill="url(#bgd)" stroke="#6a3a00" stroke-width="1.5"/><circle cx="82" cy="90" r="6" fill="url(#bgd)" stroke="#6a3a00" stroke-width="1.5"/></symbol>
+ <symbol id="b8" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="#ffc44a33"/>
+  <path d="M30 46C30 70 40 84 50 84C60 84 70 70 70 46Z" fill="#e8b48a" stroke="#3a1a06" stroke-width="2"/>
+  <path d="M30 56C40 50 60 50 70 56L70 72C60 80 40 80 30 72Z" fill="url(#brd)" stroke="#3a1a06" stroke-width="2"/>
+  <path d="M38 62L42 66M48 60L52 66M58 62L62 66" stroke="#fff8" stroke-width="2"/>
+  <path d="M36 46H64" stroke="#1a0a04" stroke-width="2"/><path d="M38 44L46 47L38 49ZM62 44L54 47L62 49Z" fill="#1a0a04"/>
+  <path d="M4 40C20 48 80 48 96 40C92 34 82 34 74 36L70 12C68 4 60 4 50 10C40 4 32 4 30 12L26 36C18 34 8 34 4 40Z" fill="#2a1a10" stroke="#ffc44a" stroke-width="2"/>
+  <path d="M27 30C40 34 60 34 73 30L72 25C60 29 40 29 28 25Z" fill="#ffc44a"/></symbol>
+ <symbol id="b9" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#ffc44a44"/>
+  <path d="M50 4L61 34L94 34L67 54L77 86L50 66L23 86L33 54L6 34L39 34Z" fill="url(#bgd)" stroke="#6a3a00" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="url(#bgd)" stroke="#6a3a00" stroke-width="2"><circle cx="50" cy="4" r="5"/><circle cx="94" cy="34" r="5"/><circle cx="6" cy="34" r="5"/><circle cx="77" cy="86" r="5"/><circle cx="23" cy="86" r="5"/></g>
+  <circle cx="50" cy="50" r="15" fill="#c4721c" stroke="#6a3a00" stroke-width="2"/>
+  <text x="50" y="56" text-anchor="middle" font-family="Rye,serif" font-size="15" fill="#fff2b0">FREE</text></symbol>
+</svg>
+
+<script>
+// Sdílená matematika automatů: výplaty „ways“ s wildy a násobky
+const SlotMath = (() => {
+  function pickW(arr, w, rnd) { let t = 0; for (const x of w) t += x; let x = rnd() * t; for (let i = 0; i < arr.length; i++) if ((x -= w[i]) < 0) return arr[i]; return arr[arr.length - 1]; }
+  // g[reel][row] = {s, m?}; syms = [{id, pay:[3,4,5]}]; wild = id wildu
+  // Násobky wildů v jedné cestě se NÁSOBÍ (součet přes cesty = součin součtů po válcích)
+  function ways(g, syms, wild, scale = 1) {
+    const out = [];
+    for (const s of syms) {
+      let factor = 1, count = 1, len = 0, real = false; const cells = [];
+      for (let r = 0; r < g.length; r++) {
+        let f = 0, c = 0;
+        for (let y = 0; y < g[r].length; y++) {
+          const x = g[r][y];
+          if (x.s === s.id) { f += 1; c++; real = true; cells.push([r, y]); }
+          else if (x.s === wild) { f += x.m || 1; c++; cells.push([r, y]); }
+        }
+        if (!f) break;
+        factor *= f; count *= c; len++;
+      }
+      if (len >= 3 && real) {
+        const win = s.pay[Math.min(len, 5) - 3] * factor * scale;
+        out.push({ s: s.id, len, ways: count, mult: Math.round(factor / count * 100) / 100, win, cells: cells.filter(([r]) => r < len) });
+      }
+    }
+    return { wins: out, total: out.reduce((a, w) => a + w.win, 0) };
+  }
+  const count = (g, s) => { let n = 0; for (const col of g) for (const x of col) if (x.s === s) n++; return n; };
+  return { pickW, ways, count };
+})();
+if (typeof module !== 'undefined') module.exports = SlotMath;
+
+// Divoký západ – 5×4, 1024 cest, wildy s násobky (v cestě se násobí), ve free spinech lepivé
+const Game = (() => {
+  const SM = typeof SlotMath !== 'undefined' ? SlotMath : require('./slotmath.js');
+  const REELS = 5, ROWS = 4;
+  const SYMS = [
+    { id: 0, name: 'J', w: 14, pay: [0.05, 0.10, 0.25] },
+    { id: 1, name: 'Q', w: 13, pay: [0.05, 0.10, 0.30] },
+    { id: 2, name: 'K', w: 12, pay: [0.05, 0.15, 0.35] },
+    { id: 3, name: 'A', w: 11, pay: [0.10, 0.20, 0.40] },
+    { id: 4, name: 'Podkova', w: 8, pay: [0.15, 0.30, 0.75] },
+    { id: 5, name: 'Klobouk', w: 7, pay: [0.20, 0.40, 1.00] },
+    { id: 6, name: 'Revolver', w: 6, pay: [0.25, 0.60, 1.50] },
+    { id: 7, name: 'Měšec zlata', w: 5, pay: [0.40, 1.00, 2.50] },
+  ];
+  const WILD = 8, SCATTER = 9;
+  const MULTS = [2, 3, 5], MW = [60, 30, 10], MW_FS = [70, 24, 6];
+  const FREE_SPINS = { 3: 10, 4: 12, 5: 15 }, RETRIGGER = 5, MAX_WIN = 5000;
+  const CFG = { wildP: 0.045, wildPFS: 0.034, scatterP: 0.017, payScale: 0.37, fsScale: 0.33, buyX: 80 };
+
+  function cell(r, rnd, fs) {
+    const x = rnd(), wp = fs ? CFG.wildPFS : CFG.wildP;
+    if (x < CFG.scatterP) return { s: SCATTER };
+    if (r >= 1 && r <= 3 && x < CFG.scatterP + wp) return { s: WILD, m: SM.pickW(MULTS, fs ? MW_FS : MW, rnd) };
+    return { s: SM.pickW(SYMS.map(s => s.id), SYMS.map(s => s.w), rnd) };
+  }
+  const filler = rnd => cell(0, rnd);
+  function grid(rnd, fs, sticky) {
+    return Array.from({ length: REELS }, (_, r) => Array.from({ length: ROWS }, (_, y) => sticky && sticky[r][y] ? sticky[r][y] : cell(r, rnd, fs)));
+  }
+  function spin(rnd, fs = false, sticky = null) {
+    const g = grid(rnd, fs, sticky);
+    const ev = SM.ways(g, SYMS, WILD, fs ? CFG.fsScale : CFG.payScale);
+    const sc = SM.count(g, SCATTER);
+    return { g, wins: ev.wins, total: ev.total, sc };
+  }
+  const emptySticky = () => Array.from({ length: REELS }, () => Array(ROWS).fill(null));
+  function addSticky(sticky, g) { const news = []; g.forEach((col, r) => col.forEach((x, y) => { if (x.s === WILD && !sticky[r][y]) { sticky[r][y] = x; news.push([r, y]); } })); return news; }
+  // celé free spiny bez animace (pro simulaci)
+  function freeSpins(n, rnd) {
+    const st = emptySticky(); let left = n, tot = 0;
+    while (left > 0) { left--; const r = spin(rnd, true, st); addSticky(st, r.g); tot += r.total; if (r.sc >= 3) left += RETRIGGER; if (tot >= MAX_WIN) { tot = MAX_WIN; break; } }
+    return tot;
+  }
+  return { REELS, ROWS, SYMS, WILD, SCATTER, FREE_SPINS, RETRIGGER, MAX_WIN, CFG, filler, spin, emptySticky, addSticky, freeSpins };
+})();
+if (typeof module !== 'undefined') module.exports = Game;
+
+// SlotKit – sdílené UI pro automaty Lucky 7 Casina (válce, ovládání, peněženka, okna, zvuky)
+const Kit = (() => {
+  const css = `
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg0)}html,body{margin:0}
+body{font-family:'Fredoka',system-ui,sans-serif;color:#fff;min-height:100vh;overflow-x:hidden;background:var(--bgimg) fixed}
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:8px 8px 18px;display:flex;flex-direction:column;gap:8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.icon{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--acc2);background:#0005;color:#fff;font-size:16px;display:grid;place-items:center;cursor:pointer;text-decoration:none;font-family:inherit}
+.title{text-align:center;line-height:1}
+.title .t{font-family:var(--tfont);font-weight:900;font-size:24px;letter-spacing:1px;background:var(--tgrad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #0008) drop-shadow(0 0 10px var(--glow))}
+.title small{display:block;font-size:9px;letter-spacing:4px;opacity:.75;margin-top:3px}
+.fsbar{display:none;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:12px;font-weight:600;font-size:13px;background:var(--fsbar);color:#fff;text-shadow:0 1px 2px #0008;box-shadow:0 0 16px var(--glow)}
+.fsbar.on{display:flex}.fsbar b{font-size:20px}
+.frame{position:relative;padding:7px;border-radius:18px;background:var(--frame);box-shadow:0 0 0 2px #0008,0 0 24px var(--glow),0 10px 24px #000a}
+.board{position:relative;display:grid;gap:3px;border-radius:12px;overflow:hidden;background:var(--boardbg)}
+.reel{position:relative;overflow:hidden;background:var(--reelbg);border-radius:6px}
+.strip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.strip.blur .sym svg{filter:blur(1.3px)}
+.sym{height:var(--ch);display:grid;place-items:center;position:relative}
+.sym svg{width:84%;height:88%;overflow:visible;filter:drop-shadow(0 2px 2px #000a)}
+.sym .val{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);font-weight:700;font-size:calc(var(--cw)*.2);color:#fff;white-space:nowrap;
+ text-shadow:0 0 3px #000,0 1px 0 #000,0 0 8px #000;padding:0 4px;border-radius:6px;background:#0007;line-height:1.25}
+.sym .val.jp{color:var(--jpc,#ffe28a);font-family:var(--tfont)}
+.sym.empty svg{opacity:0}
+.sym.win svg{animation:kwin .7s ease-in-out infinite}
+.sym.win::before{content:"";position:absolute;inset:3px;border-radius:10px;background:radial-gradient(circle,var(--winglow),transparent 70%);box-shadow:inset 0 0 0 2px var(--acc)}
+@keyframes kwin{50%{transform:scale(1.13)}}
+.board.dim .sym:not(.win){opacity:.33;transition:opacity .3s}
+.sym.pulse svg{animation:kpulse 1.4s ease-in-out infinite}
+@keyframes kpulse{50%{transform:scale(1.1)}}
+.sym.flick svg{animation:kflick .12s linear infinite}
+@keyframes kflick{50%{opacity:.3;transform:translateY(-6px)}}
+.sym.landed svg{animation:kland .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes kland{from{transform:scale(.3);opacity:0}}
+.reel.antic{box-shadow:inset 0 0 0 2px var(--acc),inset 0 0 20px var(--glow)}
+.ovl{position:absolute;left:0;right:0;height:var(--ch);z-index:3;display:grid;place-items:center;pointer-events:none}
+.winpop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;text-align:center;font-family:var(--tfont);font-weight:900;color:#fff6d0;
+ text-shadow:0 0 6px #000,0 0 18px var(--glow),0 3px 0 #000;font-size:34px;opacity:0;white-space:nowrap}
+.winpop.on{animation:kpop 1.8s ease-out forwards}
+.winpop small{display:block;font-family:'Fredoka';font-size:13px;font-weight:600;letter-spacing:1px}
+@keyframes kpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+.msgline{min-height:18px;text-align:center;font-size:12px;opacity:.9}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat{background:#0007;border:1px solid var(--acc2);border-radius:12px;padding:4px 8px;text-align:center}
+.stat small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.75}
+.stat b{font-size:19px}.stat.w b{color:var(--acc);text-shadow:0 0 8px var(--glow)}
+.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.betbox{display:flex;align-items:center;justify-content:space-between;gap:4px;background:#0007;border:1px solid var(--acc2);border-radius:999px;padding:3px}
+.betbox button{width:32px;height:32px;border-radius:50%;border:0;font-size:20px;font-weight:700;cursor:pointer;color:var(--btntext);background:var(--btn);font-family:inherit;line-height:1}
+.betbox button:disabled{opacity:.4}
+.betbox .bv{text-align:center;font-weight:700;font-size:15px;line-height:1.05}.betbox .bv small{display:block;font-size:9px;letter-spacing:1px;opacity:.7;font-weight:400}
+.spin{width:86px;height:86px;border-radius:50%;cursor:pointer;border:0;padding:0;font-family:var(--tfont);font-weight:900;font-size:15px;color:#fff;letter-spacing:1px;background:var(--spinbg);
+ box-shadow:0 0 0 3px var(--acc),0 0 0 5px #0008,0 0 22px var(--glow),0 6px 12px #000a;text-shadow:0 1px 3px #000}
+.spin:active{transform:scale(.95)}.spin:disabled{filter:grayscale(.5) brightness(.8)}
+.spin .ic{display:block;font-size:26px;line-height:1;font-family:'Fredoka'}
+.side{display:flex;gap:6px;justify-content:center}
+.pill{border:1.5px solid var(--acc2);border-radius:12px;padding:8px 9px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:#fff;background:#0007}
+.pill.on{background:var(--btn);color:var(--btntext)}
+.buy{border:0;border-radius:12px;padding:9px;font-family:var(--tfont);font-weight:800;font-size:14px;cursor:pointer;color:#fff;letter-spacing:1px;background:var(--buybg);box-shadow:0 3px 0 #0008,0 0 14px var(--glow);text-shadow:0 1px 2px #000}
+.buy:disabled{filter:grayscale(.7);opacity:.6}.buy small{font-family:'Fredoka';font-weight:600;opacity:.85}
+.foot{text-align:center;font-size:10px;opacity:.6}
+.ov{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:16px;background:#000c;backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.card{max-width:420px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:20px 18px;text-align:center;color:#fff;background:var(--cardbg);border:1px solid var(--acc2);box-shadow:0 0 40px var(--glow);animation:kcin .4s cubic-bezier(.2,1.5,.4,1)}
+@keyframes kcin{from{transform:scale(.6);opacity:0}}
+.card h2{margin:0 0 6px;font-family:var(--tfont);font-size:26px;color:var(--acc);text-shadow:0 0 12px var(--glow)}
+.card .big{font-family:var(--tfont);font-weight:900;font-size:44px;color:#fff6d0;text-shadow:0 0 16px var(--glow);margin:4px 0}
+.card p{margin:6px 0;font-size:14px;line-height:1.45}
+.card .go{margin-top:10px;border:0;border-radius:999px;padding:11px 26px;font-family:var(--tfont);font-weight:800;font-size:16px;cursor:pointer;color:var(--btntext);background:var(--btn);box-shadow:0 3px 0 #0008}
+.card .ghost{background:#ffffff22;color:#fff;margin-left:6px}
+.pt{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}.pt td,.pt th{padding:3px;border-bottom:1px solid #ffffff1a}.pt th{font-size:10px;color:var(--acc)}
+.pt svg{width:34px;height:30px;vertical-align:middle}
+.rules{text-align:left;font-size:13px;line-height:1.45;padding-left:18px}.rules li{margin:3px 0}
+.confetti{position:fixed;top:-20px;z-index:60;pointer-events:none;font-size:20px;animation:kfall linear forwards}
+@keyframes kfall{to{transform:translateY(110vh) rotate(540deg)}}
+.fly{position:fixed;z-index:30;pointer-events:none;font-weight:700;font-size:16px;color:#fff;text-shadow:0 0 4px #000,0 0 10px var(--glow);transition:transform .6s cubic-bezier(.5,0,.3,1),opacity .6s}
+`;
+  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  const $ = id => document.getElementById(id);
+  const fmt = x => Math.round(x).toLocaleString('cs-CZ');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const WKEY = 'lucky7_wallet';
+  const K = { fmt, sleep, busy: false, auto: false, turbo: false, sound: true, bonus: false, bonusBet: 10 };
+  let bal = 1000; try { const s = localStorage.getItem(WKEY); if (s !== null && isFinite(+s)) bal = +s; } catch (e) {}
+  let O, betI = 0, grid, reels = [], strips = [];
+  const save = () => { try { localStorage.setItem(WKEY, String(Math.round(bal))); localStorage.setItem(O.key + '_bet', String(betI)); } catch (e) {} };
+  K.bet = () => K.bonus ? K.bonusBet : O.bets[betI];
+  K.wait = ms => sleep(K.turbo ? ms * .45 : ms);
+  K.addBal = x => { bal += x; save(); K.update(); };
+  K.getBal = () => bal;
+
+  // zvuk
+  let actx = null;
+  K.tone = (f, d = .1, type = 'sine', v = .08, delay = 0, f2) => {
+    if (!K.sound) return;
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+      o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d + .02); } catch (e) {}
+  };
+  K.sfx = {
+    stop: i => K.tone(140 + i * 25, .09, 'triangle', .09),
+    win: () => [523, 659, 784].forEach((f, i) => K.tone(f, .25, 'sine', .08, i * .08)),
+    big: () => [392, 523, 659, 784, 1046].forEach((f, i) => K.tone(f, .4, 'triangle', .1, i * .1)),
+    tick: () => K.tone(1200, .03, 'square', .03),
+    ding: (i = 0) => K.tone(700 + i * 90, .25, 'sine', .09),
+    whoosh: () => K.tone(200, .5, 'sawtooth', .05, 0, 900),
+    jp: () => [784, 988, 1175, 1568, 1175, 1568, 2093].forEach((f, i) => K.tone(f, .3, 'triangle', .1, i * .12)),
+  };
+
+  // ---------- sestavení stránky ----------
+  K.create = opts => {
+    O = Object.assign({ bets: [10, 20, 30, 50, 100, 200, 500], cellRatio: .84, buyX: 0 }, opts);
+    try { const b = +localStorage.getItem(O.key + '_bet'); if (b >= 0 && b < O.bets.length) betI = b | 0; } catch (e) {}
+    document.body.insertAdjacentHTML('beforeend', `
+<div class="app">
+  <header><a class="icon" href="index.html" title="Lobby">🏠</a>
+    <div class="title"><div class="t">${O.title}</div><small>${O.subtitle}</small></div>
+    <div style="display:flex;gap:5px"><button class="icon" id="kSound">🔊</button><button class="icon" id="kInfo">ℹ️</button></div></header>
+  <div id="kTop"></div>
+  <div class="fsbar" id="kFs"><div id="kFsL">FREE SPINY <b>0</b></div><div id="kFsR" style="text-align:right">VÝHRA BONUSU <b>0</b></div></div>
+  <div class="frame"><div class="board" id="kBoard" style="grid-template-columns:repeat(${O.reels},1fr)"></div><div class="winpop" id="kPop"></div></div>
+  <div class="msgline" id="kMsg">${O.hint || ''}</div>
+  <div class="stats"><div class="stat"><small>KREDIT</small><b id="kBal">0</b></div><div class="stat w"><small>VÝHRA</small><b id="kWin">0</b></div></div>
+  <div class="controls">
+    <div class="betbox"><button id="kBm">−</button><div class="bv"><small>SÁZKA</small><span id="kBet">10</span></div><button id="kBp">+</button></div>
+    <button class="spin" id="kSpin"><span class="ic">⟳</span>TOČIT</button>
+    <div class="side"><button class="pill" id="kAuto">AUTO</button><button class="pill" id="kTurbo">⚡</button></div>
+  </div>
+  ${O.buyX ? `<button class="buy" id="kBuy">${O.buyLabel || 'KOUPIT BONUS'} <small id="kBuyC"></small></button>` : ''}
+  <div class="foot">Lucky 7 Casino • jen pro zábavu, fiktivní kredity</div>
+</div>
+<div class="ov" id="kOv"><div class="card" id="kCard"></div></div>`);
+    const board = $('kBoard');
+    for (let r = 0; r < O.reels; r++) {
+      const el = document.createElement('div'); el.className = 'reel';
+      const s = document.createElement('div'); s.className = 'strip'; el.appendChild(s); board.appendChild(el); reels.push(el); strips.push(s);
+    }
+    const size = () => { const w = board.clientWidth / O.reels; document.documentElement.style.setProperty('--cw', w + 'px'); document.documentElement.style.setProperty('--ch', Math.round(w * O.cellRatio) + 'px'); reels.forEach(r => r.style.height = `calc(var(--ch) * ${O.rows})`); };
+    size(); addEventListener('resize', () => { size(); K.render(grid); });
+    grid = Array.from({ length: O.reels }, () => Array.from({ length: O.rows }, () => O.filler(Math.random)));
+    K.render(grid);
+    $('kSpin').onclick = () => { if (K.auto) { K.stopAuto(); return; } K.spin(); };
+    $('kAuto').onclick = () => { K.auto = !K.auto; $('kAuto').classList.toggle('on', K.auto); if (K.auto && !K.busy) K.spin(); K.update(); };
+    $('kTurbo').onclick = () => { K.turbo = !K.turbo; $('kTurbo').classList.toggle('on', K.turbo); };
+    $('kSound').onclick = () => { K.sound = !K.sound; $('kSound').textContent = K.sound ? '🔊' : '🔇'; };
+    $('kInfo').onclick = () => { $('kCard').innerHTML = O.info() + '<button class="go" id="kGo">ROZUMÍM</button>'; $('kOv').classList.add('on'); $('kGo').onclick = () => $('kOv').classList.remove('on'); };
+    $('kBm').onclick = () => { if (betI > 0) betI--; save(); K.update(); };
+    $('kBp').onclick = () => { if (betI < O.bets.length - 1) betI++; save(); K.update(); };
+    if (O.buyX) $('kBuy').onclick = K.buy;
+    document.addEventListener('keydown', e => { if (e.code === 'Space' && !$('kOv').classList.contains('on')) { e.preventDefault(); $('kSpin').click(); } });
+    K.update();
+  };
+
+  K.update = () => {
+    $('kBal').textContent = fmt(bal); $('kBet').textContent = fmt(K.bet());
+    $('kSpin').disabled = K.busy && !K.auto;
+    $('kBm').disabled = $('kBp').disabled = K.busy || K.bonus;
+    if (O.buyX) { $('kBuy').disabled = K.busy || K.bonus || bal < O.bets[betI] * O.buyX; $('kBuyC').textContent = '(' + fmt(O.bets[betI] * O.buyX) + ')'; }
+    O.onUpdate && O.onUpdate();
+  };
+  K.setWin = x => $('kWin').textContent = fmt(x);
+  K.msg = t => $('kMsg').innerHTML = t || ' ';
+  K.fsBar = (on, left, win, leftLabel = 'FREE SPINY', rightLabel = 'VÝHRA BONUSU') => {
+    $('kFs').classList.toggle('on', on);
+    $('kFsL').innerHTML = `${leftLabel} <b>${left}</b>`; $('kFsR').innerHTML = `${rightLabel} <b>${fmt(win)}</b>`;
+  };
+  K.top = () => $('kTop');
+
+  // ---------- válce ----------
+  K.symHTML = (c, extra = '') => {
+    const lab = O.label ? O.label(c, K.bet()) : null;
+    return `<div class="sym s${c.s}${extra}${O.pulse && O.pulse.includes(c.s) ? ' pulse' : ''}"><svg viewBox="0 0 100 100"><use href="#${O.prefix}${c.s}"/></svg>${lab ? `<span class="val${lab.cls ? ' ' + lab.cls : ''}">${lab.t}</span>` : ''}</div>`;
+  };
+  K.render = g => { grid = g; for (let r = 0; r < O.reels; r++) { strips[r].style.transition = 'none'; strips[r].style.transform = 'translateY(0)'; strips[r].innerHTML = g[r].map(c => K.symHTML(c)).join(''); } };
+  K.cell = (r, y) => strips[r].children[y];
+  K.setCell = (r, y, c, extra = '') => { grid[r][y] = c; const el = K.cell(r, y); el.outerHTML = K.symHTML(c, extra); };
+  K.reelEl = r => reels[r];
+  const cellH = () => reels[0].clientHeight / O.rows;
+  // roztočí válce a zastaví je na nové mřížce; keep[r][y] = buňky, které zůstávají (lepivé)
+  K.spinTo = async (ng, o = {}) => {
+    $('kBoard').classList.remove('dim');
+    const h = cellH(), done = []; let delay = 0, cnt = 0;
+    for (let r = 0; r < O.reels; r++) {
+      const antic = o.anticSym != null && r >= 2 && cnt >= 2;
+      const n = 12 + r * 4 + (antic ? 14 : 0);
+      const seq = [...ng[r], ...Array.from({ length: n }, () => O.filler(Math.random)), ...grid[r]];
+      const s = strips[r];
+      s.style.transition = 'none'; s.innerHTML = seq.map(c => K.symHTML(c)).join('');
+      s.style.transform = `translateY(${-(seq.length - O.rows) * h}px)`; s.classList.add('blur');
+      const dur = (K.turbo ? .45 : 1) * (600 + n * 36);
+      done.push(new Promise(res => setTimeout(() => {
+        if (antic) { reels[r].classList.add('antic'); K.tone(300, .8, 'sine', .04, 0, 900); }
+        s.style.transition = `transform ${dur}ms cubic-bezier(.25,.1,.25,1.06)`; s.style.transform = 'translateY(0)';
+        setTimeout(() => { s.classList.remove('blur'); reels[r].classList.remove('antic'); K.sfx.stop(r); s.style.transition = 'none'; s.innerHTML = ng[r].map(c => K.symHTML(c)).join(''); res(); }, dur);
+      }, delay)));
+      delay += K.turbo ? 50 : 120;
+      if (o.anticSym != null) cnt += ng[r].filter(c => c.s === o.anticSym).length;
+    }
+    await Promise.all(done); grid = ng;
+  };
+  K.highlight = cells => {
+    const set = new Set(cells.map(([r, y]) => r * 10 + y));
+    for (let r = 0; r < O.reels; r++) for (let y = 0; y < O.rows; y++) K.cell(r, y)?.classList.toggle('win', set.has(r * 10 + y));
+    $('kBoard').classList.toggle('dim', cells.length > 0);
+  };
+  K.clearHighlight = () => K.highlight([]);
+  K.overlay = (r, y, html, cls = '') => { const d = document.createElement('div'); d.className = 'ovl ' + cls; d.style.top = `calc(var(--ch) * ${y})`; d.innerHTML = html; reels[r].appendChild(d); return d; };
+  K.clearOverlays = cls => document.querySelectorAll('.ovl' + (cls ? '.' + cls : '')).forEach(e => e.remove());
+  K.fly = (fromEl, toEl, text) => new Promise(res => {
+    const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+    const f = document.createElement('div'); f.className = 'fly'; f.textContent = text;
+    f.style.left = (a.left + a.width / 2 - 14) + 'px'; f.style.top = (a.top + a.height / 2 - 10) + 'px'; document.body.appendChild(f);
+    requestAnimationFrame(() => requestAnimationFrame(() => { f.style.transform = `translate(${b.left - a.left}px,${b.top - a.top}px) scale(1.3)`; }));
+    setTimeout(() => { f.style.opacity = 0; }, K.turbo ? 300 : 550); setTimeout(() => { f.remove(); res(); }, K.turbo ? 350 : 650);
+  });
+  K.winpop = (t, sub) => { const p = $('kPop'); p.innerHTML = t + (sub ? `<small>${sub}</small>` : ''); p.classList.remove('on'); void p.offsetWidth; p.classList.add('on'); };
+  // standardní prezentace výher „ways“
+  K.showWays = async (wins, total, names) => {
+    if (!wins.length) return;
+    K.highlight(wins.flatMap(w => w.cells));
+    const best = wins.slice().sort((a, b) => b.win - a.win).slice(0, 3);
+    K.msg(best.map(w => `${names[w.s]} ×${w.len} • ${w.ways} cest${w.mult > 1 ? ' • ×' + (Math.round(w.mult * 10) / 10) : ''}`).join(' &nbsp;|&nbsp; '));
+    if (total > 0) {
+      const r = total / K.bet();
+      K.setWin(total); K.winpop(fmt(total), r >= 50 ? 'MEGA VÝHRA' : r >= 15 ? 'VELKÁ VÝHRA' : r >= 5 ? 'PĚKNÁ VÝHRA' : '');
+      r >= 15 ? K.sfx.big() : K.sfx.win();
+      await K.wait(r >= 15 ? 2100 : 1250);
+    }
+  };
+  K.coins = w => w > 0 ? Math.max(1, Math.floor(w * K.bet())) : 0; // výhra × sázka → celé kredity (min. 1)
+
+  K.modal = (html, btn, autoClose = 0) => new Promise(res => {
+    $('kCard').innerHTML = html + (btn ? `<div><button class="go" id="kGo">${btn}</button></div>` : '');
+    $('kOv').classList.add('on'); let d = false; const c = () => { if (d) return; d = true; $('kOv').classList.remove('on'); res(); };
+    if (btn) $('kGo').onclick = c; if (autoClose) setTimeout(c, autoClose);
+  });
+  K.confirm = html => new Promise(res => {
+    $('kCard').innerHTML = html + '<div><button class="go" id="kY">KOUPIT</button><button class="go ghost" id="kN">Zpět</button></div>';
+    $('kOv').classList.add('on'); $('kY').onclick = () => { $('kOv').classList.remove('on'); res(true); }; $('kN').onclick = () => { $('kOv').classList.remove('on'); res(false); };
+  });
+  K.confetti = (n, set) => { for (let i = 0; i < n; i++) { const s = document.createElement('div'); s.className = 'confetti'; s.textContent = set[i % set.length];
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = (2 + Math.random() * 2) + 's'; s.style.animationDelay = Math.random() * .8 + 's'; document.body.appendChild(s); setTimeout(() => s.remove(), 5000); } };
+  K.stopAuto = () => { K.auto = false; $('kAuto').classList.remove('on'); K.update(); };
+
+  // ---------- hlavní smyčka ----------
+  K.spin = async () => {
+    if (K.busy) return;
+    const b = O.bets[betI];
+    if (bal < b) { K.stopAuto(); return K.modal('<h2>Došel kredit</h2><p>Doplnit kredit můžeš v lobby kasina, když klesne pod 10.</p>', 'OK'); }
+    K.busy = true; bal -= b; save(); K.update(); K.setWin(0); K.msg('');
+    const w = await O.round(b);
+    bal += w; save(); K.busy = false; K.update();
+    if (K.auto) { await K.wait(300); if (K.auto) K.spin(); }
+  };
+  K.buy = async () => {
+    const b = O.bets[betI], cost = b * O.buyX;
+    if (K.busy || K.bonus || bal < cost) return;
+    if (!(await K.confirm(`<h2>Koupit bonus?</h2><p>${O.buyText}</p><div class="big">${fmt(cost)}</div>`))) return;
+    K.busy = true; bal -= cost; save(); K.update();
+    const w = await O.buy(b);
+    bal += w; save(); K.busy = false; K.update();
+  };
+  // pomocník pro free spiny: přičítá výhry průběžně do kreditu
+  K.credit = x => { bal += x; save(); K.update(); };
+  return K;
+})();
+
+
+const names = ['J', 'Q', 'K', 'A', 'Podkova', 'Klobouk', 'Revolver', 'Měšec'];
+Kit.create({
+  key: 'bandits', prefix: 'b', reels: Game.REELS, rows: Game.ROWS, cellRatio: .78,
+  title: 'DIVOKÝ ZÁPAD', subtitle: '1 024 CEST • LEPIVÍ BANDITÉ',
+  hint: 'Bandita je WILD s násobkem – v jedné cestě se násobky násobí!',
+  filler: Game.filler, pulse: [Game.SCATTER], buyX: Game.CFG.buyX, buyLabel: '🤠 KOUPIT FREE SPINY', buyText: '10 free spinů s lepivými bandity.',
+  label: c => c.s === Game.WILD ? { t: '×' + c.m } : null,
+  info: () => {
+    let rows = ''; for (let i = Game.SYMS.length - 1; i >= 0; i--) rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#b${i}"/></svg></td>${Game.SYMS[i].pay.map(p => `<td>${(Math.round(p * Game.CFG.payScale * 1000) / 1000).toLocaleString('cs-CZ')}×</td>`).join('')}</tr>`;
+    return `<h2>Pravidla</h2><ul class="rules">
+      <li><b>5 válců × 4 řady = 1 024 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b8"/></svg> <b>Bandita</b> (WILD, válce 2–4) má násobek ×2, ×3 nebo ×5. Prochází-li cesta více bandity, <b>násobky se navzájem násobí</b> (×3 a ×5 = ×15).</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b9"/></svg> <b>Šerifská hvězda:</b> 3 = 10 free spinů, 4 = 12, 5 = 15. Ve free spinech je každý bandita <b>lepivý</b> – zůstane na místě až do konce bonusu. 3+ hvězdy = +${Game.RETRIGGER} spinů.</li>
+      <li>Maximální výhra bonusu ${Kit.fmt(Game.MAX_WIN)}× sázka. Koupě bonusu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
+      <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu (ve free spinech jiné tabulky).</p>`;
+  },
+  round: async b => {
+    const r = Game.spin(Math.random);
+    await Kit.spinTo(r.g, { anticSym: Game.SCATTER });
+    let total = Kit.coins(r.total);
+    await Kit.showWays(r.wins, total, names);
+    if (r.sc >= 3) {
+      document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
+      Kit.winpop(Game.FREE_SPINS[Math.min(r.sc, 5)] + ' FREE SPINŮ', r.sc + '× ŠERIF'); Kit.sfx.jp(); await Kit.wait(1700);
+      total += await freeSpins(Game.FREE_SPINS[Math.min(r.sc, 5)], b);
+    }
+    return total;
+  },
+  buy: b => freeSpins(10, b),
+});
+
+async function freeSpins(n, b) {
+  Kit.confetti(20, ['🤠', '⭐', '💰']);
+  await Kit.modal(`<h2>Hledá se!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý bandita, který padne, je <b>lepivý</b> a zůstane na místě až do konce bonusu – se svým násobkem.</p>`, 'JEDEME', Kit.auto ? 2200 : 0);
+  Kit.bonus = true; Kit.bonusBet = b;
+  const st = Game.emptySticky(); let left = n, tot = 0, sticky = 0;
+  Kit.top().innerHTML = '<div class="wanted">🤠 LEPIVÍ BANDITÉ: <b id="nb">0</b></div>';
+  Kit.fsBar(true, left, 0);
+  while (left > 0) {
+    left--; Kit.fsBar(true, left, tot); Kit.msg('');
+    const r = Game.spin(Math.random, true, st);
+    await Kit.spinTo(r.g, { anticSym: Game.SCATTER });
+    const news = Game.addSticky(st, r.g);
+    for (const [rr, y] of news) {
+      const c = st[rr][y];
+      Kit.overlay(rr, y, Kit.symHTML(c) + '<span class="lock">🔒</span>', 'stk'); Kit.tone(220, .2, 'square', .06); Kit.tone(660, .2, 'sine', .06, .08);
+      sticky++; document.getElementById('nb').textContent = sticky;
+      await Kit.wait(350);
+    }
+    let w = Kit.coins(r.total);
+    if (tot + w > Game.MAX_WIN * b) w = Game.MAX_WIN * b - tot;
+    if (r.wins.length) { Kit.clearOverlays('stk'); await Kit.showWays(r.wins, w, names); restoreSticky(st); }
+    tot += w; Kit.fsBar(true, left, tot);
+    if (r.sc >= 3) { left += Game.RETRIGGER; Kit.winpop('+' + Game.RETRIGGER + ' SPINŮ', 'ŠERIF'); Kit.sfx.jp(); await Kit.wait(1400); }
+    if (tot >= Game.MAX_WIN * b) { Kit.winpop('MAX VÝHRA'); await Kit.wait(1500); break; }
+    await Kit.wait(300);
+  }
+  Kit.clearOverlays('stk'); Kit.top().innerHTML = '';
+  Kit.confetti(tot >= b * 30 ? 50 : 18, ['🤠', '💰', '⭐']);
+  await Kit.modal(`<h2>Odměna vyplacena</h2><div class="big">${Kit.fmt(tot)}</div><p>${(Math.round(tot / b * 10) / 10).toLocaleString('cs-CZ')}× sázka • ${sticky} banditů chyceno</p>`, 'POKRAČOVAT', Kit.auto ? 2800 : 0);
+  Kit.bonus = false; Kit.fsBar(false, 0, 0);
+  return tot;
+}
+function restoreSticky(st) { st.forEach((col, r) => col.forEach((c, y) => { if (c) Kit.overlay(r, y, Kit.symHTML(c) + '<span class="lock">🔒</span>', 'stk'); })); document.querySelectorAll('.stk').forEach(e => e.style.animation = 'none'); }
+</script>
+</body>
+</html>

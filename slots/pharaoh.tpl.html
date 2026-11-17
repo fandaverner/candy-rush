@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Poklad faraona – Lucky 7 Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#07101f;--acc:#ffd76a;--acc2:#c9a24a88;--glow:#ffcf4a66;--winglow:#ffe8a066;--tfont:'Cinzel',serif;
+ --tgrad:linear-gradient(180deg,#fff7d0,#ffd76a 50%,#a8741c);
+ --bgimg:radial-gradient(ellipse 80% 40% at 50% 0%,#1d3d7a 0%,transparent 70%),radial-gradient(ellipse 100% 35% at 50% 100%,#c8913a 0%,#7a4a14 40%,transparent 75%),linear-gradient(180deg,#0b1a3a 0%,#08142c 55%,#2a1a08 100%);
+ --frame:linear-gradient(180deg,#ffe9a0,#c9922a 30%,#6a4410 60%,#e8c060 100%);--boardbg:#0a1530;--reelbg:linear-gradient(180deg,#14306a,#0a1838);
+ --fsbar:linear-gradient(90deg,#1d3d7a,#c9922a);--btn:linear-gradient(180deg,#ffe28a,#c4831c);--btntext:#3a2400;
+ --spinbg:radial-gradient(circle at 50% 30%,#fff8 0 8%,transparent 30%),linear-gradient(180deg,#2a5ab0,#0a1f5a);
+ --buybg:linear-gradient(90deg,#1d4aa0,#c4831c);--cardbg:linear-gradient(180deg,#14306a,#0a1530 60%,#3a2408)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:40vh;pointer-events:none;background:radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px),radial-gradient(circle at 70% 60%,#fff9 0 1px,transparent 2px),radial-gradient(circle at 45% 15%,#fffa 0 1.5px,transparent 2.5px);background-size:120px 90px,170px 110px,210px 140px;opacity:.7}
+.jps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.jp{border-radius:10px;padding:4px 2px;text-align:center;box-shadow:0 3px 8px #0008,inset 0 1px 0 #fff5;position:relative;overflow:hidden}
+.jp small{display:block;font-family:Cinzel;font-weight:900;font-size:9px;letter-spacing:1.5px}
+.jp b{font-size:14px}
+.jp.j0{background:linear-gradient(180deg,#7fd3ff,#2a6ab0)}.jp.j1{background:linear-gradient(180deg,#8affc0,#1f8a55)}
+.jp.j2{background:linear-gradient(180deg,#ff9aa8,#a3122a)}.jp.j3{background:linear-gradient(180deg,#fff2a8,#c4831c);color:#3a2200}
+.jp::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,#fff6 50%,transparent 65%);transform:translateX(-120%);animation:sh 4s infinite}
+.jp.j1::after{animation-delay:1s}.jp.j2::after{animation-delay:2s}.jp.j3::after{animation-delay:3s}
+@keyframes sh{40%,100%{transform:translateX(120%)}}
+.jp.hit{animation:jh .5s 6}@keyframes jh{50%{filter:brightness(1.8);transform:scale(1.08)}}
+.sym.s9 .val{bottom:auto;top:50%;transform:translate(-50%,-50%);background:none;font-size:calc(var(--cw)*.24);color:#3a2200;text-shadow:0 1px 0 #fff8}
+.sym.s9 .val.jp{font-size:calc(var(--cw)*.16);color:#fff;text-shadow:0 0 4px #000,0 1px 0 #000}
+.sym.empty{background:radial-gradient(circle,#ffffff08,transparent 70%)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff7d0"/><stop offset=".45" stop-color="#ffd76a"/><stop offset="1" stop-color="#8a5a10"/></linearGradient>
+  <linearGradient id="pl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0ff"/><stop offset=".5" stop-color="#2a6ad8"/><stop offset="1" stop-color="#0a1f6a"/></linearGradient>
+  <linearGradient id="pt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8fff0"/><stop offset=".5" stop-color="#1fb89a"/><stop offset="1" stop-color="#0a4a3a"/></linearGradient>
+  <linearGradient id="pr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".5" stop-color="#d8402a"/><stop offset="1" stop-color="#5a0a05"/></linearGradient>
+  <linearGradient id="pv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d8ff"/><stop offset=".5" stop-color="#9a4ae0"/><stop offset="1" stop-color="#3a0a6a"/></linearGradient>
+  <radialGradient id="pc" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fffbe0"/><stop offset=".5" stop-color="#ffcf3a"/><stop offset="1" stop-color="#a8640a"/></radialGradient>
+  <radialGradient id="pglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe8a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffe8a0" stop-opacity="0"/></radialGradient>
+ </defs>
+ <symbol id="p0" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#pt)" stroke="#022a22" stroke-width="3" paint-order="stroke">J</text></symbol>
+ <symbol id="p1" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="62" fill="url(#pl)" stroke="#020a2a" stroke-width="3" paint-order="stroke">Q</text></symbol>
+ <symbol id="p2" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="62" fill="url(#pr)" stroke="#2a0402" stroke-width="3" paint-order="stroke">K</text></symbol>
+ <symbol id="p3" viewBox="0 0 100 100"><text x="50" y="74" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="64" fill="url(#pv)" stroke="#1a0230" stroke-width="3" paint-order="stroke">A</text></symbol>
+ <symbol id="p4" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="url(#pglow)" opacity=".5"/>
+  <path d="M50 6C36 6 30 18 30 28C30 38 38 46 44 50H22V60H44V94H56V60H78V50H56C62 46 70 38 70 28C70 18 64 6 50 6ZM50 16C57 16 60 22 60 28C60 36 55 42 50 46C45 42 40 36 40 28C40 22 43 16 50 16Z" fill="url(#pg)" stroke="#5a3a00" stroke-width="2"/></symbol>
+ <symbol id="p5" viewBox="0 0 100 100">
+  <path d="M8 46C22 26 78 26 92 46C78 62 22 62 8 46Z" fill="#fff8e8" stroke="#0a1f6a" stroke-width="5"/>
+  <circle cx="50" cy="45" r="13" fill="url(#pl)" stroke="#020a2a" stroke-width="3"/><circle cx="46" cy="41" r="4" fill="#fff"/>
+  <path d="M6 30C30 16 70 16 94 26" stroke="#0a1f6a" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M40 58L36 86M36 86C30 90 22 88 22 80" stroke="#0a1f6a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M60 58C66 70 78 76 90 72" stroke="#0a1f6a" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M8 46C22 26 78 26 92 46" stroke="url(#pg)" stroke-width="2" fill="none"/></symbol>
+ <symbol id="p6" viewBox="0 0 100 100">
+  <path d="M30 40C14 34 4 42 2 56C12 50 22 50 30 52Z" fill="url(#pt)" stroke="#022a22" stroke-width="2"/>
+  <path d="M70 40C86 34 96 42 98 56C88 50 78 50 70 52Z" fill="url(#pt)" stroke="#022a22" stroke-width="2"/>
+  <ellipse cx="50" cy="58" rx="22" ry="30" fill="url(#pt)" stroke="#022a22" stroke-width="2.5"/>
+  <path d="M50 30V88M30 50H70" stroke="#022a22" stroke-width="2"/>
+  <circle cx="50" cy="22" r="11" fill="url(#pc)" stroke="#6a4400" stroke-width="2"/>
+  <path d="M28 70L16 84M72 70L84 84M30 58L14 62M70 58L86 62" stroke="#022a22" stroke-width="3" stroke-linecap="round"/></symbol>
+ <symbol id="p7" viewBox="0 0 100 100">
+  <path d="M34 26L30 6L42 18C46 17 54 17 58 18L70 6L66 26C72 32 72 42 66 48C70 56 74 68 74 80C74 90 70 94 62 94H38C30 94 26 90 26 80C26 68 30 56 34 48C28 42 28 32 34 26Z" fill="#1a1a2a" stroke="url(#pg)" stroke-width="3"/>
+  <path d="M38 34L46 36L40 38ZM62 34L54 36L60 38Z" fill="#7affc0"/>
+  <path d="M38 52C44 56 56 56 62 52" stroke="url(#pg)" stroke-width="4" fill="none"/>
+  <circle cx="50" cy="58" r="4" fill="url(#pc)"/>
+  <path d="M72 84C86 82 92 70 86 60" stroke="#1a1a2a" stroke-width="6" fill="none" stroke-linecap="round"/></symbol>
+ <symbol id="p8" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="url(#pglow)"/>
+  <path d="M20 40C20 14 80 14 80 40L88 92H12Z" fill="url(#pl)" stroke="#020a2a" stroke-width="2.5"/>
+  <path d="M24 46L14 88M76 46L86 88M30 42L22 88M70 42L78 88" stroke="url(#pg)" stroke-width="4"/>
+  <path d="M32 34C32 20 68 20 68 34V64C68 76 60 84 50 84C40 84 32 76 32 64Z" fill="url(#pc)" stroke="#6a4400" stroke-width="2"/>
+  <path d="M38 44H46M54 44H62" stroke="#0a1f6a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M44 66H56" stroke="#8a4a00" stroke-width="3"/>
+  <path d="M46 84H54V96H46Z" fill="url(#pl)"/>
+  <path d="M44 22C46 14 54 14 56 22" fill="url(#pg)"/>
+  <text x="50" y="99" text-anchor="middle" font-family="Cinzel" font-weight="900" font-size="15" fill="#fff" stroke="#020a2a" stroke-width="3" paint-order="stroke">WILD</text></symbol>
+ <symbol id="p9" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="46" fill="url(#pglow)"/>
+  <circle cx="50" cy="50" r="40" fill="url(#pc)" stroke="#8a5400" stroke-width="3"/>
+  <circle cx="50" cy="50" r="31" fill="none" stroke="#fff6c0" stroke-width="2" opacity=".8"/>
+  <path d="M50 14L54 22L50 20L46 22ZM86 50L78 54L80 50L78 46ZM14 50L22 46L20 50L22 54ZM50 86L46 78L50 80L54 78Z" fill="#a8640a"/></symbol>
+</svg>
+
+<script>
+/*SLOTMATH*/
+/*ENGINE*/
+/*KIT*/
+
+const names = ['J', 'Q', 'K', 'A', 'Ankh', 'Horovo oko', 'Skarab', 'Bastet'];
+const JPN = ['MINI', 'MINOR', 'MAJOR', 'GRAND'];
+Kit.create({
+  key: 'pharaoh', prefix: 'p', reels: Game.REELS, rows: Game.ROWS, cellRatio: .9,
+  title: 'POKLAD FARAONA', subtitle: '243 CEST • HOLD & WIN', hint: '6 a více zlatých mincí spustí Poklad faraona',
+  filler: Game.filler, pulse: [Game.COIN], buyX: Game.CFG.buyX, buyLabel: '🪙 KOUPIT POKLAD', buyText: 'Hold &amp; Win se 6 zlatými mincemi.',
+  label: (c, b) => c.s === Game.COIN ? (typeof c.v === 'number' ? { t: Kit.fmt(c.v * b) } : { t: c.v, cls: 'jp' }) : null,
+  onUpdate: () => JPN.forEach((n, i) => { const el = document.getElementById('jp' + i); if (el) el.querySelector('b').textContent = Kit.fmt(Game.JPV[n] * Kit.bet()); }),
+  info: () => {
+    const b = Kit.bet(), f = x => Kit.fmt(Math.max(1, x * Game.CFG.payScale * b));
+    let rows = ''; for (let i = Game.SYMS.length - 1; i >= 0; i--) rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#p${i}"/></svg></td>${Game.SYMS[i].pay.map(p => `<td>${(Math.round(p * Game.CFG.payScale * 100) / 100).toLocaleString('cs-CZ')}×</td>`).join('')}</tr>`;
+    return `<h2>Pravidla</h2><ul class="rules">
+      <li><b>5 válců × 3 řady = 243 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p8"/></svg> <b>Faraon</b> (WILD, válce 2–4) nahrazuje všechny symboly.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p9"/></svg> <b>Poklad faraona:</b> 6+ zlatých mincí spustí Hold &amp; Win. Mince zůstanou na místě, máš 3 respiny a každá nová mince je vrátí na 3.</li>
+      <li>Mince mají hodnotu 1× až 50× sázka nebo jackpot MINI (20×), MINOR (50×), MAJOR (200×). <b>Zaplníš-li všech 15 polí, vyhráváš GRAND (1000×)!</b></li>
+      <li>Koupě pokladu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
+      <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu.</p>`;
+  },
+  round: async b => {
+    const r = Game.base(Math.random);
+    await Kit.spinTo(r.g, { anticSym: Game.COIN });
+    let total = Kit.coins(r.total);
+    await Kit.showWays(r.wins, total, names);
+    if (r.trigger) total += await holdWin(r.g, b);
+    return total;
+  },
+  buy: async b => { const g = Game.buyGrid(Math.random); await Kit.spinTo(g, {}); return holdWin(g, b); },
+});
+Kit.top().innerHTML = `<div class="jps">${JPN.map((n, i) => `<div class="jp j${i}" id="jp${i}"><small>${n}</small><b>0</b></div>`).join('')}</div>`;
+Kit.update();
+
+async function holdWin(g, b) {
+  Kit.clearHighlight();
+  document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
+  Kit.sfx.jp(); await Kit.wait(1200);
+  await Kit.modal(`<h2>Poklad faraona</h2><div class="big">HOLD &amp; WIN</div><p>Zlaté mince zůstávají na místě. Máš <b>3 respiny</b> – každá nová mince je vrátí na 3.</p><p>Zaplň všech 15 polí a vyhraj <b>GRAND</b>!</p>`, 'START', Kit.auto ? 2200 : 0);
+  Kit.bonus = true; Kit.bonusBet = b;
+  const h = Game.holdAndWin(g, Math.random);
+  const val = c => Game.coinValue(c.v) * b;
+  let sum = 0;
+  const grid = g.map(col => col.map(c => c.s === Game.COIN ? c : { s: -1 }));
+  Kit.render(grid);
+  for (const col of grid) for (const c of col) if (c.s === Game.COIN) sum += val(c);
+  Kit.clearHighlight(); document.querySelectorAll('.sym.s-1').forEach(e => e.classList.add('empty'));
+  Kit.fsBar(true, 3, sum, 'RESPINY', 'SOUČET MINCÍ');
+  for (const step of h.steps) {
+    const empties = [];
+    grid.forEach((col, r) => col.forEach((c, y) => { if (c.s === -1) empties.push([r, y]); }));
+    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('empty'); el.classList.add('flick'); el.querySelector('use').setAttribute('href', '#p9'); });
+    await Kit.wait(650);
+    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('flick'); el.classList.add('empty'); el.querySelector('use').setAttribute('href', '#p-1'); });
+    for (const [r, y, c] of step.news) { grid[r][y] = c; Kit.setCell(r, y, c, ' landed'); sum += val(c); Kit.sfx.ding(); await Kit.wait(220); }
+    Kit.fsBar(true, step.respins, sum, 'RESPINY', 'SOUČET MINCÍ');
+    await Kit.wait(step.news.length ? 500 : 350);
+  }
+  // výplata
+  let total = 0;
+  for (let r = 0; r < Game.REELS; r++) for (let y = 0; y < Game.ROWS; y++) {
+    const c = grid[r][y]; if (c.s !== Game.COIN) continue;
+    const v = val(c); total += v; Kit.cell(r, y).classList.add('win'); Kit.setWin(total); Kit.sfx.ding(y + r);
+    if (typeof c.v === 'string') { const i = JPN.indexOf(c.v); document.getElementById('jp' + i).classList.add('hit'); Kit.sfx.jp(); await Kit.wait(900); }
+    await Kit.wait(160);
+  }
+  if (h.grand) { total += Game.JPV.GRAND * b; document.getElementById('jp3').classList.add('hit'); Kit.sfx.jp(); Kit.confetti(80, ['🪙', '👑', '✨', '💎']); await Kit.modal(`<h2>GRAND JACKPOT</h2><div class="big">${Kit.fmt(Game.JPV.GRAND * b)}</div><p>Zaplnil jsi všech 15 polí!</p>`, 'SUPER', Kit.auto ? 3000 : 0); }
+  Kit.setWin(total);
+  document.querySelectorAll('.jp.hit').forEach(e => setTimeout(() => e.classList.remove('hit'), 2500));
+  Kit.confetti(total >= b * 30 ? 50 : 18, ['🪙', '✨', '💰']);
+  await Kit.modal(`<h2>Poklad nalezen</h2><div class="big">${Kit.fmt(total)}</div><p>${(Math.round(total / b * 10) / 10).toLocaleString('cs-CZ')}× sázka</p>`, 'POKRAČOVAT', Kit.auto ? 2800 : 0);
+  Kit.bonus = false; Kit.fsBar(false, 0, 0);
+  Kit.render(grid.map(col => col.map(c => c.s === -1 ? Game.filler(Math.random) : c)));
+  return total;
+}
+</script>
+</body>
+</html>
