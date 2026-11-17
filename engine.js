@@ -23,11 +23,13 @@ const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
   multiP: 0, multiPBonus: 0.016,
-  payScale: 0.17, baseScale: 1, bonusPayScale: 0.55,
+  payScale: 0.17, baseScale: 1, bonusPayScale: 0.066,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
 const W_BASE = [21, 20, 19, 17, 13, 7, 3];
 CFG.wBase = W_BASE;
+// free spiny: hustší váhy → víc propojení za sebou
+CFG.wBonus = [32, 28, 20, 10, 6, 3, 1];
 const TOTAL_W = SYMS.reduce((a, s) => a + s.w, 0);
 
 function sizeIdx(n) {
@@ -42,7 +44,7 @@ function newCell(bonus, rnd) {
   const mp = bonus ? CFG.multiPBonus : CFG.multiP;
   if (r < sp) return { s: SCATTER };
   if (r < sp + mp) return { s: MULTI, m: pick(bonus ? MULTI_VALUES_BONUS : MULTI_VALUES, rnd) };
-  const W = bonus ? SYMS.map(s => s.w) : CFG.wBase;
+  const W = bonus ? CFG.wBonus : CFG.wBase;
   let x = rnd() * W.reduce((a, b) => a + b, 0);
   for (let i = 0; i < W.length; i++) { if ((x -= W[i]) < 0) return { s: i }; }
   return { s: 0 };
@@ -110,9 +112,10 @@ function playSpin(bonus, rnd, state) {
   const ms = multis(g).reduce((a, x) => a + x.m, 0);
   // základní hra: celá výhra kola se na konci vynásobí dosaženým násobkem propojení
   if (!bonus && win > 0) win *= cascadeMulti(step);
-  if (bonus) {
+  // free spiny: násobky se připíšou do celkového násobku JEN když kolo mělo propojení (výhru)
+  if (bonus && win > 0) {
     state.meter += ms;
-    if (win > 0 && state.meter > 0) win *= state.meter;
+    if (state.meter > 0) win *= state.meter;
   }
   state.steps = step;
   if (sc >= 3) win += SCATTER_PAY[Math.min(sc, 7)];
@@ -122,6 +125,7 @@ function playSpin(bonus, rnd, state) {
 // základní hra: každý výherní shluk = propojení; po konci kola se výhra násobí: 1 propojení ×1, 2 ×2, 3 ×4, 4 ×6 …
 function cascadeMulti(step) { return step <= 1 ? 1 : 2 * (step - 1); }
 
+const BONUS_MIN = 20;
 function playBonus(spins, rnd, start = 0) {
   const st = { meter: start }; let total = 0, left = spins;
   while (left > 0) {
@@ -130,7 +134,7 @@ function playBonus(spins, rnd, start = 0) {
     total += r.win;
     left += retrigger(r.sc);
   }
-  return total;
+  return Math.max(total, BONUS_MIN); // bonus vždy vyplatí aspoň BONUS_MIN × sázka
 }
 
-if (typeof module !== 'undefined') module.exports = { COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, retrigger, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };
+if (typeof module !== 'undefined') module.exports = { BONUS_MIN, COLS, ROWS, SYMS, SCATTER, MULTI, CFG, FREE_SPINS, START_MULTI, RETRIGGER, retrigger, SCATTER_PAY, cascadeMulti, fillGrid, findClusters, tumble, countSym, multis, playSpin, playBonus, newCell };

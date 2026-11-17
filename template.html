@@ -177,7 +177,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 // ---------- UI ----------
 const $ = id => document.getElementById(id);
 const board = $('board');
-const BUY_X = 75;
+const BUY_X = 73;
 const BETS = [10, 20, 30, 50, 100, 200, 500];
 // sdílená peněženka kasina (lobby, ruleta, blackjack)
 const WKEY = 'lucky7_wallet';
@@ -298,7 +298,7 @@ async function spinRound() {
   for (const col of grid) col.forEach((x, r) => x.from = -1.5);
   await sleep(render(grid, true) + 80);
   setWin(0);
-  let step = 0;
+  let step = 0, raw = 0;
   for (;;) {
     const cl = findClusters(grid, bonus);
     if (!cl.length) break;
@@ -306,7 +306,7 @@ async function spinRound() {
     for (const k of cl) {
       step++;
       if (!bonus && step > 1) showCombo(cascadeMulti(step));
-      const kw = Math.max(1, Math.round(k.win * b)); sw += kw;
+      const kw = Math.max(1, Math.round(k.win * b)); sw += kw; raw += k.win * b;
       for (const [c, r] of k.cells) cellEl(c, r)?.classList.add('win');
       const cx = k.cells.reduce((a, p) => a + p[0], 0) / k.cells.length;
       const cy = k.cells.reduce((a, p) => a + p[1], 0) / k.cells.length;
@@ -328,17 +328,20 @@ async function spinRound() {
     for (const m of ms) cellEl(m.c, m.r)?.classList.add('glow');
     sfx.multi();
     const sum = ms.reduce((a, m) => a + m.m, 0);
-    if (bonus) {
+    if (bonus && total > 0) {
       meter += sum; updateUI();
       $('meter').classList.remove('bump'); void $('meter').offsetWidth; $('meter').classList.add('bump');
       banner('+×' + sum + ' do násobku');
+    } else if (bonus) {
+      for (const m of ms) cellEl(m.c, m.r)?.classList.add('pop');
+      banner('Bez propojení – násobky propadly');
     }
     await wait(900);
   }
   const mult = bonus ? meter : (step > 1 ? cascadeMulti(step) : 0);
   if (total > 0 && mult > 0) {
     banner(fmt(total) + ' × ' + mult);
-    total = Math.round(total * mult); sfx.multi();
+    total = Math.max(1, Math.round((bonus ? raw : total) * mult)); sfx.multi();
     await wait(1100);
     setWin(total);
   }
@@ -384,7 +387,8 @@ async function spin() {
 async function runBonus(spins, b, start = 0) {
   bonusBet = b;
   await modal(`<h2>🍭 BONUS! 🍭</h2><div class="big">${spins} FREE SPINŮ</div>${start ? `<p style="font-size:20px">Startovní násobek <b style="color:#e8197a">×${start}</b>!</p>` : ''}
-    <p>Násobky ve free spinech <b>zůstávají a sčítají se</b>.<br>Celkový násobek se uplatní na každou výhru!</p>
+    <p>Násobky se připíšou do celkového násobku <b>jen v kole s propojením</b> – pak zůstávají a sčítají se.<br>Celkový násobek se uplatní na každou výhru!</p>
+    <p style="font-size:14px">Bonus vždy vyplatí aspoň <b>${BONUS_MIN}× sázka</b>.</p>
     <p style="font-size:13px;opacity:.8">Lízátka v bonusu: 2 = +2, 3 = +5, 4 = +8, 5 = +10 spinů</p>`, 'START', auto ? 2200 : 0);
   bonus = true; fsLeft = spins; meter = start; fsTotal = 0; updateUI();
   while (fsLeft > 0) {
@@ -395,11 +399,12 @@ async function runBonus(spins, b, start = 0) {
     updateUI();
     await wait(450);
   }
-  const t = fsTotal;
+  let t = fsTotal, topup = 0;
+  if (t < BONUS_MIN * b) { topup = BONUS_MIN * b - t; t += topup; st.bal += topup; save(); }
   bonus = false; updateUI();
   confetti(t >= b * 20 ? 40 : 15);
   await modal(`<h2>KONEC BONUSU</h2><p>Celkem jsi vyhrál</p><div class="big">${fmt(t)}</div>
-    <p>to je <b>${fmtX(t / b)}×</b> sázka • konečný násobek ×${meter}</p>`, 'POKRAČOVAT', auto ? 3000 : 0);
+    <p>to je <b>${fmtX(t / b)}×</b> sázka • konečný násobek ×${meter}</p>${topup ? `<p style="font-size:13px">včetně doplatku na garantovaných ${BONUS_MIN}× sázka</p>` : ''}`, 'POKRAČOVAT', auto ? 3000 : 0);
   meter = 0; fsTotal = 0; updateUI();
 }
 
@@ -459,9 +464,9 @@ function showInfo() {
    <li>Hrací plocha <b>8×8</b>. Výhra padá za <b>shluk 5 a více stejných symbolů</b>, které se dotýkají stranou – kdekoli na ploše, i uprostřed.</li>
    <li>Výherní symboly zmizí, ostatní <b>propadnou dolů</b> a shora spadnou nové – výhry se můžou řetězit.</li>
    <li>🔗 <b>Propojení v základní hře</b>: každý výherní shluk (i dva různé symboly naráz) je samostatné propojení. Výhry se během kola sčítají a <b>po konci kola</b> se celá výhra vynásobí podle počtu propojení: 2 = ×2, 3 = ×4, 4 = ×6, 5 = ×8, 6 = ×10 …</li>
-   <li>🌈 <b>Násobky</b> (×2 až ×50) padají <b>jen ve free spinech</b>.</li>
+   <li>🌈 <b>Násobky</b> (×2 až ×20) padají <b>jen ve free spinech</b> a připíšou se do celkového násobku jen v kole, kde je propojení. Ve free spinech padá víc propojení za sebou.</li>
    <li>🍭 <b>Scatter</b>: 3 = 10 free spinů + startovní násobek ×${START_MULTI[3]}, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
-   <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. Lízátka v bonusu přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5+ = +10.</li>
+   <li>Bonus vždy vyplatí aspoň ${BONUS_MIN}× sázka. Ve <b>free spinech</b> se násobky z kol s propojením přičtou do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. Lízátka v bonusu přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5+ = +10.</li>
    <li>Bonus (10 spinů, start s násobkem ×0) lze koupit za ${BUY_X}× sázka – chycený ve hře je výhodnější. Teoretická návratnost (RTP) ≈ 96 %.</li>
   </ul>
   <table class="pt"><tr><th></th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${rows}</table>
