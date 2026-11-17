@@ -15,10 +15,10 @@ const Game = (() => {
   ];
   const WILD = 8, FISH = 9, SCATTER = 10;
   const FISH_V = [2, 3, 5, 10, 15, 20, 25, 50, 100, 250, 1000];
-  const FISH_W = [34, 26, 18, 10, 5, 2.5, 1.8, 0.8, 0.25, 0.05, 0.005];
+  const FISH_W = [34, 28, 20, 10, 4, 2, 1.2, 0.4, 0.08, 0.01, 0.001];
   const FREE_SPINS = { 3: 10, 4: 15, 5: 20 };
-  const LEVELS = [1, 2, 3, 10]; // násobek sběru po každých 4 rybářích
-  const CFG = { scatterP: 0.0235, fishPFS: 0.078, wildPFS: 0.0155, payScale: 4.2, fsPayScale: 4.2, collectScale: 1, buyX: 75 };
+  const LEVELS = [1, 2, 3, 4]; // násobek sběru po každých 4 rybářích
+  const CFG = { scatterP: 0.0235, fishPFS: 0.046, wildPFS: 0.032, payScale: 4.05, fsPayScale: 0.7, collectScale: 1, buyX: 66 };
 
   const fish = rnd => ({ s: FISH, v: SM.pickW(FISH_V, FISH_W, rnd) });
   function cell(r, rnd, fs) {
@@ -29,7 +29,8 @@ const Game = (() => {
       if (x < CFG.fishPFS + CFG.wildPFS) return { s: WILD };
       if (x < CFG.fishPFS + CFG.wildPFS + CFG.scatterP * 0.6) return { s: SCATTER };
     }
-    const id = SM.pickW(SYMS.map(s => s.id), SYMS.map(s => s.w), rnd);
+    // ve free spinech padají ryby jen přes fishPFS (ne z běžných vah)
+    const id = SM.pickW(SYMS.map(s => s.id), SYMS.map(s => fs && s.id === FISH ? 0 : s.w), rnd);
     return id === FISH ? fish(rnd) : { s: id };
   }
   const filler = rnd => cell(0, rnd, false);
@@ -40,7 +41,10 @@ const Game = (() => {
     return { g, wins: ev.wins, total: ev.total, sc: SM.count(g, SCATTER), fishermen: SM.count(g, WILD), fishSum };
   }
   // stav free spinů
-  function fsState(n) { return { left: n, collected: 0, level: 0, total: 0 }; }
+  // natural = chyceno ve hře → v počítadle už je 1 rybář
+  function fsState(n, natural = false) { return { left: n, collected: natural ? 1 : 0, level: 0, total: 0 }; }
+  const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 };
+  const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
   // vyhodnotí sběr ve free spinu; vrací {collect, retrig}
   function fsCollect(st, r) {
     let collect = 0;
@@ -49,15 +53,15 @@ const Game = (() => {
     const before = Math.floor(st.collected / 4);
     st.collected += r.fishermen;
     const after = Math.min(3, Math.floor(st.collected / 4));
-    if (after > before && st.level < 3) { retrig = (after - Math.min(before, 3)) * 10; st.level = after; }
-    if (r.sc >= 3) retrig += 5;
+    if (after > before && st.level < 3) { retrig = (after - Math.min(before, 3)) * 5; st.level = after; }
+    retrig += retrigger(r.sc);
     return { collect, retrig };
   }
-  function freeSpins(n, rnd) {
-    const st = fsState(n);
+  function freeSpins(n, rnd, natural = false) {
+    const st = fsState(n, natural);
     while (st.left > 0) { st.left--; const r = spin(rnd, true); const c = fsCollect(st, r); st.total += r.total + c.collect; st.left += c.retrig; }
     return st.total;
   }
-  return { REELS, ROWS, SYMS, WILD, FISH, SCATTER, FREE_SPINS, LEVELS, CFG, filler, spin, fsState, fsCollect, freeSpins };
+  return { REELS, ROWS, SYMS, WILD, FISH, SCATTER, FREE_SPINS, LEVELS, RETRIGGER, CFG, filler, spin, fsState, fsCollect, freeSpins };
 })();
 if (typeof module !== 'undefined') module.exports = Game;

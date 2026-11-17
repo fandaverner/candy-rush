@@ -11,7 +11,7 @@ function playBonus(spins) {
     left--;
     const g = H.spinGrid(rnd), f = H.rollFeature(true, rnd), e = H.evaluate(g, f, true);
     tot += (e.total > 0 ? Math.max(1, Math.floor(e.total * 10)) / 10 : 0) + jackpot(e.jp);
-    if (e.sc >= 3) left += H.RETRIGGER;
+    left += H.retrigger(e.sc);
   }
   return tot;
 }

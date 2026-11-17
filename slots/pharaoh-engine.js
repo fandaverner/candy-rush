@@ -14,9 +14,9 @@ const Game = (() => {
   ];
   const WILD = 8, COIN = 9;
   const COIN_V = [1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 50, 'MINI', 'MINOR', 'MAJOR'];
-  const COIN_W = [22, 20, 15, 12, 10, 7, 5, 3.5, 2.2, 1.5, 0.6, 1.2, 0.35, 0.08];
-  const JPV = { MINI: 20, MINOR: 50, MAJOR: 200, GRAND: 1000 };
-  const CFG = { wildP: 0.05, coinP: 0.122, respinP: 0.062, payScale: 2.15, buyX: 55 };
+  const COIN_W = [4, 10, 16, 20, 19, 14, 9, 4, 1.5, 0.6, 0.15, 0.6, 0.12, 0.03];
+  const JPV = { MINI: 15, MINOR: 40, MAJOR: 150, GRAND: 500 };
+  const CFG = { wildP: 0.05, coinP: 0.122, respinP: 0.06, payScale: 2.0, buyX: 62 };
   const TRIG = 6;
 
   function coin(rnd) { return { s: COIN, v: SM.pickW(COIN_V, COIN_W, rnd) }; }
@@ -37,15 +37,16 @@ const Game = (() => {
     return { g, wins: ev.wins, total: ev.total, trigger: coins >= TRIG };
   }
   // Hold & Win: vrací seznam kroků (pro animaci) a celkovou výhru
-  function holdAndWin(startGrid, rnd) {
+  // natural = chyceno ve hře → 4 respiny na startu (koupený jen 3)
+  function holdAndWin(startGrid, rnd, natural = false) {
     const locked = startGrid.map(col => col.map(x => x.s === COIN ? x : null));
-    const steps = []; let respins = 3;
+    const steps = []; let respins = natural ? 4 : 3;
     const filled = () => locked.flat().filter(Boolean).length;
     while (respins > 0 && filled() < REELS * ROWS) {
       const news = [];
       for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++)
         if (!locked[r][y] && rnd() < CFG.respinP) { locked[r][y] = coin(rnd); news.push([r, y, locked[r][y]]); }
-      respins = news.length ? 3 : respins - 1;
+      respins = news.length ? (natural ? 4 : 3) : respins - 1;
       steps.push({ news, respins });
     }
     let total = 0; for (const col of locked) for (const x of col) if (x) total += coinValue(x.v);
@@ -53,11 +54,11 @@ const Game = (() => {
     if (grand) total += JPV.GRAND;
     return { steps, locked, total, grand };
   }
-  function buyGrid(rnd) { // koupený bonus: 6 mincí na náhodných místech
+  function buyGrid(rnd) { // koupený bonus: 7 mincí na náhodných místech
     const g = grid(rnd).map(col => col.map(x => x.s === COIN ? { s: 0 } : x));
     const pos = []; for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++) pos.push([r, y]);
     for (let i = pos.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pos[i], pos[j]] = [pos[j], pos[i]]; }
-    pos.slice(0, TRIG).forEach(([r, y]) => g[r][y] = coin(rnd));
+    pos.slice(0, TRIG + 1).forEach(([r, y]) => g[r][y] = coin(rnd));
     return g;
   }
   return { REELS, ROWS, SYMS, WILD, COIN, JPV, CFG, TRIG, filler, base, holdAndWin, buyGrid, coinValue };

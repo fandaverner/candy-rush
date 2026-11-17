@@ -140,9 +140,9 @@ const Game = (() => {
   ];
   const WILD = 8, COIN = 9;
   const COIN_V = [1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 50, 'MINI', 'MINOR', 'MAJOR'];
-  const COIN_W = [22, 20, 15, 12, 10, 7, 5, 3.5, 2.2, 1.5, 0.6, 1.2, 0.35, 0.08];
-  const JPV = { MINI: 20, MINOR: 50, MAJOR: 200, GRAND: 1000 };
-  const CFG = { wildP: 0.05, coinP: 0.122, respinP: 0.062, payScale: 2.15, buyX: 55 };
+  const COIN_W = [4, 10, 16, 20, 19, 14, 9, 4, 1.5, 0.6, 0.15, 0.6, 0.12, 0.03];
+  const JPV = { MINI: 15, MINOR: 40, MAJOR: 150, GRAND: 500 };
+  const CFG = { wildP: 0.05, coinP: 0.122, respinP: 0.06, payScale: 2.0, buyX: 62 };
   const TRIG = 6;
 
   function coin(rnd) { return { s: COIN, v: SM.pickW(COIN_V, COIN_W, rnd) }; }
@@ -163,15 +163,16 @@ const Game = (() => {
     return { g, wins: ev.wins, total: ev.total, trigger: coins >= TRIG };
   }
   // Hold & Win: vrací seznam kroků (pro animaci) a celkovou výhru
-  function holdAndWin(startGrid, rnd) {
+  // natural = chyceno ve hře → 4 respiny na startu (koupený jen 3)
+  function holdAndWin(startGrid, rnd, natural = false) {
     const locked = startGrid.map(col => col.map(x => x.s === COIN ? x : null));
-    const steps = []; let respins = 3;
+    const steps = []; let respins = natural ? 4 : 3;
     const filled = () => locked.flat().filter(Boolean).length;
     while (respins > 0 && filled() < REELS * ROWS) {
       const news = [];
       for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++)
         if (!locked[r][y] && rnd() < CFG.respinP) { locked[r][y] = coin(rnd); news.push([r, y, locked[r][y]]); }
-      respins = news.length ? 3 : respins - 1;
+      respins = news.length ? (natural ? 4 : 3) : respins - 1;
       steps.push({ news, respins });
     }
     let total = 0; for (const col of locked) for (const x of col) if (x) total += coinValue(x.v);
@@ -179,11 +180,11 @@ const Game = (() => {
     if (grand) total += JPV.GRAND;
     return { steps, locked, total, grand };
   }
-  function buyGrid(rnd) { // koupený bonus: 6 mincí na náhodných místech
+  function buyGrid(rnd) { // koupený bonus: 7 mincí na náhodných místech
     const g = grid(rnd).map(col => col.map(x => x.s === COIN ? { s: 0 } : x));
     const pos = []; for (let r = 0; r < REELS; r++) for (let y = 0; y < ROWS; y++) pos.push([r, y]);
     for (let i = pos.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pos[i], pos[j]] = [pos[j], pos[i]]; }
-    pos.slice(0, TRIG).forEach(([r, y]) => g[r][y] = coin(rnd));
+    pos.slice(0, TRIG + 1).forEach(([r, y]) => g[r][y] = coin(rnd));
     return g;
   }
   return { REELS, ROWS, SYMS, WILD, COIN, JPV, CFG, TRIG, filler, base, holdAndWin, buyGrid, coinValue };
@@ -465,7 +466,7 @@ const JPN = ['MINI', 'MINOR', 'MAJOR', 'GRAND'];
 Kit.create({
   key: 'pharaoh', prefix: 'p', reels: Game.REELS, rows: Game.ROWS, cellRatio: .9,
   title: 'POKLAD FARAONA', subtitle: '243 CEST • HOLD & WIN', hint: '6 a více zlatých mincí spustí Poklad faraona',
-  filler: Game.filler, pulse: [Game.COIN], buyX: Game.CFG.buyX, buyLabel: '🪙 KOUPIT POKLAD', buyText: 'Hold &amp; Win se 6 zlatými mincemi.',
+  filler: Game.filler, pulse: [Game.COIN], buyX: Game.CFG.buyX, buyLabel: '🪙 KOUPIT POKLAD', buyText: 'Hold &amp; Win se 7 zlatými mincemi a 3 respiny.',
   label: (c, b) => c.s === Game.COIN ? (typeof c.v === 'number' ? { t: Kit.fmt(c.v * b) } : { t: c.v, cls: 'jp' }) : null,
   onUpdate: () => JPN.forEach((n, i) => { const el = document.getElementById('jp' + i); if (el) el.querySelector('b').textContent = Kit.fmt(Game.JPV[n] * Kit.bet()); }),
   info: () => {
@@ -474,9 +475,9 @@ Kit.create({
     return `<h2>Pravidla</h2><ul class="rules">
       <li><b>5 válců × 3 řady = 243 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
       <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p8"/></svg> <b>Faraon</b> (WILD, válce 2–4) nahrazuje všechny symboly.</li>
-      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p9"/></svg> <b>Poklad faraona:</b> 6+ zlatých mincí spustí Hold &amp; Win. Mince zůstanou na místě, máš 3 respiny a každá nová mince je vrátí na 3.</li>
-      <li>Mince mají hodnotu 1× až 50× sázka nebo jackpot MINI (20×), MINOR (50×), MAJOR (200×). <b>Zaplníš-li všech 15 polí, vyhráváš GRAND (1000×)!</b></li>
-      <li>Koupě pokladu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#p9"/></svg> <b>Poklad faraona:</b> 6+ zlatých mincí spustí Hold &amp; Win. Mince zůstanou na místě, máš 3 respiny a každá nová mince je vrátí na 3. <b>Poklad chycený ve hře má 4 respiny</b> (a nová mince je vrací na 4).</li>
+      <li>Mince mají hodnotu 1× až 50× sázka nebo jackpot MINI (${Game.JPV.MINI}×), MINOR (${Game.JPV.MINOR}×), MAJOR (${Game.JPV.MAJOR}×). <b>Zaplníš-li všech 15 polí, vyhráváš GRAND (${Game.JPV.GRAND}×)!</b></li>
+      <li>Koupě pokladu (7 mincí, 3 respiny) za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
       <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu.</p>`;
   },
   round: async b => {
@@ -484,10 +485,10 @@ Kit.create({
     await Kit.spinTo(r.g, { anticSym: Game.COIN });
     let total = Kit.coins(r.total);
     await Kit.showWays(r.wins, total, names);
-    if (r.trigger) total += await holdWin(r.g, b);
+    if (r.trigger) total += await holdWin(r.g, b, true);
     return total;
   },
-  buy: async b => { const g = Game.buyGrid(Math.random); await Kit.spinTo(g, {}); return holdWin(g, b); },
+  buy: async b => { const g = Game.buyGrid(Math.random); await Kit.spinTo(g, {}); return holdWin(g, b, false); },
 });
 Kit.top().innerHTML = `<div class="jps">${JPN.map((n, i) => `<div class="jp j${i}" id="jp${i}"><small>${n}</small><b>0</b></div>`).join('')}</div>`;
 Kit.update();
@@ -526,20 +527,21 @@ async function respinCells(cells, newAt, tense, b) {
   await Promise.all(jobs); tick = false;
 }
 
-async function holdWin(g, b) {
+async function holdWin(g, b, natural = false) {
+  const R = natural ? 4 : 3;
   Kit.clearHighlight();
   document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
   Kit.sfx.jp(); await Kit.wait(1200);
-  await Kit.modal(`<h2>Poklad faraona</h2><div class="big">HOLD &amp; WIN</div><p>Zlaté mince zůstávají na místě. Máš <b>3 respiny</b> – každá nová mince je vrátí na 3.</p><p>Zaplň všech 15 polí a vyhraj <b>GRAND</b>!</p>`, 'START', Kit.auto ? 2200 : 0);
+  await Kit.modal(`<h2>Poklad faraona</h2><div class="big">HOLD &amp; WIN</div><p>Zlaté mince zůstávají na místě. Máš <b>${R} respiny</b> – každá nová mince je vrátí na ${R}.</p>${natural ? '<p style="color:#ffd76a"><b>Chycený poklad:</b> 4 respiny místo 3!</p>' : ''}<p>Zaplň všech 15 polí a vyhraj <b>GRAND</b>!</p>`, 'START', Kit.auto ? 2200 : 0);
   Kit.bonus = true; Kit.bonusBet = b;
-  const h = Game.holdAndWin(g, Math.random);
+  const h = Game.holdAndWin(g, Math.random, natural);
   const val = c => Game.coinValue(c.v) * b;
   let sum = 0;
   const grid = g.map(col => col.map(c => c.s === Game.COIN ? c : { s: -1 }));
   Kit.render(grid);
   for (const col of grid) for (const c of col) if (c.s === Game.COIN) sum += val(c);
   Kit.clearHighlight(); document.querySelectorAll('.sym.s-1').forEach(e => e.classList.add('empty'));
-  Kit.fsBar(true, 3, sum, 'RESPINY', 'SOUČET MINCÍ');
+  Kit.fsBar(true, R, sum, 'RESPINY', 'SOUČET MINCÍ');
   for (const step of h.steps) {
     const empties = [];
     grid.forEach((col, r) => col.forEach((c, y) => { if (c.s === -1) empties.push([r, y]); }));

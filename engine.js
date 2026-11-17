@@ -12,18 +12,18 @@ const SYMS = [
 ];
 const SCATTER = 7, MULTI = 8;
 const MULTI_VALUES = [2,2,2,3,3,3,4,5,5,6,8,10,10,12,15,20,25,50,100];
-const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,10,15,20,25,50];
+const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,12,15,20];
 const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
 // startovní celkový násobek bonusu podle počtu scatterů
-const START_MULTI = { 3: 0, 4: 10, 5: 100 };
+const START_MULTI = { 3: 5, 4: 10, 5: 100 }; // jen při chycení ve hře; koupený bonus startuje s ×0
 // lízátka ve free spinech: 2 = +2, 3 = +5, 4 = +8, 5+ = +10 spinů
 const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 };
 const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
-  multiP: 0, multiPBonus: 0.013,
-  payScale: 0.17, baseScale: 1, bonusPayScale: 0.54,
+  multiP: 0, multiPBonus: 0.016,
+  payScale: 0.17, baseScale: 1, bonusPayScale: 0.55,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
 const W_BASE = [21, 20, 19, 17, 13, 7, 3];

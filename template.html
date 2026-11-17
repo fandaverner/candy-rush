@@ -177,7 +177,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 // ---------- UI ----------
 const $ = id => document.getElementById(id);
 const board = $('board');
-const BUY_X = 80;
+const BUY_X = 75;
 const BETS = [10, 20, 30, 50, 100, 200, 500];
 // sdílená peněženka kasina (lobby, ruleta, blackjack)
 const WKEY = 'lucky7_wallet';
@@ -460,9 +460,9 @@ function showInfo() {
    <li>Výherní symboly zmizí, ostatní <b>propadnou dolů</b> a shora spadnou nové – výhry se můžou řetězit.</li>
    <li>🔗 <b>Propojení v základní hře</b>: každý výherní shluk (i dva různé symboly naráz) je samostatné propojení. Výhry se během kola sčítají a <b>po konci kola</b> se celá výhra vynásobí podle počtu propojení: 2 = ×2, 3 = ×4, 4 = ×6, 5 = ×8, 6 = ×10 …</li>
    <li>🌈 <b>Násobky</b> (×2 až ×50) padají <b>jen ve free spinech</b>.</li>
-   <li>🍭 <b>Scatter</b>: 3 = 10 free spinů, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
+   <li>🍭 <b>Scatter</b>: 3 = 10 free spinů + startovní násobek ×${START_MULTI[3]}, 4 = 12 spinů + startovní násobek ×${START_MULTI[4]}, 5+ = 15 spinů + startovní násobek ×${START_MULTI[5]} (+ výplata 3×/5×/10× sázka).</li>
    <li>Ve <b>free spinech</b> se každý násobek přičte do <b>celkového násobku</b>, který vydrží do konce bonusu a násobí každou výhru. Lízátka v bonusu přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5+ = +10.</li>
-   <li>Bonus (10 spinů) lze koupit za ${BUY_X}× sázka. Teoretická návratnost (RTP) ≈ 96 %.</li>
+   <li>Bonus (10 spinů, start s násobkem ×0) lze koupit za ${BUY_X}× sázka – chycený ve hře je výhodnější. Teoretická návratnost (RTP) ≈ 96 %.</li>
   </ul>
   <table class="pt"><tr><th></th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr>${rows}</table>
   <p style="font-size:12px;opacity:.75">Základní výplaty pro sázku ${fmt(b)} (před násobkem propojení; ve free spinech jsou výplaty vyšší) • Fiktivní kredity, jen pro zábavu.</p>

@@ -87,13 +87,13 @@ Kit.create({
   title: 'DIVOKÝ ZÁPAD', subtitle: '1 024 CEST • LEPIVÍ BANDITÉ',
   hint: 'Bandita je WILD s násobkem – v jedné cestě se násobky násobí!',
   filler: Game.filler, pulse: [Game.SCATTER], buyX: Game.CFG.buyX, buyLabel: '🤠 KOUPIT FREE SPINY', buyText: '10 free spinů s lepivými bandity.',
-  label: c => c.s === Game.WILD ? { t: '×' + c.m } : null,
+  label: c => c.s === Game.WILD && c.m > 1 ? { t: '×' + c.m } : null,
   info: () => {
     let rows = ''; for (let i = Game.SYMS.length - 1; i >= 0; i--) rows += `<tr><td><svg viewBox="0 0 100 100"><use href="#b${i}"/></svg></td>${Game.SYMS[i].pay.map(p => `<td>${(Math.round(p * Game.CFG.payScale * 1000) / 1000).toLocaleString('cs-CZ')}×</td>`).join('')}</tr>`;
     return `<h2>Pravidla</h2><ul class="rules">
       <li><b>5 válců × 4 řady = 1 024 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
-      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b8"/></svg> <b>Bandita</b> (WILD, válce 2–4) má násobek ×2, ×3 nebo ×5. Prochází-li cesta více bandity, <b>násobky se navzájem násobí</b> (×3 a ×5 = ×15).</li>
-      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b9"/></svg> <b>Šerifská hvězda:</b> 3 = 10 free spinů, 4 = 12, 5 = 15. Ve free spinech je každý bandita <b>lepivý</b> – zůstane na místě až do konce bonusu. 3+ hvězdy = +${Game.RETRIGGER} spinů.</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b8"/></svg> <b>Bandita</b> (WILD, válce 2–4) má násobek ×2, ×3 nebo ×5 (ve free spinech ×1 až ×3). Prochází-li cesta více bandity, <b>násobky se navzájem násobí</b> (×3 a ×5 = ×15).</li>
+      <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#b9"/></svg> <b>Šerifská hvězda:</b> 3 = 10 free spinů, 4 = 12, 5 = 15. Ve free spinech je každý bandita <b>lepivý</b> – zůstane na místě až do konce bonusu. Bonus začíná se 2 lepivými bandity (chycený ve hře: jeden má ×2). Hvězdy ve free spinech přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5 = +10.</li>
       <li>Maximální výhra bonusu ${Kit.fmt(Game.MAX_WIN)}× sázka. Koupě bonusu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
       <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu (ve free spinech jiné tabulky).</p>`;
   },
@@ -105,20 +105,21 @@ Kit.create({
     if (r.sc >= 3) {
       document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
       Kit.winpop(Game.FREE_SPINS[Math.min(r.sc, 5)] + ' FREE SPINŮ', r.sc + '× ŠERIF'); Kit.sfx.jp(); await Kit.wait(1700);
-      total += await freeSpins(Game.FREE_SPINS[Math.min(r.sc, 5)], b);
+      total += await freeSpins(Game.FREE_SPINS[Math.min(r.sc, 5)], b, true);
     }
     return total;
   },
-  buy: b => freeSpins(10, b),
+  buy: b => freeSpins(10, b, false),
 });
 
-async function freeSpins(n, b) {
+async function freeSpins(n, b, natural = false) {
   Kit.confetti(20, ['🤠', '⭐', '💰']);
-  await Kit.modal(`<h2>Hledá se!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý bandita, který padne, je <b>lepivý</b> a zůstane na místě až do konce bonusu – se svým násobkem.</p>`, 'JEDEME', Kit.auto ? 2200 : 0);
+  await Kit.modal(`<h2>Hledá se!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý bandita, který padne, je <b>lepivý</b> a zůstane na místě až do konce bonusu – se svým násobkem.</p><p>Začínáš se <b>2 lepivými bandity</b>${natural ? ' – <b style="color:#ffc44a">chycený bonus: jeden z nich má ×2!</b>' : ''}</p>`, 'JEDEME', Kit.auto ? 2200 : 0);
   Kit.bonus = true; Kit.bonusBet = b;
   const st = Game.emptySticky(); let left = n, tot = 0, sticky = 0;
   Kit.top().innerHTML = '<div class="wanted">🤠 LEPIVÍ BANDITÉ: <b id="nb">0</b></div>';
   Kit.fsBar(true, left, 0);
+  for (const [rr, y] of Game.startSticky(st, Math.random, natural)) { Kit.overlay(rr, y, Kit.symHTML(st[rr][y]) + '<span class="lock">🔒</span>', 'stk'); sticky++; document.getElementById('nb').textContent = sticky; Kit.tone(660, .2, 'sine', .06); await Kit.wait(400); }
   while (left > 0) {
     left--; Kit.fsBar(true, left, tot); Kit.msg('');
     const r = Game.spin(Math.random, true, st);
@@ -134,7 +135,8 @@ async function freeSpins(n, b) {
     if (tot + w > Game.MAX_WIN * b) w = Game.MAX_WIN * b - tot;
     if (r.wins.length) { Kit.clearOverlays('stk'); await Kit.showWays(r.wins, w, names); restoreSticky(st); }
     tot += w; Kit.fsBar(true, left, tot);
-    if (r.sc >= 3) { left += Game.RETRIGGER; Kit.winpop('+' + Game.RETRIGGER + ' SPINŮ', 'ŠERIF'); Kit.sfx.jp(); await Kit.wait(1400); }
+    const rt = Game.retrigger(r.sc);
+    if (rt) { document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win')); left += rt; Kit.winpop('+' + rt + ' SPINŮ', r.sc + '× ŠERIF'); Kit.sfx.jp(); await Kit.wait(1400); }
     if (tot >= Game.MAX_WIN * b) { Kit.winpop('MAX VÝHRA'); await Kit.wait(1500); break; }
     await Kit.wait(300);
   }

@@ -18,9 +18,10 @@ const HH = (() => {
   const SCATTER = 11, JACKPOT = 12, EXPAND = 13; // EXPAND = symbol Duel, po dopadu roztáhne válec
   const MULTS = [2, 4, 6, 8, 10, 25, 50, 100];
   const MULT_W = [40, 26, 14, 9, 6, 3, 1.5, 0.5];
-  const MULT_W_BONUS = [36, 26, 15, 10, 7, 3.5, 1.8, 0.7];
+  const MULT_W_BONUS = [30, 30, 20, 10, 7, 2.5, 0.4, 0.1];
   const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
-  const RETRIGGER = 5;
+  const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 }; // scattery ve free spinech přidají spiny
+  const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
   const JP = [ // MINI, MAJOR, GRAND – hodnoty v násobcích sázky
     { name: 'MINI', seed: 20, grow: 0.010 },
     { name: 'MAJOR', seed: 100, grow: 0.004 },
@@ -29,8 +30,8 @@ const HH = (() => {
   const CFG = {
     scatterP: 0.0118, jackpotP: 0.0078,
     featureP: 0.1,          // šance na rozšířený válec v základní hře
-    bonusReels: [0.972, 0.026, 0.002], // 1 / 2 / 3 válce ve free spinech
-    payScale: 0.235, bonusPayScale: 0.46,
+    bonusReels: [0.75, 0.22, 0.03], // 1 / 2 / 3 válce ve free spinech
+    payScale: 0.215, bonusPayScale: 0.33,
   };
   const TOTW = SYMS.reduce((a, s) => a + s.w, 0);
 
@@ -50,10 +51,11 @@ const HH = (() => {
     return g;
   }
   // rozšířené válce: [{reel, mult}]
-  function rollFeature(bonus, rnd) {
+  function rollFeature(bonus, rnd, minN = 0) {
     let n = 0;
     if (bonus) { const x = rnd(); n = x < CFG.bonusReels[0] ? 1 : x < CFG.bonusReels[0] + CFG.bonusReels[1] ? 2 : 3; }
     else if (rnd() < CFG.featureP) n = 1;
+    n = Math.max(n, minN);
     const reels = [0, 1, 2, 3, 4];
     for (let i = reels.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [reels[i], reels[j]] = [reels[j], reels[i]]; }
     // nahoře a dole dva RŮZNÉ násobky, náhodně se vybere jeden z nich
@@ -94,6 +96,6 @@ const HH = (() => {
   function placeExpanders(g, feat) { for (const f of feat) g[f.reel][f.row] = EXPAND; return g; }
   const jackpotLevel = n => n >= 5 ? 2 : n === 4 ? 1 : n === 3 ? 0 : -1;
 
-  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, EXPAND, placeExpanders, MULTS, FREE_SPINS, RETRIGGER, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
+  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, EXPAND, placeExpanders, MULTS, FREE_SPINS, RETRIGGER, retrigger, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
 })();
 if (typeof module !== 'undefined') module.exports = HH;

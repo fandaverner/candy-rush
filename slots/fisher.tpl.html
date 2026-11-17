@@ -116,7 +116,7 @@ Kit.create({
       <li><b>5 válců × 3 řady = 243 cest.</b> Vyhrává 3–5 stejných symbolů na sousedních válcích zleva.</li>
       <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#f10"/></svg> <b>Lodička:</b> 3 = 10 free spinů, 4 = 15, 5 = 20.</li>
       <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#f8"/></svg> <b>Rybář</b> padá jen ve free spinech. Je WILD a <b>vyloví hodnoty všech ryb</b> na válcích (každý rybář zvlášť).</li>
-      <li><b>Každý 4. rybář</b> přidá +10 free spinů a zvýší násobek úlovku: ×2 → ×3 → ×10. 3 lodičky ve free spinech = +5 spinů.</li>
+      <li><b>Každý 4. rybář</b> přidá +5 free spinů a zvýší násobek úlovku: ×2 → ×3 → ×4. Lodičky ve free spinech přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5 = +10. <b>Bonus chycený ve hře</b> začíná s 1 rybářem v počítadle.</li>
       <li>Ryby mají hodnotu 2× až 1000× sázka. Koupě bonusu za ${Game.CFG.buyX}× sázka. Návratnost ≈ 96 %.</li></ul>
       <table class="pt"><tr><th></th><th>3×</th><th>4×</th><th>5×</th></tr>${rows}</table><p style="font-size:11px;opacity:.7">Výplaty v násobcích sázky za cestu.</p>`;
   },
@@ -129,11 +129,11 @@ Kit.create({
       document.querySelectorAll('.sym.s10').forEach(e => e.classList.add('win'));
       const n = Game.FREE_SPINS[Math.min(r.sc, 5)];
       Kit.winpop(n + ' FREE SPINŮ', r.sc + '× LODIČKA'); Kit.sfx.jp(); await Kit.wait(1700);
-      total += await freeSpins(n, b);
+      total += await freeSpins(n, b, true);
     }
     return total;
   },
-  buy: b => freeSpins(10, b),
+  buy: b => freeSpins(10, b, false),
 });
 
 function catchUI(st) {
@@ -141,11 +141,11 @@ function catchUI(st) {
   Kit.top().innerHTML = `<div class="catch"><small>RYBÁŘI</small><div class="slots">${[0, 1, 2, 3].map(i => `<i class="${i < inLvl ? 'on' : ''}">${i < inLvl ? '🎣' : ''}</i>`).join('')}</div>
     <small>NÁSOBEK</small><div class="lv">×${Game.LEVELS[st.level]}</div></div>`;
 }
-async function freeSpins(n, b) {
+async function freeSpins(n, b, natural = false) {
   Kit.confetti(20, ['🐟', '🎣', '💧']);
-  await Kit.modal(`<h2>Jdeme na ryby!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý <b>rybář</b> vyloví hodnoty všech ryb na válcích.</p><p>Každý 4. rybář = <b>+10 spinů</b> a vyšší násobek ×2 → ×3 → ×10.</p>`, 'NAHODIT', Kit.auto ? 2200 : 0);
+  await Kit.modal(`<h2>Jdeme na ryby!</h2><div class="big">${n} FREE SPINŮ</div><p>Každý <b>rybář</b> vyloví hodnoty všech ryb na válcích.</p><p>Každý 4. rybář = <b>+5 spinů</b> a vyšší násobek ×2 → ×3 → ×4.</p>${natural ? '<p style="color:#ffe14a"><b>Chycený bonus:</b> v počítadle už máš 1 rybáře!</p>' : ''}`, 'NAHODIT', Kit.auto ? 2200 : 0);
   Kit.bonus = true; Kit.bonusBet = b;
-  const st = Game.fsState(n); catchUI(st);
+  const st = Game.fsState(n, natural); catchUI(st);
   Kit.fsBar(true, st.left, 0);
   while (st.left > 0) {
     st.left--; Kit.fsBar(true, st.left, st.total); Kit.msg('');
@@ -170,8 +170,8 @@ async function freeSpins(n, b) {
     if (r.wins.length) await Kit.showWays(r.wins, w, names);
     st.total += c.collect * b + w;
     Kit.fsBar(true, st.left, st.total);
-    if (st.level > lvl) { Kit.winpop('+10 SPINŮ', 'NÁSOBEK ×' + Game.LEVELS[st.level]); Kit.sfx.jp(); await Kit.wait(1600); }
-    else if (c.retrig) { Kit.winpop('+' + c.retrig + ' SPINŮ', 'LODIČKY'); Kit.sfx.jp(); await Kit.wait(1400); }
+    if (st.level > lvl) { Kit.winpop('+' + c.retrig + ' SPINŮ', 'NÁSOBEK ×' + Game.LEVELS[st.level]); Kit.sfx.jp(); await Kit.wait(1600); }
+    else if (c.retrig) { document.querySelectorAll('.sym.s10').forEach(e => e.classList.add('win')); Kit.winpop('+' + c.retrig + ' SPINŮ', r.sc + '× LODIČKA'); Kit.sfx.jp(); await Kit.wait(1400); }
     st.left += c.retrig; catchUI(st); Kit.fsBar(true, st.left, st.total);
     await Kit.wait(300);
   }

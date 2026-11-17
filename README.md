@@ -21,7 +21,7 @@ Malé herní kasino v prohlížeči – jen pro zábavu, fiktivní kredity. Kred
 - 🍭 Scatter: 3 = 10, 4 = 12 (+ start ×10), 5+ = 15 (+ start ×100) free spinů
 - Ve free spinech se násobky sčítají a zůstávají do konce bonusu
 - Lízátka v bonusu přidají spiny: 2 = +2, 3 = +5, 4 = +8, 5+ = +10
-- Koupě bonusu za 80× sázka
+- Koupě bonusu za 75× sázka (koupený startuje s násobkem ×0, chycený se 3 scattery s ×5)
 
 Vývoj: `engine.js` (logika) + `template.html` (UI) → `python3 build.py` vytvoří `candy-rush.html`. Simulace výplat: `node sim.js 400000`.
 
@@ -36,3 +36,8 @@ Vývoj: `engine.js` (logika) + `template.html` (UI) → `python3 build.py` vytvo
 ## Poklad faraona, Divoký západ, Zlatý úlovek
 Sdílené UI je ve `slots/slotkit.js`, výpočet výher „ways“ ve `slots/slotmath.js`, logika her v `slots/*-engine.js`, šablony `slots/*.tpl.html`.
 `python3 build.py` sestaví všechny hry. Simulace: `node slots/sim-pharaoh.js`, `node slots/sim-bandits.js`, `node slots/sim-fisher.js` (cíl RTP ≈ 96 %).
+
+## Chycený vs. koupený bonus
+Bonus chycený ve hře má vždy výhodu: Candy Rush start ×5, Halo & Horns 2 Duely v 1. spinu, Poklad faraona 4 respiny,
+Divoký západ jeden startovní bandita ×2, Zlatý úlovek 1 rybář v počítadle. Koupené bonusy vrací cca 92–94 %.
+Ve všech free spinech přidávají scattery spiny: 2 = +2, 3 = +5, 4 = +8, 5 = +10. Ladění: `node tune.js <candy|halo|pharaoh|bandits|fisher>`.
