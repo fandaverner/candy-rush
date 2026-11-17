@@ -177,7 +177,7 @@ h1 small{display:block;font-size:12px;letter-spacing:3px;color:#ffe9a6;-webkit-t
 // ---------- UI ----------
 const $ = id => document.getElementById(id);
 const board = $('board');
-const BUY_X = 73;
+const BUY_X = 75;
 const BETS = [10, 20, 30, 50, 100, 200, 500];
 // sdílená peněženka kasina (lobby, ruleta, blackjack)
 const WKEY = 'lucky7_wallet';
@@ -306,7 +306,8 @@ async function spinRound() {
     for (const k of cl) {
       step++;
       if (!bonus && step > 1) showCombo(cascadeMulti(step));
-      const kw = Math.max(1, Math.round(k.win * b)); sw += kw; raw += k.win * b;
+      // ve free spinech ukazuje výhra shluku rovnou aktuální celkový násobek
+      const kw = Math.max(1, Math.round(k.win * b * (bonus ? Math.max(1, meter) : 1))); sw += kw; raw += k.win * b;
       for (const [c, r] of k.cells) cellEl(c, r)?.classList.add('win');
       const cx = k.cells.reduce((a, p) => a + p[0], 0) / k.cells.length;
       const cy = k.cells.reduce((a, p) => a + p[1], 0) / k.cells.length;
@@ -338,7 +339,12 @@ async function spinRound() {
     }
     await wait(900);
   }
-  const mult = bonus ? meter : (step > 1 ? cascadeMulti(step) : 0);
+  if (bonus && total > 0) {
+    const nt = Math.max(1, Math.round(raw * Math.max(1, meter)));
+    if (nt > total) { banner('×' + meter + ' → ' + fmt(nt)); sfx.multi(); await wait(1100); }
+    total = nt; setWin(total);
+  }
+  const mult = bonus ? 0 : (step > 1 ? cascadeMulti(step) : 0);
   if (total > 0 && mult > 0) {
     banner(fmt(total) + ' × ' + mult);
     total = Math.max(1, Math.round((bonus ? raw : total) * mult)); sfx.multi();

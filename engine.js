@@ -15,14 +15,14 @@ const MULTI_VALUES = [2,2,2,3,3,3,4,5,5,6,8,10,10,12,15,20,25,50,100];
 const MULTI_VALUES_BONUS = [2,2,2,3,3,3,4,4,5,5,6,8,10,12,15,20];
 const FREE_SPINS = { 3: 10, 4: 12, 5: 15 };
 // startovní celkový násobek bonusu podle počtu scatterů
-const START_MULTI = { 3: 5, 4: 10, 5: 100 }; // jen při chycení ve hře; koupený bonus startuje s ×0
+const START_MULTI = { 3: 2, 4: 6, 5: 25 }; // jen při chycení ve hře; koupený bonus startuje s ×0
 // lízátka ve free spinech: 2 = +2, 3 = +5, 4 = +8, 5+ = +10 spinů
 const RETRIGGER = { 2: 2, 3: 5, 4: 8, 5: 10 };
 const retrigger = sc => sc >= 2 ? RETRIGGER[Math.min(sc, 5)] : 0;
 const SCATTER_PAY = { 3: 3, 4: 5, 5: 10, 6: 25, 7: 100 };
 const CFG = {
   scatterP: 0.0053, scatterPBonus: 0.0042,
-  multiP: 0, multiPBonus: 0.016,
+  multiP: 0, multiPBonus: 0.0036,
   payScale: 0.17, baseScale: 1, bonusPayScale: 0.066,
 };
 // základní hra má „hustší“ váhy (víc propojení), bonus původní
@@ -74,8 +74,8 @@ function findClusters(g, bonus) {
         if (g[nx][ny].s === s) { seen[nx][ny] = true; stack.push([nx, ny]); }
       }
     }
-    // základní hra: celočíselná tabulka pro sázku 10 (base / 10 × sázka), bonus: pay × bonusPayScale
-    if (cells.length >= 5) out.push({ s, cells, win: bonus ? SYMS[s].pay[sizeIdx(cells.length)] * sc : SYMS[s].base[sizeIdx(cells.length)] * CFG.baseScale / 10 });
+    // celočíselná tabulka pro sázku 10 (base / 10 × sázka) – stejná v základní hře i ve free spinech
+    if (cells.length >= 5) out.push({ s, cells, win: SYMS[s].base[sizeIdx(cells.length)] * CFG.baseScale / 10 });
   }
   return out;
 }
@@ -115,7 +115,7 @@ function playSpin(bonus, rnd, state) {
   // free spiny: násobky se připíšou do celkového násobku JEN když kolo mělo propojení (výhru)
   if (bonus && win > 0) {
     state.meter += ms;
-    if (state.meter > 0) win *= state.meter;
+    win *= Math.max(1, state.meter);
   }
   state.steps = step;
   if (sc >= 3) win += SCATTER_PAY[Math.min(sc, 7)];
