@@ -11,7 +11,7 @@ Malé herní kasino v prohlížeči – jen pro zábavu, fiktivní kredity. Kred
 | `divoky-zapad.html` | 🤠 Divoký západ – 1024 cest, bandité s násobky (násobí se), lepiví ve free spinech |
 | `zlaty-ulovek.html` | 🎣 Zlatý úlovek – 243 cest, rybář ve free spinech sbírá hodnoty ryb |
 | `ruleta.html` | 🎡 Evropská ruleta (jedna nula) |
-| `blackjack.html` | 🃏 Blackjack (6 balíčků, BJ 3:2, krupiér stojí na 17, zdvojení, rozdělení) |
+| `blackjack.html` | 🃏 Blackjack (až 3 místa najednou, sázky na stranu Perfect Pairs a 21+3, 6 balíčků, BJ 3:2) |
 
 ## Candy Rush
 - Plocha 8×8, výhra za shluk **5+ stejných symbolů** (sousedí stranou), kdekoli na ploše
