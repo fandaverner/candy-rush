@@ -15,7 +15,7 @@ const HH = (() => {
     { id: 9,  key: 'halo',    w: 7,  pay: [0.80, 2.00, 4.00] },
     { id: 10, key: 'wings',   w: 6,  pay: [1.00, 3.00, 6.00] },
   ];
-  const SCATTER = 11, JACKPOT = 12;
+  const SCATTER = 11, JACKPOT = 12, EXPAND = 13; // EXPAND = symbol Duel, po dopadu roztáhne válec
   const MULTS = [2, 4, 6, 8, 10, 25, 50, 100];
   const MULT_W = [40, 26, 14, 9, 6, 3, 1.5, 0.5];
   const MULT_W_BONUS = [36, 26, 15, 10, 7, 3.5, 1.8, 0.7];
@@ -62,7 +62,7 @@ const HH = (() => {
       const top = pickW(MULTS, W, rnd);
       let bot; do { bot = pickW(MULTS, W, rnd); } while (bot === top);
       const side = rnd() < 0.5 ? 'top' : 'bot';
-      return { reel, top, bot, side, mult: side === 'top' ? top : bot };
+      return { reel, row: Math.floor(rnd() * ROWS), top, bot, side, mult: side === 'top' ? top : bot };
     });
   }
   // výpočet výher „ways“ (zleva doprava, sousední válce, všech 6^5 = 7776 cest)
@@ -90,8 +90,10 @@ const HH = (() => {
     for (let r = 0; r < REELS; r++) if (!wild.has(r)) for (let y = 0; y < ROWS; y++) { if (g[r][y] === SCATTER) sc++; if (g[r][y] === JACKPOT) jp++; }
     return { wins, total: wins.reduce((a, w) => a + w.win, 0), sc, jp };
   }
+  // vloží symbol Duel na válce, které se roztáhnou
+  function placeExpanders(g, feat) { for (const f of feat) g[f.reel][f.row] = EXPAND; return g; }
   const jackpotLevel = n => n >= 5 ? 2 : n === 4 ? 1 : n === 3 ? 0 : -1;
 
-  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, MULTS, FREE_SPINS, RETRIGGER, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
+  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, EXPAND, placeExpanders, MULTS, FREE_SPINS, RETRIGGER, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
 })();
 if (typeof module !== 'undefined') module.exports = HH;

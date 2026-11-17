@@ -24,7 +24,7 @@ Vývoj: `engine.js` (logika) + `template.html` (UI) → `python3 build.py` vytvo
 
 ## Halo & Horns
 - 5 válců × 6 řad = **7 776 cest** (3–5 stejných na sousedních válcích zleva)
-- **Rozšířený válec**: náhodně se roztáhne jeden z 5 válců, je WILD; nahoře a dole jsou dva různé násobky (×2–×100) a náhodně se vybere jeden z nich
+- **Symbol Duel**: když padne na válec, roztáhne ho přes celou výšku, válec je WILD; nahoře a dole jsou dva různé násobky (×2–×100) a náhodně se vybere jeden z nich
 - **Bonus**: 3/4/5 scatterů = 10/12/15 free spinů, v každém zaručený aspoň jeden rozšířený válec; 3+ scattery = +5 spinů
 - **3 progresivní jackpoty** (MINI/MAJOR/GRAND za 3/4/5 jackpotových symbolů)
 - **Rostoucí cashback** 1–5 % z prohraných spinů (+1 % každých 50 spinů, výběr vrací úroveň na 1 %)

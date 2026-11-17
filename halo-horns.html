@@ -81,6 +81,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .board.dim .sym:not(.win){opacity:.32;transition:opacity .3s}
 .sym.sc svg{animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(1.08)}}
+.sym.duel svg{animation:duel .7s ease-in-out both}
+.sym.duel::after{content:"";position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,#fff 0,#ffe28a88 30%,#ff6a3a44 55%,transparent 70%);animation:duelGlow .7s ease-out both}
+@keyframes duel{40%{transform:scale(1.35) rotate(-8deg)}70%{transform:scale(1.25) rotate(6deg)}100%{transform:scale(1.3)}}
+@keyframes duelGlow{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1.2)}}
 .reel.antic{box-shadow:inset 0 0 0 2px #ffe28a,inset 0 0 20px #ff8a3a}
 /* rozšířený válec */
 .wildreel{position:absolute;inset:0;z-index:4;border-radius:6px;overflow:hidden;transform-origin:50% 50%;
@@ -243,6 +247,17 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px}
   <circle cx="50" cy="6" r="3.5" fill="#ff5a6a"/><circle cx="32" cy="12" r="3" fill="#7ae8ff"/><circle cx="68" cy="12" r="3" fill="#7ae8ff"/>
   <text x="50" y="66" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="26" fill="#fff" stroke="#120a4a" stroke-width="2" paint-order="stroke">JP</text>
  </symbol>
+ <symbol id="s-13" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="url(#gGlow)" opacity=".8"/>
+  <clipPath id="dL"><path d="M0 0H100L0 100Z"/></clipPath><clipPath id="dR"><path d="M100 0V100H0Z"/></clipPath>
+  <circle cx="50" cy="50" r="42" fill="url(#gGold)" clip-path="url(#dL)"/>
+  <circle cx="50" cy="50" r="42" fill="url(#gBlood)" clip-path="url(#dR)"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="#fffbe0" stroke-width="3"/>
+  <path d="M8 92L92 8" stroke="#fffbe0" stroke-width="3"/>
+  <ellipse cx="30" cy="22" rx="13" ry="4.5" fill="none" stroke="#fff" stroke-width="3.5"/>
+  <path d="M62 86C76 82 84 72 86 58C80 68 72 74 60 76Z" fill="#fff2d8" stroke="#3a1a08" stroke-width="1.5"/>
+  <text x="50" y="58" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="20" fill="#fff" stroke="#2a0204" stroke-width="2.5" paint-order="stroke">WILD</text>
+ </symbol>
 </svg>
 
 <div class="app">
@@ -303,7 +318,7 @@ const HH = (() => {
     { id: 9,  key: 'halo',    w: 7,  pay: [0.80, 2.00, 4.00] },
     { id: 10, key: 'wings',   w: 6,  pay: [1.00, 3.00, 6.00] },
   ];
-  const SCATTER = 11, JACKPOT = 12;
+  const SCATTER = 11, JACKPOT = 12, EXPAND = 13; // EXPAND = symbol Duel, po dopadu roztáhne válec
   const MULTS = [2, 4, 6, 8, 10, 25, 50, 100];
   const MULT_W = [40, 26, 14, 9, 6, 3, 1.5, 0.5];
   const MULT_W_BONUS = [36, 26, 15, 10, 7, 3.5, 1.8, 0.7];
@@ -350,7 +365,7 @@ const HH = (() => {
       const top = pickW(MULTS, W, rnd);
       let bot; do { bot = pickW(MULTS, W, rnd); } while (bot === top);
       const side = rnd() < 0.5 ? 'top' : 'bot';
-      return { reel, top, bot, side, mult: side === 'top' ? top : bot };
+      return { reel, row: Math.floor(rnd() * ROWS), top, bot, side, mult: side === 'top' ? top : bot };
     });
   }
   // výpočet výher „ways“ (zleva doprava, sousední válce, všech 6^5 = 7776 cest)
@@ -378,9 +393,11 @@ const HH = (() => {
     for (let r = 0; r < REELS; r++) if (!wild.has(r)) for (let y = 0; y < ROWS; y++) { if (g[r][y] === SCATTER) sc++; if (g[r][y] === JACKPOT) jp++; }
     return { wins, total: wins.reduce((a, w) => a + w.win, 0), sc, jp };
   }
+  // vloží symbol Duel na válce, které se roztáhnou
+  function placeExpanders(g, feat) { for (const f of feat) g[f.reel][f.row] = EXPAND; return g; }
   const jackpotLevel = n => n >= 5 ? 2 : n === 4 ? 1 : n === 3 ? 0 : -1;
 
-  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, MULTS, FREE_SPINS, RETRIGGER, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
+  return { REELS, ROWS, SYMS, SCATTER, JACKPOT, EXPAND, placeExpanders, MULTS, FREE_SPINS, RETRIGGER, JP, CFG, spinGrid, rollFeature, evaluate, jackpotLevel };
 })();
 if (typeof module !== 'undefined') module.exports = HH;
 
@@ -483,6 +500,10 @@ async function spinReels(newGrid, anticipate) {
 
 // rozšířený válec s násobkem nahoře i dole
 async function expandReel(f) {
+  // symbol Duel dopadl – zazáří a teprve pak se válec roztáhne
+  const cell = strips[f.reel].children[f.row];
+  if (cell) { cell.classList.add('duel'); tone(660, .4, 'sine', .08); tone(990, .5, 'triangle', .06, .15); }
+  await sleep(T(700));
   sfx.whoosh(); $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
   const w = document.createElement('div'); w.className = 'wildreel';
   w.innerHTML = `<div class="badge top roll"><span>?</span></div>
@@ -490,6 +511,7 @@ async function expandReel(f) {
     <div class="w">WILD</div>
     <div class="art a2"><svg viewBox="0 0 100 100"><use href="#s-8"/></svg></div>
     <div class="badge bot roll"><span>?</span></div>`;
+  w.style.transformOrigin = `50% ${((f.row + .5) / ROWS) * 100}%`;
   reels[f.reel].appendChild(w);
   await sleep(T(450));
   const top = w.querySelector('.badge.top'), bot = w.querySelector('.badge.bot');
@@ -531,7 +553,7 @@ function updateUI() {
 }
 const setWin = x => $('win').textContent = fmt(x);
 function winpop(text, sub) { const p = $('winpop'); p.innerHTML = text + (sub ? `<small>${sub}</small>` : ''); p.classList.remove('on'); void p.offsetWidth; p.classList.add('on'); }
-const symName = id => ['9', '10', 'J', 'Q', 'K', 'A', 'Plamen', 'Trojzubec', 'Démon', 'Svatozář', 'Křídla'][id];
+const symName = id => ['9', '10', 'J', 'Q', 'K', 'A', 'Plamen', 'Trojzubec', 'Démon', 'Svatozář', 'Křídla', 'Bonus', 'JP', 'Duel'][id];
 
 function highlight(wins, feat) {
   const set = new Set();
@@ -549,6 +571,7 @@ async function spinRound() {
   if (!bonus) { JP.forEach((j, i) => S.jp[i] += j.grow); }
   const g = HH.spinGrid(Math.random);
   const feat = HH.rollFeature(bonus, Math.random);
+  HH.placeExpanders(g, feat);
   setWin(0); $('wins').textContent = bonus ? 'Free spin – aspoň jeden válec s násobkem je jistý!' : ' ';
   await spinReels(g, true);
   for (const f of feat) await expandReel(f);
@@ -612,7 +635,7 @@ async function runBonus(spins, b) {
   bonusBet = b;
   confetti(25, ['🪽', '🔥', '✨']);
   await modal(`<h2>Nebe vs. Peklo</h2><div class="big">${spins} FREE SPINŮ</div>
-    <p>V každém free spinu je <b>zaručený aspoň jeden rozšířený válec</b> s násobkem ×2 až ×100.</p>
+    <p>V každém free spinu padne <b>aspoň jeden symbol Duel</b>, který roztáhne válec s násobkem ×2 až ×100.</p>
     <p style="opacity:.8;font-size:13px">3+ scattery v bonusu = +${RETRIGGER} spinů</p>`, 'START', auto ? 2200 : 0);
   bonus = true; fsLeft = spins; fsTotal = 0; updateUI();
   while (fsLeft > 0) {
@@ -658,8 +681,8 @@ function showInfo() {
   $('card').innerHTML = `<h2>Pravidla</h2>
    <ul class="rules">
     <li><b>5 válců × 6 řad = 7 776 cest.</b> Vyhrává 3, 4 nebo 5 stejných symbolů na sousedních válcích zleva, na libovolné pozici. Výhra = výplata × počet cest.</li>
-    <li><b>Rozšířený válec:</b> náhodně se roztáhne jeden z 5 válců přes celou výšku, stane se WILD a nahoře i dole se vylosuje násobek <b>×2, ×4, ×6, ×8, ×10, ×25, ×50 nebo ×100</b>. Násobí všechny výhry, které přes válec vedou (více válců se sčítá).</li>
-    <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-11"/></svg> <b>Bonus:</b> 3 scattery = 10 free spinů, 4 = 12, 5+ = 15. Ve free spinech je v každém zatočení <b>zaručený aspoň jeden rozšířený válec</b>. 3+ scattery = +${RETRIGGER} spinů.</li>
+    <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-13"/></svg> <b>Symbol Duel:</b> když padne na kterýkoli válec, roztáhne se přes celou výšku válce, stane se WILD a nahoře i dole se vylosuje násobek <b>×2, ×4, ×6, ×8, ×10, ×25, ×50 nebo ×100</b>. Násobí všechny výhry, které přes válec vedou (více válců se sčítá).</li>
+    <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-11"/></svg> <b>Bonus:</b> 3 scattery = 10 free spinů, 4 = 12, 5+ = 15. Ve free spinech padne v každém zatočení <b>aspoň jeden symbol Duel</b>. 3+ scattery = +${RETRIGGER} spinů.</li>
     <li><svg viewBox="0 0 100 100" style="width:22px;vertical-align:middle"><use href="#s-12"/></svg> <b>Jackpoty:</b> 3 symboly = MINI, 4 = MAJOR, 5+ = GRAND. Jackpoty rostou s každým spinem.</li>
     <li><b>Rostoucí cashback:</b> z každého prohraného spinu se do cashbacku vrací 1 % sázky, každých 50 spinů o 1 % víc (max. 5 %). Vybráním se úroveň vrátí na 1 %.</li>
     <li>Koupě bonusu (10 free spinů) za ${BUY_X}× sázka. Teoretická návratnost ≈ 96 %.</li>
