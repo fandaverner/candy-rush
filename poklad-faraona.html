@@ -26,6 +26,15 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:40vh;pointer-events
 .jp.hit{animation:jh .5s 6}@keyframes jh{50%{filter:brightness(1.8);transform:scale(1.08)}}
 .sym.s9 .val{bottom:auto;top:50%;transform:translate(-50%,-50%);background:none;font-size:calc(var(--cw)*.24);color:#3a2200;text-shadow:0 1px 0 #fff8}
 .sym.s9 .val.jp{font-size:calc(var(--cw)*.16);color:#fff;text-shadow:0 0 4px #000,0 1px 0 #000}
+.sym.mini{overflow:hidden;display:block}
+.mstrip{position:absolute;left:0;right:0;top:0;will-change:transform}
+.mstrip .mini-i{height:var(--ch)}
+.mini-i.blank svg{opacity:.14;filter:grayscale(1)}
+.sym.mini::after{content:"";position:absolute;inset:2px;border-radius:8px;box-shadow:inset 0 0 0 1.5px #ffd76a55;pointer-events:none}
+.sym.tense::after{box-shadow:inset 0 0 0 3px #ffd76a,inset 0 0 18px #ffcf4a;animation:tns .3s infinite alternate}
+@keyframes tns{to{box-shadow:inset 0 0 0 3px #fff,inset 0 0 26px #ffcf4a}}
+.fsbar.bump b{animation:bmp .45s}@keyframes bmp{40%{transform:scale(1.5)}}
+.fsbar b{display:inline-block}
 .sym.empty{background:radial-gradient(circle,#ffffff08,transparent 70%)}
 </style>
 </head>
@@ -483,6 +492,40 @@ Kit.create({
 Kit.top().innerHTML = `<div class="jps">${JPN.map((n, i) => `<div class="jp j${i}" id="jp${i}"><small>${n}</small><b>0</b></div>`).join('')}</div>`;
 Kit.update();
 
+// každé prázdné pole je samostatný malý válec – roztočí se a zastavují se postupně jedno po druhém
+async function respinCells(cells, newAt, tense, b) {
+  const items = (fin, n) => {
+    const fake = () => Math.random() < .28 ? { s: Game.COIN, v: [1, 2, 3, 5, 10, 'MINI'][Math.floor(Math.random() * 6)] } : null;
+    const seq = [fin, ...Array.from({ length: n }, fake), null];
+    return seq.map(c => c ? Kit.symHTML(c).replace('class="sym', 'class="sym mini-i') : '<div class="sym mini-i blank"><svg viewBox="0 0 100 100"><use href="#p9"/></svg></div>').join('');
+  };
+  const order = cells.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const k = Kit.turbo ? .45 : 1, jobs = [];
+  order.forEach(([r, y], i) => {
+    const el = Kit.cell(r, y), h = el.clientHeight;
+    const fin = newAt.get(r * 10 + y) || null;
+    const n = 10 + i * 2 + (tense && i === order.length - 1 ? 14 : 0);
+    el.classList.remove('empty'); el.classList.add('mini');
+    el.innerHTML = `<div class="mstrip">${items(fin, n)}</div>`;
+    const st = el.firstChild;
+    st.style.transform = `translateY(${-(n + 1) * h}px)`;
+    const dur = (700 + n * 45) * k, delay = i * 110 * k;
+    jobs.push(new Promise(res => setTimeout(() => {
+      st.style.transition = `transform ${dur}ms cubic-bezier(.2,.1,.25,1.08)`; st.style.transform = 'translateY(0)';
+      if (tense && i === order.length - 1) el.classList.add('tense');
+      setTimeout(() => {
+        el.classList.remove('tense');
+        if (fin) { Kit.setCell(r, y, fin, ' landed'); Kit.sfx.ding(i % 6); }
+        else { el.classList.remove('mini'); el.classList.add('empty'); el.innerHTML = '<svg viewBox="0 0 100 100"><use href="#p-1"/></svg>'; Kit.tone(120, .06, 'triangle', .05); }
+        res();
+      }, dur);
+    }, delay)));
+  });
+  // tikání během točení
+  let tick = true; (async () => { while (tick) { Kit.sfx.tick(); await Kit.sleep(90); } })();
+  await Promise.all(jobs); tick = false;
+}
+
 async function holdWin(g, b) {
   Kit.clearHighlight();
   document.querySelectorAll('.sym.s9').forEach(e => e.classList.add('win'));
@@ -500,12 +543,12 @@ async function holdWin(g, b) {
   for (const step of h.steps) {
     const empties = [];
     grid.forEach((col, r) => col.forEach((c, y) => { if (c.s === -1) empties.push([r, y]); }));
-    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('empty'); el.classList.add('flick'); el.querySelector('use').setAttribute('href', '#p9'); });
-    await Kit.wait(650);
-    empties.forEach(([r, y]) => { const el = Kit.cell(r, y); el.classList.remove('flick'); el.classList.add('empty'); el.querySelector('use').setAttribute('href', '#p-1'); });
-    for (const [r, y, c] of step.news) { grid[r][y] = c; Kit.setCell(r, y, c, ' landed'); sum += val(c); Kit.sfx.ding(); await Kit.wait(220); }
+    const newAt = new Map(step.news.map(([r, y, c]) => [r * 10 + y, c]));
+    await respinCells(empties, newAt, step.respins === 1 || empties.length <= 3, b);
+    for (const [r, y, c] of step.news) { grid[r][y] = c; sum += val(c); }
     Kit.fsBar(true, step.respins, sum, 'RESPINY', 'SOUČET MINCÍ');
-    await Kit.wait(step.news.length ? 500 : 350);
+    const bar = document.getElementById('kFs'); bar.classList.remove('bump'); void bar.offsetWidth; bar.classList.add('bump');
+    await Kit.wait(step.news.length ? 650 : 450);
   }
   // výplata
   let total = 0;
